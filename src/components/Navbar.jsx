@@ -107,7 +107,7 @@ const handleCart=()=>{
             <IoMenu className="text-5xl" />
           </button>
            <div className="flex items-center ">
-            <img src="images/be-logo.png"
+            <img src="/images/be-logo.png"
             className="xxxl:w-[58px] laptop:w-[40px] hd:w-[45px] w-[35px]"> 
             </img>
             <div className="flex flex-col text-left text-[12px] leading-tight uppercase text-[#3A261A] font-opensans font-bold xxxl:text-[25px] hd:text-[20px] laptop:text-[16px] xxxl:leading-[22px] hd:leading-[18px] laptop:leading-[14px]">
@@ -263,11 +263,11 @@ const handleCart=()=>{
 
 
         {/* Desktop View */}
-  <div className="hidden laptop:flex w-full fixed top-0 z-50 font-archivo ">
+  <div className="hidden laptop:flex w-full fixed top-0 z-50 font-archivon ">
   {/* Left Section */}
   <div className="bg-nav flex items-center px-4 laptop:px-4 xxxl:px-10 py-5 gap-6 hd:gap-10 laptop:gap-6 xxxl:gap-14 laptop:w-[55%] xxxl:w-[50%] ">
      <div className="flex items-center ">
-            <img src="images/be-logo.png"
+            <img src="/images/be-logo.png"
             className="xxxl:w-[65px] laptop:w-[45px] hd:w-[50px] "> 
             </img>
             <div className="flex flex-col text-left uppercase text-[#3A261A] font-opensans font-bold xxxl:text-[18px] hd:text-[16px] laptop:text-[14px] xxxl:leading-[22px] hd:leading-[18px] laptop:leading-[14px]">
@@ -399,7 +399,7 @@ const handleCart=()=>{
   <div className="bg-nav  border-b-2 border-[#3A261A] text-white  items-center py-[17px] px-4">
      <div className="flex items-center  justify-between xxxl:mb-30  laptop:mb-16 hd:mb-24 xxxl:px-20 laptop:px-10 hd:px-16">
            <div className="flex items-center ">
-            <img src="images/be-logo.png"
+            <img src="/images/be-logo.png"
             className="w-[36px] xxxl:w-[58px] laptop:w-[40px] hd:w-[45px] "> 
             </img>
             <div className="text-[15px] leading-tight flex flex-col text-left uppercase text-[#3A261A] font-opensans font-bold xxxl:text-[25px] hd:text-[20px] laptop:text-[16px] xxxl:leading-[22px] hd:leading-[18px] laptop:leading-[14px]">
@@ -408,7 +408,7 @@ const handleCart=()=>{
               </div>
             </div>
             <div>
-              <img src="images/close.png"
+              <img src="/images/close.png"
               onClick={() => setIsOpen(false)}
               className="w-[20px] xxxl:w-[30px] hd:w-[20px] laptop:w-[18px]"></img>
             </div>
