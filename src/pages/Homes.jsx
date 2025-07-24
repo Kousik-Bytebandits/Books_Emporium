@@ -84,7 +84,7 @@ const sections = [
       alt={product.title}
       className="w-[102px] h-[157px] mx-auto object-contain mb-2 shadow-around-soft"
     />
-    <p className="lg:text-[15px] font-figtree font-semibold leading-tight">{product.title}</p>
+    <p className="lg:text-[15px] font-archivo font-semibold leading-tight">{product.title}</p>
     <p className="lg:text-[12px] text-gray-500">By: {product.author}</p>
     <div className="flex items-center gap-2 mt-1">
       <p className="lg:text-[12px] font-bold text-black">₹{product.price}</p>

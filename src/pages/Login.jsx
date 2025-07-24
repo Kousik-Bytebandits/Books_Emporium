@@ -38,11 +38,11 @@ export default function Login() {
   localStorage.setItem('user', JSON.stringify(data));
   localStorage.setItem('accessToken', data.accessToken);
   localStorage.setItem('refreshToken', data.refreshToken);
-
+console.log(data.refreshToken);
   showPopup('success', 'Login successful!');
 
   setTimeout(() => {
-    navigate( '/home');
+    navigate( '/');
   }, 1500);
 } else {
   showPopup('error', data.message || 'Login failed');

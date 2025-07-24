@@ -1,0 +1,379 @@
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { FaMinus, FaPlus, FaChevronDown } from "react-icons/fa";
+
+const ProductDetails = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+
+  const [product, setProduct] = useState(null);
+  const [quantity, setQuantity] = useState(1);
+  const [showDescription, setShowDescription] = useState(true);
+  const [showDetails, setShowDetails] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [maxStock, setMaxStock] = useState(0);
+  const incrementQty = () => {
+  if (quantity < maxStock) {
+    setQuantity(prev => prev + 1);
+  }
+};
+
+
+const decrementQty = () => {
+  if (quantity > 1) {
+    setQuantity(prev => prev - 1);
+  }
+};
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const response = await fetch(
+          `https://booksemporium.in/Microservices/Prod/04_user_website/api/books/${id}`
+        );
+        const data = await response.json();
+        
+         setProduct(data);
+      setMaxStock(Number(data.product_details.stock_quantity));
+      
+      } catch (error) {
+        console.error("Failed to fetch product:", error);
+      }
+    };
+
+    if (id) fetchProduct();
+  }, [id]);
+
+  if (!product) {
+    return <div className="text-center py-10">Loading...</div>;
+  }
+
+const handleAddToCart = async () => {
+  const token = localStorage.getItem("accessToken");
+
+  if (!token) {
+    navigate("/signin");
+   
+
+    return;
+  }
+console.log("Sending to cart API:", {
+   bookId: product.product_details.book_id
+,
+  quantity
+});
+
+  try {
+    const response = await fetch("https://booksemporium.in/Microservices/Prod/05_cart/cart/items", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      
+      body: JSON.stringify({
+        bookId: product.product_details.book_id
+,
+        quantity: quantity,
+      }),
+    });
+
+    const contentType = response.headers.get("content-type");
+
+    if (!response.ok) {
+      
+      if (contentType && contentType.includes("application/json")) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to add product to cart");
+      } else {
+        const errorText = await response.text();
+        throw new Error(errorText || "Failed to add product to cart");
+      }
+    }
+
+    const result = await response.json();
+    alert("Product added to cart successfully!",result);
+  } catch (error) {
+    console.error("Error adding to cart:", error);
+    alert("Error: " + error.message);
+  }
+};
+
+  return (
+   <>
+   
+    <div className="bg-background  hidden lg:block  lg:pt-[8%] min-h-screen px-4 py-6 font-sans">
+      {/* Breadcrumb */}
+      <p className="text-black font-semibold text-[24px] tracking-wider font-archivo mb-10 hidden lg:block">
+        Books &gt; The Power Of Your Subconscious Mind
+      </p>
+
+      <div className="bg-white font-archivon   p-6 flex flex-col  lg:pt-[4%] gap-6 shadow-around-soft">
+        {/* Left: Book Image */}
+        <div className="lg:flex lg:w-[80%] lg:mx-20">
+        <div className="flex justify-center lg:w-1/2">
+          <img
+            src={product?.product_details?.image_url}
+  alt={product?.product_details?.title}
+            className="w-[220px] lg:w-[306px] lg:h-[473px] rounded-lg shadow-around-soft"
+          />
+        </div>
+
+        {/* Right: Book Details */}
+        <div className="lg:w-1/2 flex flex-col gap-2">
+          <h2 className="text-2xl lg:text-[40px] mb-4  font-archivo font-semibold text-[#282828]">
+           {product?.title}
+          </h2>
+          <p className="text-[#3D3D3D] text-lg lg:text-[32px]">	 {product?.product_details?.title}</p>
+
+          {/* Pricing */}
+          <div className="mt-4">
+            <div className="text-[22px] lg:text-[50px] font-semibold text-black">
+              ₹ {product?.product_details?.price} <span className="text-[#CA1D1D] text-[16px] lg:text-[35px] font-bold "> - {product?.product_details?.discount} %</span>
+            </div>
+            <div className="text-[#666666] mt-4 text-sm lg:text-[25px]">M.R.P: <span className="line-through"> {product?.product_details?.oldprice}</span></div>
+            <div className="text-sm text-[#3D3D3D] lg:text-[25px] mt-8">Inclusive Of All Taxes</div>
+          </div>
+
+          {/* Quantity & Buttons */}
+          <div className="mt-4 w-[26%] gap-3 lg:mt-5">
+            <div className="flex items-center justify-between gap-2 border rounded-full px-1 py-[2px]">
+              <button className="text-md bg-[#D8D8D8] px-2 font-normal border rounded-full w-10 h-10 flex items-center justify-center"  onClick={decrementQty}><FaMinus/></button>
+              <span className="text-sm lg:text-[20px]">{quantity}</span>
+              <button className="text-md bg-[#D8D8D8] px-2 font-normal border  rounded-full w-10 h-10 flex items-center justify-center" onClick={incrementQty} ><FaPlus/></button>
+            </div>
+            
+          </div>
+          <div className="flex justify-between  lg:mt-6">
+           <button
+            onClick={handleAddToCart} 
+           className="bg-[#3A261A] text-md lg:text-[24px] text-white w-[45%] px-4 py-2 rounded-md font-semibold hover:bg-[#4a2615]">
+              Add To Cart
+            </button>
+            <button className="bg-[#145974] text-md lg:text-[24px] text-white px-4 py-2 w-[45%] rounded-md font-semibold hover:bg-[#084464]">
+              Buy Now
+            </button>
+          </div>
+         </div>
+         </div>
+          {/* Description */}
+          <div className="  flex flex-col lg:w-[70%]  lg:mx-[16%] mb-10">
+          <div className="mt-6 ">
+            <h3 className="text-[18px] lg:text-[24px] font-semibold mb-2 text-[#4B4B4B] font-archivo">Description</h3>
+            <p className="text-sm text-[#6A6A6A] lg:text-[20px] leading-6">
+              {product?.product_details?.description}
+            </p>
+          </div>
+
+          {/* Other Details */}
+          <div className="mt-6">
+            <h3 className="text-[18px] lg:text-[24px] font-semibold font-archivo mb-2 text-[#4B4B4B]">Other Details</h3>
+            <ul className="text-sm text-[#6A6A6A] lg:text-[20px] space-y-3">
+              <p><span className="font-semibold">Author:</span> {product?.product_details?.author}</p>
+    <p><span className="font-semibold">Publisher:</span> {product?.product_details?.publisher}</p>
+    <p><span className="font-semibold">Published Date:</span> {product?.product_details?.published_date}</p>
+    <p><span className="font-semibold">Language:</span> {product?.product_details?.language}</p>
+    <p><span className="font-semibold">Pages:</span> {product?.product_details?.pages}</p>
+    <p><span className="font-semibold">ISBN:</span> {product?.product_details?.ean}</p>
+            </ul>
+          </div>
+          </div>
+        
+      </div>
+
+      {/* Top Picks Section */}
+    {product?.related?.length > 0 && (
+  <div className="mt-10">
+    <h2 className="text-xl font-bold mb-4 text-black lg:text-[32px] font-archivo text-center">
+      Top Picks For You
+    </h2>
+
+    <div className="flex gap-4 overflow-x-auto hide-scrollbar  pb-2 justify-evenly mt-10 mb-10 lg:w-[80%] mx-auto">
+      {product.related.map((item, index) => (
+        <div
+        
+          key={index}
+           onClick={() => navigate(`/productdetails/${item.book_id}`)}
+          className="min-w-[150px] w-[185px] h-[335px] p-2 bg-white cursor-pointer rounded-xl shadow-md flex-shrink-0"
+        >
+          <img
+            src={item.image_url}
+            alt={item.title}
+            className="w-[150px] h-[230px] mx-auto rounded object-contain"
+          />
+          <div className="mt-2 text-sm text-black font-archivo font-semibold">
+            {item.title}
+          </div>
+          <div className="text-xs text-[#666]">By: {item.author || "Unknown"}</div>
+          <div className="flex items-center gap-2 mt-1">
+            <p className="lg:text-[12px] font-bold text-black">₹{item.price}</p>
+            <p className="lg:text-[12px] line-through text-gray-400">
+              ₹{item.oldprice}
+            </p>
+            <p className="lg:text-[12px] text-[#CA1D1D] font-medium">
+              -{" "}
+              {item.discount} %
+            </p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
+
+    </div>
+
+    
+
+
+<div className="lg:hidden pt-[40%]  px-4 py-4 bg-[#FFF8F4] font-archivo">
+  {/* Delivery Banner */}
+  <p className="text-center text-[20px] font-figtree font-semibold text-black mb-3">Delivery Within 4–6 Business Days</p>
+
+  {/* Product Image */}
+  <div className="bg-white p-6 rounded-lg shadow-around-soft flex justify-center">
+    <img
+       src={product?.product_details?.image_url}
+  alt={product?.product_details?.title}
+      className="w-[150px] h-[230px]  object-contain"
+    />
+  </div>
+
+  {/* Product Info */}
+  <div className="bg-white mt-3 p-4 rounded-lg shadow-around-soft">
+    <h2 className="text-[24px] font-semibold ">
+       {product?.product_details?.title}
+    </h2>
+    <p className="text-[20px] font-archivon text-[#3D3D3D] my-1">By:  {product?.product_details?.author}</p>
+
+    {/* Pricing */}
+   <div className="flex items-center gap-2 mt-2 font-archivon">
+  <p className="text-[32px] font-bold text-[#3A261A]">₹{product?.product_details?.price}</p>
+  <p className="text-[16px] text-[#666666]">
+    M.R.P <span className="line-through">₹{product?.product_details?.oldprice}</span>
+  </p>
+  <p className="text-[16px] text-[#CA1D1D] font-semibold">
+    - {product?.product_details?.discount}%
+  </p>
+</div>
+
+    {/* Quantity Controls */}
+    <div className="flex justify-between py-1 px-1 mx-auto border border-[#D8D8D8] rounded-full items-center gap-4 mt-4">
+      <button className="w-9 h-9 bg-[#D8D8D8] rounded-full border border-[#999] text-lg font-bold flex items-center justify-center " onClick={decrementQty}><FaMinus/></button>
+      <span className="text-[20px] font-semibold">{quantity}</span>
+      <button className="w-8 h-8 bg-[#D8D8D8] rounded-full border border-[#999] text-lg font-bold flex items-center justify-center " onClick={incrementQty}><FaPlus/></button>
+    </div>
+
+    {/* Action Buttons */}
+    <div className="flex gap-3 mt-4">
+      <button
+       onClick={handleAddToCart} 
+        className="flex-1 bg-[#3A261A] text-white rounded-md py-3 text-[14px] font-semibold">
+        Add To Cart
+      </button>
+      <button className="flex-1 bg-[#145974] text-white rounded-md py-3 text-[14px] font-semibold">
+        Buy Now
+      </button>
+    </div>
+  </div>
+
+  {/* Description */}
+ <div className="bg-white mt-3 p-4 rounded-lg shadow-around-soft lg:hidden">
+  {/* Description Section */}
+  <div>
+    <div
+      onClick={() => setShowDescription(!showDescription)}
+      className="flex justify-between items-center cursor-pointer"
+    >
+      <p className="font-semibold text-[18px] text-[#4B4B4B]">Description</p>
+      <span className="text-[#666] text-[14px] transform transition-transform duration-300" style={{ transform: showDescription ? 'rotate(180deg)' : 'rotate(0deg)' }}><FaChevronDown/></span>
+    </div>
+    {showDescription && (
+      <p className="mt-2 text-[14px] text-[#555] leading-relaxed">
+        {isExpanded
+          ? `How to harness the limitless power of your subconscious mind in order to succeed in every sphere of your life. This book explains how we can harness its power in order to become self-aware and succeed in all areas of our lives. This book explains how we can harness its limitless power in order to become self-aware and experience success in every sphere of our lives.This book has touched millions of lives. It is designed to help you improve your relationships, health, sleep, career, and it arms you with useful insights that help you cross any kind of obstacle in life. Drawing on both deep scientific research as well as spiritual wisdom, it acts as a guide in helping one form a close connection with one’s subconscious, overcome unresolved fears and understand and then manifest what one truly desires.Dr Joseph Murphy says, our lives and its landmark events are shaped by the workings of our conscious and subconscious minds. This book gives practical techniques through which one can change one’s destiny by focusing and redirecting the magical energy of one’s mind and spirit.
+`
+          : ` How to harness the limitless power of your sub conscious mind in order to succeed in every
+              sphere of your life our subconscious mind has the power to change our lives. this book
+              explains how we can harness its limitless power in order to become self-aware and experience
+              success in every sphere of our lives.`}
+        <span
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="text-[#F24137] font-semibold cursor-pointer"
+        >
+          {isExpanded ? ' Show Less' : ' Read More...'}
+        </span>
+      </p>
+    )}
+  </div>
+
+  {/* Dashed Divider */}
+  <div className="my-4 border-t border-dashed border-gray-300" />
+
+  {/* Other Details Section */}
+  <div>
+    <div
+      onClick={() => setShowDetails(!showDetails)}
+      className="flex justify-between items-center cursor-pointer"
+    >
+      <p className="font-semibold text-[#4B4B4B] text-[18px]">Other Details</p>
+      <span className="text-[#666] text-[14px] transform transition-transform duration-300" style={{ transform: showDetails ? 'rotate(180deg)' : 'rotate(0deg)' }}><FaChevronDown/></span>
+    </div>
+   {showDetails && (
+  <div className="mt-2 text-[14px] text-[#444] space-y-1">
+    <p><span className="font-semibold">Author:</span> {product?.product_details?.author}</p>
+    <p><span className="font-semibold">Publisher:</span> {product?.product_details?.publisher}</p>
+    <p><span className="font-semibold">Published Date:</span> {product?.product_details?.published_date}</p>
+    <p><span className="font-semibold">Language:</span> {product?.product_details?.language}</p>
+    <p><span className="font-semibold">Pages:</span> {product?.product_details?.pages}</p>
+    <p><span className="font-semibold">ISBN:</span> {product?.product_details?.ean}</p>
+  </div>
+)}
+  </div>
+</div>
+
+
+  {/* Top Picks Section */}
+{product?.related?.length > 0 && (
+  <div className="mt-6">
+    <h3 className="font-bold text-[20px] text-center mb-4">Top Picks For You</h3>
+    
+    <div className="flex gap-3  overflow-x-auto px-2 py-2 scrollbar-hide">
+      {product.related.map((item) => (
+        <div
+          key={item.book_id}
+          onClick={() => navigate(`/productdetails/${item.book_id}`)}
+          className="w-[140px] bg-white h-[224px] rounded-lg p-2 shadow-around-soft text-center cursor-pointer flex-shrink-0"
+        >
+          <img
+            src={item.image_url}
+            alt={item.title}
+            className="w-full h-[130px] object-contain mx-auto"
+          />
+          <p className=" text-[10px] font-figtree font-semibold mt-2 line-clamp-2">{item.title}</p>
+          <div className="mt-1 text-[9px] flex justify-start gap-3 px-2 items-center">
+               <span className="text-[#F24137] font-semibold ml-1">-{item.discount}%</span>
+            <span className="text-black font-bold text-[11px]">₹{item.price}</span>
+           
+             
+          </div>
+           <>
+                <span className="text-[#999] ml-1 text-[12px]"> M.R.P <span className="line-through ">₹{item.oldprice}</span></span>
+             
+              </>
+            
+        </div>
+      ))}
+    </div>
+  </div>
+)}
+
+
+
+</div>
+
+</>
+  );
+};
+
+export default ProductDetails;

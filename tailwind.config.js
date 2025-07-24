@@ -9,8 +9,9 @@ export default {
          inter: ['Inter', 'sans-serif'],
         opensans: ['"Open Sans"', 'sans-serif'],
         outfit: ['Outfit', 'sans-serif'],
-         archivo: ['"Archivo Narrow"', 'sans-serif'],
+         archivon: ['"Archivo Narrow"', 'sans-serif'],
           figtree: ['Figtree', 'sans-serif'],
+          archivo: ['Archivo', 'sans-serif'],
       },
       colors: {
         desktopBg: '#F2F2F2',
