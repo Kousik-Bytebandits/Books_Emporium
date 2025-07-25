@@ -292,33 +292,35 @@ console.log("Sending to cart API:", {
 </div>
 
     {/* Quantity Controls */}
-  <div className="mt-4 w-[180px]">
-  <label className="block  font-medium mb-1">Select Quantity</label>
-  <div className="relative">
+  <div className="relative inline-flex items-center border border-black rounded-md bg-[#FFF7F0] px-3 py-2 w-[220px] my-4">
+  <span className="text-sm text-black">Select Quantity</span>
+  <div className="relative ml-auto">
     <select
+      ref={selectRef}
       value={quantity}
       onChange={(e) => setQuantity(Number(e.target.value))}
-      className="w-full appearance-none border border-gray-300 rounded-md py-2 pl-3 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+      className="appearance-none bg-transparent text-black text-right pr-6 cursor-pointer outline-none"
+      style={{ minWidth: '60px' }} // force consistent width
     >
-      {options.map((qty, index) => (
+      {options.map((opt, i) => (
         <option
-          key={qty}
-          value={qty}
+          key={opt}
+          value={opt}
           style={{
-            backgroundColor: index % 2 === 0 ? "#EFE0D3" : "#FFF7F0",
+            backgroundColor: i % 2 === 0 ? "#EFE0D3" : "#FFF7F0",
+            textAlign: "center",
           }}
         >
-          {qty}
+          {opt}
         </option>
       ))}
     </select>
-
-    {/* Custom dropdown icon using FaChevronDown */}
-    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-      <FaChevronDown className="text-gray-500 text-sm" />
+    <div className="pointer-events-none absolute right-1 top-1/2 -translate-y-1/2 text-black">
+      <FaChevronDown size={12} />
     </div>
   </div>
 </div>
+
     {/* Action Buttons */}
     <div className="flex gap-3 mt-4">
       <button

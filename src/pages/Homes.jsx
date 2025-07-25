@@ -27,6 +27,9 @@ useEffect(() => {
   const handleBooksByCategory = (fetchedBooks) => {
     setBooks(fetchedBooks);
   };
+ const handleCardClick = (product) => {
+  navigate(`/productdetails/${product.book_id}`);
+};
 
 const sections = [
   { title: "Now Trending", products: books.trending || [] },
@@ -79,8 +82,11 @@ const navigate = useNavigate();
 
               <div className="overflow-x-auto  hide-scrollbar lg:mt-16">
                 <div className="flex gap-4">
+               
                  {section.products.map((product, index) => (
   <div
+    onClick={() => handleCardClick(product)}
+  
   key={product.book_id || index}
   className="lg:w-[177px] lg:h-[272px] w-[132px] h-[222px]  shadow-around-soft border bg-white lg:p-3 p-1  rounded-md hover:shadow-lg transition flex-shrink- flex flex-col justify-between"
 >
