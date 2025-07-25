@@ -424,7 +424,7 @@ const handleCart=()=>{
       <li><a href="/">Home</a></li>
       <li><a href="/about">About</a></li>
       <li><a href="/contact">contact</a></li>
-      <li><a href="/bookscrate">books crate</a></li>
+      <li><a href="/bookcrate">books crate</a></li>
       <li><a href="/shop">shop</a></li>
      
 
