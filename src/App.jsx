@@ -10,6 +10,7 @@ import ProductDetails from './pages/ProductDetails';
 import Home from './pages/Homes';
 import ScrollToTop from './components/ScrollToTop';
 import ShopCart from './pages/ShopCart';
+import BookCrate from './pages/BookCrate';
 export default function App() {
     const location = useLocation();
    const hideNavbarRoutes = ['/signin', '/signup', '/forgot'];
@@ -26,6 +27,7 @@ export default function App() {
         <Route path='/shop' element={<ShopList/>}/>
         <Route path='/' element={<Home/>}/>
         <Route path='/shopcart' element={<ShopCart/>}/>
+        <Route path='/bookcrate' element={<BookCrate/>}/>
         
        </Routes>
         {!hideNavbarRoutes.includes(location.pathname) && <Footer />}

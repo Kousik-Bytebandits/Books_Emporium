@@ -108,9 +108,9 @@ const handleCart=()=>{
           </button>
            <div className="flex items-center ">
             <img src="/images/be-logo.png"
-            className="xxxl:w-[58px] laptop:w-[40px] hd:w-[45px] w-[35px]"> 
+            className="xxxl:w-[58px] laptop:w-[40px] hd:w-[45px] w-[36px] "> 
             </img>
-            <div className="flex flex-col text-left text-[12px] leading-tight uppercase text-[#3A261A] font-opensans font-bold xxxl:text-[25px] hd:text-[20px] laptop:text-[16px] xxxl:leading-[22px] hd:leading-[18px] laptop:leading-[14px]">
+            <div className="flex flex-col text-left text-[15px] leading-[0.9rem] lg:leading-tight uppercase text-[#3A261A] font-opensans font-bold xxxl:text-[25px] hd:text-[20px] laptop:text-[16px] xxxl:leading-[22px] hd:leading-[18px] laptop:leading-[14px]">
               <p>books</p>
               <p>emporium</p>
               </div>
@@ -175,7 +175,7 @@ const handleCart=()=>{
         <GoSearch className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-800 w-5 h-5" />
  <input
         type="text"
-        className="w-full px-4 py-2 border border-black rounded-md"
+        className="w-full px-10 py-2 border border-black rounded-md"
        placeholder="Search for books"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
