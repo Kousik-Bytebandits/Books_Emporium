@@ -1,29 +1,30 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect ,useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { FaMinus, FaPlus, FaChevronDown } from "react-icons/fa";
+import {  FaChevronDown } from "react-icons/fa";
 
 const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
   const [product, setProduct] = useState(null);
-  const [quantity, setQuantity] = useState(1);
+   const selectRef = useRef(null);
   const [showDescription, setShowDescription] = useState(true);
   const [showDetails, setShowDetails] = useState(true);
   const [isExpanded, setIsExpanded] = useState(false);
   const [maxStock, setMaxStock] = useState(0);
-  const incrementQty = () => {
-  if (quantity < maxStock) {
-    setQuantity(prev => prev + 1);
+  const [options, setOptions] = useState([]);
+  const [quantity, setQuantity] = useState(1);
+
+ useEffect(() => {
+  if (maxStock > 0) {
+    const limit = Math.min(maxStock, 20);
+    const opts = Array.from({ length: limit }, (_, i) => i + 1);
+    setOptions(opts);
   }
-};
+}, [maxStock]);
 
 
-const decrementQty = () => {
-  if (quantity > 1) {
-    setQuantity(prev => prev - 1);
-  }
-};
+
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -34,7 +35,14 @@ const decrementQty = () => {
         const data = await response.json();
         
          setProduct(data);
-      setMaxStock(Number(data.product_details.stock_quantity));
+      const stockQty = Number(data.product_details.stock_quantity);
+setMaxStock(stockQty);
+
+
+if (!quantity || quantity < 1) {
+  setQuantity(1);
+}
+
       
       } catch (error) {
         console.error("Failed to fetch product:", error);
@@ -48,9 +56,14 @@ const decrementQty = () => {
     return <div className="text-center py-10">Loading...</div>;
   }
 
+
+
 const handleAddToCart = async () => {
   const token = localStorage.getItem("accessToken");
-
+if (!quantity || quantity < 1) {
+  alert("Please select a valid quantity before adding to cart.");
+  return;
+}
   if (!token) {
     navigate("/signin");
    
@@ -135,15 +148,36 @@ console.log("Sending to cart API:", {
             <div className="text-sm text-[#3D3D3D] lg:text-[25px] mt-8">Inclusive Of All Taxes</div>
           </div>
 
-          {/* Quantity & Buttons */}
-          <div className="mt-4 w-[26%] gap-3 lg:mt-5">
-            <div className="flex items-center justify-between gap-2 border rounded-full px-1 py-[2px]">
-              <button className="text-md bg-[#D8D8D8] px-2 font-normal border rounded-full w-10 h-10 flex items-center justify-center"  onClick={decrementQty}><FaMinus/></button>
-              <span className="text-sm lg:text-[20px]">{quantity}</span>
-              <button className="text-md bg-[#D8D8D8] px-2 font-normal border  rounded-full w-10 h-10 flex items-center justify-center" onClick={incrementQty} ><FaPlus/></button>
-            </div>
-            
-          </div>
+          {/* Quantity */}
+   <div className="relative inline-flex items-center border border-black rounded-md bg-[#FFF7F0] px-3 py-2 w-[220px] my-4">
+  <span className="text-sm text-black">Select Quantity</span>
+  <div className="relative ml-auto">
+    <select
+      ref={selectRef}
+      value={quantity}
+      onChange={(e) => setQuantity(Number(e.target.value))}
+      className="appearance-none bg-transparent text-black text-right pr-6 cursor-pointer"
+    >
+      {options.map((opt, i) => (
+        <option
+          key={opt}
+          value={opt}
+          style={{
+            backgroundColor: i % 2 === 0 ? "#EFE0D3" : "#FFF7F0",
+            textAlign: "center",
+          }}
+        >
+          {opt}
+        </option>
+      ))}
+    </select>
+    <div className="pointer-events-none absolute right-1 top-1/2 -translate-y-1/2 text-black">
+      <FaChevronDown size={12} />
+    </div>
+  </div>
+</div>
+
+
           <div className="flex justify-between  lg:mt-6">
            <button
             onClick={handleAddToCart} 
@@ -258,12 +292,33 @@ console.log("Sending to cart API:", {
 </div>
 
     {/* Quantity Controls */}
-    <div className="flex justify-between py-1 px-1 mx-auto border border-[#D8D8D8] rounded-full items-center gap-4 mt-4">
-      <button className="w-9 h-9 bg-[#D8D8D8] rounded-full border border-[#999] text-lg font-bold flex items-center justify-center " onClick={decrementQty}><FaMinus/></button>
-      <span className="text-[20px] font-semibold">{quantity}</span>
-      <button className="w-8 h-8 bg-[#D8D8D8] rounded-full border border-[#999] text-lg font-bold flex items-center justify-center " onClick={incrementQty}><FaPlus/></button>
-    </div>
+  <div className="mt-4 w-[180px]">
+  <label className="block  font-medium mb-1">Select Quantity</label>
+  <div className="relative">
+    <select
+      value={quantity}
+      onChange={(e) => setQuantity(Number(e.target.value))}
+      className="w-full appearance-none border border-gray-300 rounded-md py-2 pl-3 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+    >
+      {options.map((qty, index) => (
+        <option
+          key={qty}
+          value={qty}
+          style={{
+            backgroundColor: index % 2 === 0 ? "#EFE0D3" : "#FFF7F0",
+          }}
+        >
+          {qty}
+        </option>
+      ))}
+    </select>
 
+    {/* Custom dropdown icon using FaChevronDown */}
+    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+      <FaChevronDown className="text-gray-500 text-sm" />
+    </div>
+  </div>
+</div>
     {/* Action Buttons */}
     <div className="flex gap-3 mt-4">
       <button
