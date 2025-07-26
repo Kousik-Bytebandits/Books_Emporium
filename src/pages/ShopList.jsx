@@ -12,25 +12,44 @@ function ProductCard({ product }) {
   };
 
   return (
-       <div onClick={handleCardClick} className="xxxl:w-[195px] xxxl:h-[350px] w-[170px] h-[280px] font-figtree mx-auto   border  p-3 shadow-around-soft rounded-lg bg-white">
-      <img
-        src={product.image_url}
-        alt={product.title}
-        className="xxxl:w-[170px] xxxl:h-[230px] w-[100px] h-[148px] object-cover rounded shadow-around-soft mx-auto"
-      />
-      <h3 className="mt-2 font-medium line-clamp-2 text-black text-[14px] mx-2">{product.title}</h3>
-      <p className="text-xs text-gray-500 mt-1 mx-2">by {product.author}</p>
+      <div
+  onClick={handleCardClick}
+  className="xxxl:w-[195px] xxxl:h-[350px] w-[170px] h-[280px] font-figtree mx-auto border p-3 shadow-around-soft rounded-lg bg-white flex flex-col justify-between"
+>
+  {/* Image */}
+  <img
+    src={product.image_url}
+    alt={product.title}
+    className="xxxl:w-[170px] xxxl:h-[230px] w-[100px] h-[148px] object-cover rounded shadow-around-soft mx-auto"
+  />
 
-      <div className="flex items-center gap-2 mt-2 mx-2">
-        <p className="text-black font-bold text-xs">₹{product.price}</p>
-        <p className="line-through text-gray-400 font-sans lg:text-xs text-[9px]">₹{product.oldprice}</p>
-         {product.discount && (
-        <p className="lg:text-xs text-[9px] text-[#CA1D1D] ">- {product.discount}%</p>
-      )}
-      </div>
-
-     
+  {/* Title + Author + Price */}
+  <div className="flex flex-col justify-between flex-1 mt-2">
+    {/* Title */}
+    <div className="min-h-[38px] text-left px-2">
+      <h3 className="font-semibold text-black text-[14px] leading-snug line-clamp-2">
+        {product.title}
+      </h3>
     </div>
+
+    {/* Author */}
+    <p className="text-xs text-gray-600 mt-1 px-2 text-left min-h-[18px]">
+      By: {product.author}
+    </p>
+
+    {/* Price Section */}
+    <div className="flex items-center gap-2 mt-2 mx-2 min-h-[20px]">
+      <p className="text-black font-bold text-xs">₹{product.price}</p>
+      <p className="line-through text-gray-400 font-sans lg:text-xs text-[9px]">
+        ₹{product.oldprice}
+      </p>
+      {product.discount && (
+        <p className="lg:text-xs text-[8px] text-[#CA1D1D]">-{product.discount}%</p>
+      )}
+    </div>
+  </div>
+</div>
+
 
   );
 }
@@ -317,12 +336,12 @@ const fetchProducts = () => {
 
       <div className="lg:hidden bg-[#B4541F] py-2 rounded flex items-center text-white justify-center mb-4">
         
-        <div className="flex-1  flex items-center justify-center  font-archivo ">
+        <div className="flex-1 text-[13px] flex items-center justify-center  font-archivo ">
           Sort by :
           <select
             value={sortOption}
             onChange={(e) => setSortOption(e.target.value)}
-            className="bg-transparent text-[14px] tracking-wide font-archivo focus:outline-none"
+            className="bg-transparent text-[13px] tracking-wide font-archivo focus:outline-none"
           >
               <option value="Relevance" className="bg-nav text-black ">Name Ascending</option>
             <option value="NameDesc" className="bg-nav text-black ">Name Descending</option>

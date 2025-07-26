@@ -51,17 +51,17 @@ const navigate = useNavigate();
     <CategorySelector onBooksFetched={handleBooksByCategory} />
 
       {/* Services */}
-      <div className="xxxl:w-[80%] h-[160px] xxxl:mx-auto grid grid-cols-2 md:grid-cols-4 lg:h-[160px] mt-10 md:px-20 bg-white shadow-around-soft lg:py-6 rounded-md mx-4 md:mx-10">
+       <div className="xxxl:w-[80%]  w-[96%] mx-auto  h-[160px]  grid grid-cols-2 md:grid-cols-4 lg:h-[160px] mt-6  bg-white shadow-around-soft lg:py-6 rounded-md  ">
         {[
           { icon: "Truck.png", title: "Free Delivery", desc: "Order over Rs 1000" },
           { icon: "security.png", title: "Secured Payment", desc: "100% Guarantee Security" },
           { icon: "Tag.png", title: "Best Deals", desc: "Upto 30% Discount" },
           { icon: "rotate.png", title: "Free Returns", desc: "Within 15 days" },
         ].map((item, i) => (
-          <div key={i} className="p-2 gap-2 flex items-center gap-4 lg:mx-auto mt-4 lg:mt-0">
+          <div key={i} className="md:p-2 gap-2 md:gap-4 flex justify-between items-center   mx-auto mt-4 lg:mt-0">
             <img src={`images/${item.icon}`} className="w-[32px] lg:w-[48px] lg:mt-2" alt="img" />
             <div className="text-left text-[14px]">
-              <p className="xxxl:text-[24px] hd:text-[20px] laptop:text-[18px] font-semibold">{item.title}</p>
+              <p className="xxxl:text-[24px] hd:text-[20px] laptop:text-[18px]  font-semibold">{item.title}</p>
               <p className="xxxl:text-[18px] hd:text-[16px] laptop:text-[14px] text-[11px] text-gray-500">{item.desc}</p>
             </div>
           </div>

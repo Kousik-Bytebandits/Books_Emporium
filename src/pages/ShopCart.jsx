@@ -77,13 +77,90 @@ const [discount, setDiscount] = useState(0);
     }
   };
    
-   const handleCheckout = () => {
-   const token = localStorage.getItem("accessToken");
-    if (!token) {
-      navigate("/signin"); 
-    } else {
-      navigate("/shopcart");     }
-  };
+   const handleCheckout = async () => {
+  const token = localStorage.getItem("accessToken");
+
+  if (!token) {
+    navigate("/signin");
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      "https://booksemporium.in/Microservices/Prod/06_orders_and_payments/order/create",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          source_type: "cart",
+          payment_method: "online",
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok || !data.razorpayOrder) {
+      alert("Failed to create order.");
+      return;
+    }
+
+    const options = {
+      key: "rzp_test_qQ40l1wBMtOxc0", // ✅ Replace with your live key in production
+      amount: data.razorpayOrder.amount,
+      currency: "INR",
+      name: "Books Emporium",
+      description: "Cart Payment",
+      order_id: data.razorpayOrder.id,
+      handler: async function (response) {
+        // ✅ Call verify API here if needed
+        try {
+          const verifyRes = await fetch(
+            "https://booksemporium.in/Microservices/Prod/06_orders_and_payments/order/verify",
+            {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature,
+              }),
+            }
+          );
+
+          if (!verifyRes.ok) {
+            alert("Payment verification failed");
+            return;
+          }
+
+          const verifyData = await verifyRes.json();
+          alert("Payment successful!");
+          navigate("/"); 
+          console.log(verifyData);
+        } catch (err) {
+          console.error("Verification failed:", err);
+          alert("Error verifying payment.");
+        }
+      },
+      theme: {
+        color: "#121212",
+      },
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+  } catch (err) {
+    console.error("Checkout failed:", err);
+    alert("Something went wrong during checkout.");
+  }
+};
+
   return (
     <>
       <div className="max-w-[100%]  lg:bg-background  pt-[35%] lg:pt-[6%] mx-auto py-8 font-archivon">

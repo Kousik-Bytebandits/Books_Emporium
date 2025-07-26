@@ -5,20 +5,20 @@ import { RiArrowDropRightLine } from "react-icons/ri";
 import { RiArrowDropLeftLine } from "react-icons/ri";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 
 function ProductCard({ product, addToCrate }) {
 
-
-  return (
+ return (
      <div 
    
-  className="xxxl:w-[195px] xxxl:h-[350px] w-[170px] h-[280px] font-figtree mx-auto border shadow-around-soft rounded-lg bg-white flex flex-col"
+  className="xxxl:w-[195px] xxxl:h-[350px] w-[170px]  h-[263px] font-figtree mx-auto mb-4 border shadow-around-soft rounded-lg bg-white flex flex-col"
 >
-  <div className="p-3 flex flex-col flex-grow">
+  <div className="p-2 flex flex-col flex-grow">
     <img
       src={product.image_url}
       alt={product.title}
-      className="xxxl:w-[170px] xxxl:h-[230px] w-[130px] h-[190px] object-cover rounded-md shadow-around-soft"
+      className="xxxl:w-[170px] xxxl:h-[230px] w-[96px] h-[148px] mx-auto  object-cover rounded-md shadow-around-soft"
     />
 
     <div className="mt-2 min-h-[38px] text-left px-2">
@@ -38,7 +38,7 @@ function ProductCard({ product, addToCrate }) {
           addToCrate(product.book_id);
         }}
 
-    className="bg-[#E6712C] text-white text-[15px] font-semibold py-2 w-full rounded-b-lg hover:bg-[#d7611c] transition-all"
+    className="bg-[#E6712C] text-white text-[15px]  font-semibold py-2 w-full rounded-b-lg hover:bg-[#d7611c] transition-all"
   >
     ADD TO CRATE
   </button>
@@ -94,7 +94,7 @@ const [crateSummary, setCrateSummary] = useState({
   rate: 0,
   totalAmount: 0,
 });
-
+const navigate = useNavigate();
 const categories = [
   "Sports",
   "History",
@@ -166,6 +166,14 @@ const sortOptionMapping = {
   PriceLowHigh: "price_low_high",
   PriceHighLow: "price_high_low",
 };
+const handle403Redirect = (res, navigate) => {
+  if (res.status === 403) {
+    localStorage.removeItem("accessToken");
+    navigate("/signin");
+    return true;
+  }
+  return false;
+};
 
 const addToCrate = async (bookId) => {
   try {
@@ -187,6 +195,7 @@ const addToCrate = async (bookId) => {
       body: JSON.stringify(payload),
     });
 
+    if (handle403Redirect(res, navigate)) return;
     if (res.ok) {
       toast.success("Book added to crate!");
       fetchCrateBooks();
@@ -210,13 +219,13 @@ const fetchCrateBooks = async () => {
     const res = await fetch(API_URL, {
       headers: { Authorization: `Bearer ${getToken()}` },
     });
-
+ if (handle403Redirect(res, navigate)) return;
     const data = await res.json();
 
-    const apiKey = crateNameToApiValue[selectedCrate.name]; // eg. "small crate"
+    const apiKey = crateNameToApiValue[selectedCrate.name]; 
     const booksList = data[apiKey] || [];
 
-    setBooks(booksList); // update displayed books
+    setBooks(booksList); 
 
    
     setCrateSummary({
@@ -241,9 +250,9 @@ const removeBook = async (bookId) => {
       },
       body: JSON.stringify({ bookId }),
     });
-
+ if (handle403Redirect(res, navigate)) return;
     if (res.ok) {
-      fetchCrateBooks(); // refresh
+      fetchCrateBooks(); 
     }
   } catch (err) {
     console.error("Error removing book", err);
@@ -251,11 +260,11 @@ const removeBook = async (bookId) => {
 };
 
 const handleConfirmCrateChange = async () => {
-  await discardCrate(); // API call to clear existing books
-  setSelectedCrate(pendingCrate); // switch to new crate
+  await discardCrate(); 
+  setSelectedCrate(pendingCrate); 
   setPendingCrate(null);
   setShowCrateChangeConfirm(false);
-  fetchCrateBooks(); // refresh scroll list
+  fetchCrateBooks(); 
 };
 
 
@@ -267,7 +276,7 @@ const discardCrate = async () => {
         Authorization: `Bearer ${getToken()}`
       },
     });
-
+ if (handle403Redirect(res, navigate)) return;
     if (res.ok) {
       setBooks([]);
     }
@@ -383,14 +392,14 @@ useEffect(() => {
     {isDropdownOpen && (
       <div className="space-y-2 mt-2">
         {categories.map((category) => (
-          <label key={category} className="flex items-center  space-x-2">
+          <label key={category} className="flex items-center   space-x-2 ">
             <input
               type="checkbox"
               className="w-5 h-4"
               checked={selectedCategories.includes(category)}
               onChange={() => toggleCategory(category)}
             />
-            <span className="text-[16px]">{category}</span>
+            <span className="text-[15px] leading-tight">{category}</span>
           </label>
         ))}
       </div>
@@ -453,7 +462,7 @@ useEffect(() => {
           </div>
         </div>
 
-        {/* PRODUCT TYPE (Left column short, Right column long) */}
+        
         <div className="mb-6">
   <p className="text-[18px] text-[#676A5E] font-tenor lg:text-[22px] uppercase mb-3">Categories</p>
   <div className="grid grid-cols-2 gap-3 text-[px]">
@@ -515,16 +524,85 @@ useEffect(() => {
   </>
 );
 
+const handleCrateCheckout = async () => {
+  const token = localStorage.getItem("accessToken");
+
+  try {
+    const res = await fetch("https://booksemporium.in/Microservices/Prod/06_orders_and_payments/order/create", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        source_type: "crate",
+        payment_method: "online",
+      }),
+    });
+
+    const data = await res.json();
+
+    if (data?.razorpayOrder) {
+      const options = {
+        key: "rzp_test_qQ40l1wBMtOxc0", // replace with live key later
+        amount: data.razorpayOrder.amount,
+        currency: "INR",
+        name: "Book Emporium",
+        description: "Book Crate Purchase",
+        order_id: data.razorpayOrder.id,
+        handler: async function (response) {
+          await verifyCratePayment(response, token);
+        },
+        theme: { color: "#00aaff" },
+      };
+
+      const rzp1 = new window.Razorpay(options);
+      rzp1.open();
+    } else {
+      alert("Failed to create Razorpay order.");
+    }
+  } catch (error) {
+    console.error("Checkout error:", error);
+    alert("An error occurred during checkout.");
+  }
+};
+
+const verifyCratePayment = async (response, token) => {
+  try {
+    const verifyRes = await fetch("https://booksemporium.in/Microservices/Prod/06_orders_and_payments/order/verify", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        razorpay_order_id: response.razorpay_order_id,
+        razorpay_payment_id: response.razorpay_payment_id,
+        razorpay_signature: response.razorpay_signature,
+      }),
+    });
+
+    const result = await verifyRes.json();
+
+    if (result.message === "Payment verified and order updated!") {
+      alert("Payment Successful!");
+    } else {
+      alert("Payment verification failed.");
+    }
+  } catch (error) {
+    console.error("Verification error:", error);
+    alert("Error verifying payment.");
+  }
+};
+
+
   return (
     <div>
-    <div className="pt-[33%] min-h-screen overflow-hidden  pb-20 bg-background   lg:px-8 lg:pt-[6%] font-archivo text-[#676A5E]">
-      <div className="hidden lg:flex justify-between items-center mb-4 px-4">
-       
-      </div>
-
-      <div className="lg:hidden bg-[#B4541F] py-2 rounded flex items-center text-white justify-center mb-4">
+    <div className="pt-[31%]  min-h-screen overflow-hidden  pb-20 bg-background   lg:px-8 lg:pt-[6%] font-archivo text-[#676A5E]">
+    
+    <div className="lg:hidden bg-[#B4541F] py-2 rounded flex items-center text-white justify-center mb-4">
         
-        <div className="flex-1  flex items-center justify-center  font-archivo ">
+        <div className="flex-1 text-[14px]  flex items-center justify-center  font-archivo ">
           Sort by :
           <select
             value={sortOption}
@@ -562,79 +640,279 @@ useEffect(() => {
 
 
       </div>
- <h1 className="text-[18px] lg:hidden font-bold font-sans text-center text-black">Popular Indian Used-Book Marketplaces</h1>
-      <div className="grid grid-cols-2 gap-3 px-3 pb-4 pt-2 font-archivo text-[#676A5E] lg:hidden">
-       {Array.isArray(products) && products.map((product) => (
-   <ProductCard key={product.book_id} product={product} addToCrate={addToCrate} />
-
-
-))}
-
-
-      </div>
-    <div className="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-6 w-full max-w-6xl">
+      <div className="xxxl:w-[80%] mx-auto lg:hidden p-4   font-archivo justify-center items-center">
+        <h1 className="text-[20px] text-center text-black  font-semibold ">Choose Your<br/> Perfect Book Crate</h1>
+        <p className="text-[11px] text-center text-black">Get a box of surprise books — hand-picked and shipped to your door</p>
+        
+    <div className="  mt-10 grid grid-cols-1 lg:grid-cols-2 gap-6 w-full ">
         {/* Left Side - Crate Selection */}
-        <div className="bg-white rounded-xl p-6 shadow-md">
-          <h3 className="text-xl font-semibold mb-4">Select Your Crate</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {crates.map((crate, index) => (
-              <div
-                key={index}
-                className={`border rounded-xl p-4 text-center transition-all duration-200 ${
-                  selectedCrate.name === crate.name
-                    ? "border-orange-400 bg-orange-50"
-                    : "border-gray-200"
-                }`}
-              >
-                <div className="flex justify-center mb-4">
-                  <img
-                    src={`/images/crate-${index + 1}.png`}
-                    alt={crate.name}
-                    className="w-16 h-16 object-contain"
-                  />
-                </div>
-                <h4 className="text-orange-600 font-semibold">{crate.name}</h4>
-                <p className="text-sm text-gray-600">{crate.books} Books</p>
-                <p className="mt-1 font-medium">₹ {crate.price}</p>
-                <button
-                   onClick={() => {
-  if (selectedCrate.name !== crate.name) {
-    setPendingCrate(crate);
-    setShowCrateChangeConfirm(true);
-  }
-}}
-
-                  className={`mt-3 px-4 py-1.5 rounded text-sm font-semibold w-full ${
-                    selectedCrate.name === crate.name
-                      ? "bg-[#3c2b1e] text-white cursor-default"
-                      : "bg-orange-500 text-white hover:bg-orange-600"
-                  }`}
-                >
-                  {selectedCrate.name === crate.name ? "SELECTED" : "SELECT"}
-                </button>
-              </div>
-            ))}
-          </div>
+      <div className="bg-white  rounded-xl p-6 shadow-around-soft">
+  <h3 className="lg:text-[24px] text-[20px] text-black font-bold  mb-4">Select Your Crate</h3>
+  <div className="grid grid-cols-3  lg:grid-cols-3 gap-2 lg:gap-6">
+    {crates.map((crate, index) => (
+      <div
+        key={index}
+        className={`flex flex-col shadow-around-soft items-center justify-between border rounded-xl p-4 h-full transition-all duration-200 ${
+          selectedCrate.name === crate.name
+            ? "border-orange-400 bg-orange-50"
+            : "border-gray-200"
+        }`}
+      >
+        {/* Box image */}
+        <div className="xxxl:h-[140px] laptop:h-[80px] hd:h-[120px] h-[100px] flex items-center justify-center mb-4">
+          <img
+            src={`/images/crate-${index + 1}.png`}
+            alt={crate.name}
+            className=" object-contain"
+          />
         </div>
+
+        {/* Crate info */}
+        <div className="text-center mb-4 text-black ">
+          <h4 className="text-[#A06616] xxxl:text-[24px] laptop:text-[18px] hd:text-[20px] text-[10px] font-semibold ">{crate.name}</h4>
+          <p className="text-[10px] xxxl:text-[20px] laptop:text-[14px] hd:text-[16px]">{crate.books} Books</p>
+          <p className="mt-1 text-[10px] xxxl:text-[18px] laptop:text-[12px] hd:text-[14px] font-medium">₹ {crate.price}</p>
+        </div>
+
+        {/* Select button */}
+        <button
+          onClick={() => {
+            if (selectedCrate.name !== crate.name) {
+              setPendingCrate(crate);
+              setShowCrateChangeConfirm(true);
+            }
+          }}
+          className={`mt-auto w-full lg:px-4 xxxl:py-3 laptop:py-1.5 hd:py-2 py-1.5 text-[10px] rounded lg:text-[14px]  font-semibold ${
+            selectedCrate.name === crate.name
+              ? "bg-[#492C1E] text-white cursor-default"
+              : "bg-[#E6712C] text-white hover:bg-orange-600"
+          }`}
+        >
+          {selectedCrate.name === crate.name ? "SELECTED" : "SELECT"}
+        </button>
+      </div>
+    ))}
+  </div>
+</div>
+
         {showCrateChangeConfirm && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-    <div className="bg-white rounded-xl shadow-lg w-[300px] p-6 text-center">
+  <div className="fixed inset-0 z-50 flex px-4 items-center justify-center bg-black bg-opacity-50">
+    <div className="bg-white rounded-xl shadow-lg w-full  p-6 text-center">
       <div className="text-left">
         <h3 className="font-bold mb-2 text-gray-800">PLEASE NOTE:</h3>
-        <p className="text-sm text-gray-700 mb-4">
+        <p className="text-sm text-black font-semibold mb-4">
           SELECTING A NEW CRATE WILL CLEAR ALL ITEMS ADDED TO THE CURRENT CRATE.
         </p>
       </div>
       <div className="flex gap-4 justify-between">
         <button
           onClick={handleConfirmCrateChange}
-          className="flex-1 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded font-semibold text-sm"
+          className="flex-1  bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded font-semibold text-sm"
         >
           SELECT CRATE
         </button>
         <button
           onClick={() => setShowCrateChangeConfirm(false)}
           className="flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-semibold text-sm"
+        >
+          CANCEL
+        </button>
+      </div>
+      
+    </div>
+  </div>
+)}
+
+
+        {/* Right Side - Crate Details */}
+       <div className="bg-white font-archivon rounded-xl p-6 shadow-around-soft">
+  <h3 className="xxxl:text-[24px] laptop:text-[18px] hd:text-[20px] text-[18px]  text-[#4B4B4B] font-semibold mb-3">
+    Selected Crate :{" "}
+    <span className="text-[#A06616] font-semibold">
+      {selectedCrate.name}
+    </span>
+  </h3>
+  <div className="  rounded-md    font-archivon xxxl:text-[24px] laptop:text-[18px] hd:text-[20px] text-[18px] font-semibold text-[#4B4B4B] ">
+    <div className="flex justify-between">
+      <span>Total No.of Books</span>
+      <span className="text-[18px]">{crateSummary.totalBooks} Books</span>
+    </div>
+    <div className="flex justify-between  ">
+      <span>Rate Per Book</span>
+      <span className="text-[18px]">₹{crateSummary.rate.toFixed(2)}</span>
+    </div>
+    <div className="flex justify-between   ">
+      <span>Total Amount</span>
+      <span className="text-[18px]">  ₹{crateSummary.totalAmount.toFixed(2)}</span>
+    </div>
+
+  <div className="mt-6  flex   gap-4  text-[16px] xxxl:text-[18px] laptop:text-[12px] hd:text-[14px]">
+    <button
+      onClick={openPopup}
+      className="flex-1 bg-[#3c2b1e] hover:bg-[#2d2015] text-white  xxxl:py-3 laptop:py-1.5 hd:py-2 py-2 rounded  font-semibold"
+    >
+      View Crate
+    </button>
+    <button  
+    onClick={handleCrateCheckout}
+    className="flex-1 bg-[#0e1f36] hover:bg-[#091426] text-white  xxxl:py-3 laptop:py-1.5 hd:py-2 py-2  rounded font-semibold">
+      Place My Order
+    </button>
+  </div>
+    </div>
+</div>
+
+     
+
+      {/* Selected Books Slider */}
+      <div className=" w-full  bg-white  rounded-xl p-4 relative">
+        <div className="flex justify-between text-black items-center mb-2">
+          <h4 className="font-semibold  text-lg">Selected Books</h4>
+          <button
+            onClick={openPopup}
+            className="text-[15px] border-b-2 border-black font-archivon hover:underline"
+          >
+            Show all
+          </button>
+        </div>
+
+       
+
+      <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide " ref={scrollRef}>
+  {books.map((book) => (
+   <img
+  key={book.book_id}
+  src={book.image_url}
+  alt="image"
+  className="w-20 h-auto object-cover rounded shadow"
+/>
+
+  ))}
+</div>
+
+
+       
+      </div>
+
+       <div className="grid grid-cols-2 gap-4  pt-2 font-archivo text-[#676A5E] ">
+       {Array.isArray(products) && products.map((product) => (
+   <ProductCard key={product.book_id} product={product} addToCrate={addToCrate} />
+
+
+))}
+ </div>
+</div>
+      {/* Popup Modal */}
+    {showPopup && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+    <div className="bg-white p-6 rounded-xl max-w-3xl w-full max-h-[80vh] overflow-y-auto">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-[20px] text-black font-semibold ">Your Crate Books</h2>
+        <button onClick={() => setShowPopup(false)} className="text-red-500 font-bold"><img src="images/close.png" className="w-5"/></button>
+      </div>
+
+      <div className="grid grid-cols-3 sm:grid-cols-4 gap-4">
+        {books.map((book) => (
+  <div key={book.book_id} className="text-center">
+    <img
+      src={book.image_url}
+      alt="image"
+      className="w-[101px] h-[150px] mx-auto object-cover rounded mb-2"
+    />
+    <button
+      onClick={() => removeBook(book.book_id)}
+      className="bg-[#AA1414] text-white px-4 py-1 text-[15px] rounded hover:bg-red-600"
+    >
+      Remove
+    </button>
+  </div>
+))}
+
+      </div>
+    </div>
+  </div>
+)}
+
+     
+
+      </div>
+    
+       
+     
+      <div className="xxxl:w-[80%] mx-auto hidden lg:flex flex-col font-archivo justify-center items-center">
+        <h1 className="text-[32px] text-black  font-semibold ">Choose Your Perfect Book Crate</h1>
+        <p className="text-[20px] text-black">Get a box of surprise books — hand-picked and shipped to your door</p>
+        
+    <div className="h-[386px]  mt-10 grid grid-cols-1 lg:grid-cols-2 gap-6 w-full ">
+        {/* Left Side - Crate Selection */}
+      <div className="bg-white rounded-xl p-6 shadow-around-soft">
+  <h3 className="text-[24px] text-black font-bold font-sans mb-4">Select Your Crate</h3>
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {crates.map((crate, index) => (
+      <div
+        key={index}
+        className={`flex flex-col shadow-around-soft items-center justify-between border rounded-xl p-4 h-full transition-all duration-200 ${
+          selectedCrate.name === crate.name
+            ? "border-orange-400 bg-orange-50"
+            : "border-gray-200"
+        }`}
+      >
+        {/* Box image */}
+        <div className="xxxl:h-[140px] laptop:h-[80px] hd:h-[120px] flex items-center justify-center mb-4">
+          <img
+            src={`/images/crate-${index + 1}.png`}
+            alt={crate.name}
+            className=" object-contain"
+          />
+        </div>
+
+        {/* Crate info */}
+        <div className="text-center mb-4 text-black">
+          <h4 className="text-[#A06616] xxxl:text-[24px] laptop:text-[18px] hd:text-[20px] text-[16px] font-semibold ">{crate.name}</h4>
+          <p className="text-[12px] xxxl:text-[20px] laptop:text-[14px] hd:text-[16px]">{crate.books} Books</p>
+          <p className="mt-1 text-[10px] xxxl:text-[18px] laptop:text-[12px] hd:text-[14px] font-medium">₹ {crate.price}</p>
+        </div>
+
+        {/* Select button */}
+        <button
+          onClick={() => {
+            if (selectedCrate.name !== crate.name) {
+              setPendingCrate(crate);
+              setShowCrateChangeConfirm(true);
+            }
+          }}
+          className={`mt-auto w-full px-4 xxxl:py-3 laptop:py-1.5 hd:py-2 py-2 rounded text-[14px]  font-semibold ${
+            selectedCrate.name === crate.name
+              ? "bg-[#492C1E] text-white cursor-default"
+              : "bg-[#E6712C] text-white hover:bg-orange-600"
+          }`}
+        >
+          {selectedCrate.name === crate.name ? "SELECTED" : "SELECT"}
+        </button>
+      </div>
+    ))}
+  </div>
+</div>
+
+        {showCrateChangeConfirm && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="bg-white rounded-xl shadow-lg xxxl:w-[28%] lg:w-[30%] p-6 text-center">
+      <div className="text-left">
+        <h3 className="font-bold mb-2 xxxl:text-[25px] text-[20px] text-gray-800">PLEASE NOTE:</h3>
+        <p className="text-[14px] text-black xxxl:text-[18px] font-semibold mb-8">
+          SELECTING A NEW CRATE WILL CLEAR ALL <br/>  ITEMS ADDED TO THE CURRENT CRATE.
+        </p>
+      </div>
+      <div className="flex gap-4 justify-between">
+        <button
+          onClick={handleConfirmCrateChange}
+          className="flex-1  bg-orange-500 hover:bg-orange-600 text-white px-4 py-3 rounded font-semibold xxxl:text-[16px] text-[14px]"
+        >
+          SELECT CRATE
+        </button>
+        <button
+          onClick={() => setShowCrateChangeConfirm(false)}
+          className="flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-3 rounded font-semibold xxxl:text-[16px] text-[14px]"
         >
           CANCEL
         </button>
@@ -651,49 +929,51 @@ useEffect(() => {
 
 
         {/* Right Side - Crate Details */}
-       <div className="bg-white rounded-xl p-6 shadow-md">
-  <h3 className="text-lg font-medium mb-3">
+       <div className="bg-white rounded-xl p-6 shadow-around-soft">
+  <h3 className="xxxl:text-[24px] laptop:text-[18px] hd:text-[20px] text-[16px] font-sans text-[#4B4B4B] font-medium mb-3">
     Selected Crate :{" "}
-    <span className="text-orange-600 font-semibold">
+    <span className="text-[#DD6017] font-semibold">
       {selectedCrate.name}
     </span>
   </h3>
-  <div className="bg-gray-100 p-4 rounded-md space-y-3 text-sm font-medium">
-    <div className="flex justify-between">
+  <div className="shadow-around p-4 rounded-md    font-archivo xxxl:text-[24px] laptop:text-[18px] hd:text-[20px] text-[16px] font-semibold text-black ">
+    <div className="flex justify-around  py-4 mt-4">
       <span>Total No.of Books</span>
       <span>{crateSummary.totalBooks} Books</span>
     </div>
-    <div className="flex justify-between">
+    <div className="flex justify-around py-4 ">
       <span>Rate Per Book</span>
       <span>₹{crateSummary.rate.toFixed(2)}</span>
     </div>
-    <div className="flex justify-between text-base font-bold border-t pt-2 border-gray-300">
+    <div className="flex justify-around py-4  text-base font-bold   xxxl:text-[24px] laptop:text-[18px] hd:text-[20px] text-[16px] ">
       <span>Total Amount</span>
       <span>₹{crateSummary.totalAmount.toFixed(2)}</span>
     </div>
-  </div>
-  <div className="mt-4 flex gap-4">
+
+  <div className="mt-4 px-4 flex gap-4 py-4 text-[10px] xxxl:text-[18px] laptop:text-[12px] hd:text-[14px]">
     <button
       onClick={openPopup}
-      className="flex-1 bg-[#3c2b1e] hover:bg-[#2d2015] text-white py-2 rounded font-semibold"
+      className="flex-1 bg-[#3c2b1e] hover:bg-[#2d2015] text-white  xxxl:py-3 laptop:py-1.5 hd:py-2 py-2 rounded  font-semibold"
     >
       View Crate
     </button>
-    <button className="flex-1 bg-[#0e1f36] hover:bg-[#091426] text-white py-2 rounded font-semibold">
+    <button onClick={handleCrateCheckout}
+     className="flex-1 bg-[#0e1f36] hover:bg-[#091426] text-white  xxxl:py-3 laptop:py-1.5 hd:py-2 py-2  rounded font-semibold">
       Place My Order
     </button>
   </div>
+    </div>
 </div>
 
       </div>
 
       {/* Selected Books Slider */}
-      <div className="mt-10 w-full max-w-6xl bg-white border-2 border-blue-400 rounded-xl p-4 relative">
+      <div className="mt-20 xxxl:h-[277px] h-[250px] w-full  bg-white  rounded-xl p-4 relative">
         <div className="flex justify-between items-center mb-2">
-          <h4 className="font-semibold text-lg">Selected Books</h4>
+          <h4 className="font-semibold text-[24px] text-black font-archivo">Selected Books</h4>
           <button
             onClick={openPopup}
-            className="text-sm text-blue-600 hover:underline"
+            className="text-[24px] font-archivon text-black border-b-2 border-black"
           >
             Show all
           </button>
@@ -703,7 +983,7 @@ useEffect(() => {
           onClick={() => scroll("left")}
           className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow"
         >
-          <FaChevronLeft className="text-gray-600" />
+          <FaChevronLeft className="text-gray-600 " size={22} />
         </button>
 
       <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide px-10" ref={scrollRef}>
@@ -712,7 +992,7 @@ useEffect(() => {
   key={book.book_id}
   src={book.image_url}
   alt="image"
-  className="w-20 h-auto object-cover rounded shadow"
+  className="w-[108px] xxxl:h-[168px]  object-cover rounded-lg shadow-around-soft"
 />
 
   ))}
@@ -723,30 +1003,30 @@ useEffect(() => {
           onClick={() => scroll("right")}
           className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow"
         >
-          <FaChevronRight className="text-gray-600" />
+          <FaChevronRight className="text-gray-600" size={22} />
         </button>
       </div>
 
       {/* Popup Modal */}
     {showPopup && (
   <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-    <div className="bg-white p-6 rounded-xl max-w-3xl w-full max-h-[80vh] overflow-y-auto">
+    <div className="bg-white p-6 rounded-xl lg:max-w-[80%] w-full max-h-[80vh] overflow-y-auto">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold">Your Crate Books</h2>
-        <button onClick={() => setShowPopup(false)} className="text-red-500 font-bold">X</button>
+        <button onClick={() => setShowPopup(false)} ><img src="images/close.png" className="w-5"/></button>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-3 sm:grid-cols-4  gap-4">
         {books.map((book) => (
-  <div key={book.book_id} className="text-center">
+  <div key={book.book_id} className="text-">
     <img
       src={book.image_url}
       alt="image"
-      className="w-full h-32 object-cover rounded mb-2"
+      className=" h-30 object-cover rounded mb-2"
     />
     <button
       onClick={() => removeBook(book.book_id)}
-      className="bg-red-500 text-white px-3 py-1 text-xs rounded hover:bg-red-600"
+      className="bg-[#AA1414] text-white px-8 py-1  rounded hover:bg-red-600"
     >
       Remove
     </button>
@@ -760,7 +1040,7 @@ useEffect(() => {
 
      
     
-      <div className="grid lg:grid-cols-[270px_1fr] gap-8 hidden lg:grid">
+      <div className="grid lg:grid-cols-[270px_1fr]  lg:w-full gap-8 hidden lg:grid">
         
         <div>{FilterSidebar}</div>
         <div className="flex flex-col gap-8 bg-white mt-16  shadow-around-soft p-6">
@@ -787,7 +1067,7 @@ useEffect(() => {
         </div>
         </div>
 
-         <div className="grid grid-cols-2 md:grid-cols-3 xxxl:grid-cols-6 hd:grid-cols-5 laptop:grid-cols-4 gap-8">
+         <div className="grid grid-cols-2 md:grid-cols-3 xxxl:grid-cols-5 hd:grid-cols-5 laptop:grid-cols-4 gap-8">
   {products.map((product) => (
     <ProductCard key={product.book_id} product={product} addToCrate={addToCrate}/>
   ))}
@@ -800,7 +1080,7 @@ useEffect(() => {
       </div>
       </div>
        
-      <div className=" ">
+      <div className="xxxl:max-w-[90%] w-full ">
  {/* Pagination Section */}
 <div className=" hidden lg:flex justify-end items-center text-[18px] text-[#676A5E] mt-8 pb-20">
   <div className="flex items-center gap-2">
@@ -861,7 +1141,7 @@ useEffect(() => {
 
 </div>
 <ToastContainer position="top-right" autoClose={3000} />
-
+</div>
 
     </div>
    
