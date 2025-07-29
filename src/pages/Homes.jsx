@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import BannerCarousel from "./BannerCarousel";
 import CategorySelector from "./categoriesSelector";
 import { useNavigate } from "react-router-dom";
+
+
 export default function Home() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
-  
-useEffect(() => {
+ 
+  useEffect(() => {
   const fetchBooks = async () => {
     try {
       const res = await fetch("https://booksemporium.in/Microservices/Prod/04_user_website/api/books");
@@ -141,6 +143,8 @@ const navigate = useNavigate();
             )}
           </div>
         ))}
+      
+
     </div>
   );
 }

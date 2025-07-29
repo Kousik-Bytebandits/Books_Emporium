@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import NotificationPopup from "./NotificatioPopup"
 import endpoint_prefix from "../config/ApiConfig";
-export default function SignUp() {
+export default function SignUp({ onClose, onOpenLogin }) {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
@@ -190,6 +190,7 @@ const otpRefs = useRef([]);
 
       showPopup("success", "Account created successfully");
       setTimeout(() => {
+        onClose();
         navigate("/signin");
       }, 1500);
     } else {
@@ -204,7 +205,7 @@ const otpRefs = useRef([]);
 
 
   return (
-    <div className="font-opensans  min-h-screen w-full relative lg:bg-desktopBg">
+    <div className="mt-[82%] font-opensans  min-h-screen w-full relative ">
        <div className="absolute inset-0  z-10 hidden lg:block" />
        <div className="rounded-2xl bg-mobileGradient lg:bg-none lg:b-white mb-4 px-6 pb-10 mt-4 mx-4 flex flex-col justify-center pt-4">
          <div className="lg:hidden flex items-center justify-between mb-6 lg:mb-0">
@@ -218,7 +219,7 @@ const otpRefs = useRef([]);
               <p>emporium</p>
               </div>
             </div>
-            <div>
+            <div onClick={onClose}>
               <img src="images/close.png"
               className="w-[25px] xxxl:w-[30px] hd:w-[20px] laptop:w-[18px]"></img>
             </div>
@@ -242,7 +243,7 @@ const otpRefs = useRef([]);
               <p>emporium</p>
               </div>
             </div>
-            <div>
+            <div onClick={onClose}>
               <img src="images/close.png"
               className="w-[20px] xxxl:w-[30px] hd:w-[20px] laptop:w-[18px]"></img>
             </div>
@@ -298,7 +299,7 @@ const otpRefs = useRef([]);
     />
 
     {/* OTP Section */}
- <div className="flex flex-wrap justify-between font-archivo gap-6 text-[12px] text-[#624534] mt-1">
+ <div className="hidden lg:flex flex-wrap justify-between font-archivo gap-6 text-[12px] text-[#624534] mt-1">
               <label className="flex items-center">
                 <input type="checkbox" className="mr-2" defaultChecked />
                 Verify OTP Using Phone
@@ -431,7 +432,7 @@ const otpRefs = useRef([]);
                 Don’t have an account?{' '}
                 <span
                   className="text-[#3A261A] font-semibold underline cursor-pointer"
-                  onClick={() => navigate('/signin')}
+                  onClick={onOpenLogin}
                 >
                   Sign In 
                 </span>

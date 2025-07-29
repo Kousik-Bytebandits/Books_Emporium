@@ -3,8 +3,8 @@ import endpoint_prefix from "../config/ApiConfig";
 import NotificationPopup from "./NotificatioPopup";
 import { useNavigate } from "react-router-dom";
 
-export default function ForgotPasswordPopup() {
-  const [isOpen, setIsOpen] = useState(true);
+export default function ForgotPasswordPopup({onClose}) {
+
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
    const [otpVerified, setOtpVerified] = useState(false);
   const [emailOrPhone, setEmailOrPhone] = useState("");
@@ -149,6 +149,7 @@ const navigate = useNavigate();
       showPopup("success", "Password Chnaged successfully");
       setTimeout(() => {
         navigate("/signin");
+        onClose();
       }, 1500);
     } else {
       showPopup("error", data.message || "Password Reset failed");
@@ -159,11 +160,11 @@ const navigate = useNavigate();
     }
   };
 
-  if (!isOpen) return null;
+
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center lg:bg-desktopBg">
-      <div className="relative rounded-xl bg-mobileGradient lg:bg-none lg:bg-white px-2 py-10 mx-4 lg:mx-0 lg:flex     lg:w-[75%] lg:h-[85%] text-center mx-auto  rounded-2xl shadow-around-soft lg:p-6 overflow-hidden">
+    <div className="fixed inset-0 px-2 z-50 flex items-center justify-center ">
+      <div className="relative rounded-xl px-4 bg-mobileGradient lg:bg-none lg:bg-white px-2 py-10 mx-4 lg:mx-0 lg:flex     lg:w-[75%] lg:h-[85%] text-center mx-auto  rounded-2xl shadow-around-soft lg:p-6 overflow-hidden">
 
         {/* Left Illustration */}
         <div className="hidden lg:flex  w-1/2 text-center  ">
@@ -188,7 +189,7 @@ const navigate = useNavigate();
             <div>
               <button
               className="text-gray-500 hover:text-black"
-              onClick={() => setIsOpen(false)}
+             onClick={onClose}
               aria-label="Close"
             ><img src="images/close.png"
               className="xxxl:w-[30px] hd:w-[20px] laptop:w-[18px] w-[20px]"></img></button>
@@ -213,7 +214,7 @@ const navigate = useNavigate();
             <div>
               <button
               className="text-gray-500 hover:text-black"
-              onClick={() => setIsOpen(false)}
+              onClick={onClose}
               aria-label="Close"
             ><img src="images/close.png"
               className="xxxl:w-[30px] hd:w-[20px] laptop:w-[18px] w-[20px]"></img></button>

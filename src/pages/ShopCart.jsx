@@ -1,15 +1,25 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect,useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaMinus, FaPlus } from "react-icons/fa";
+import { FaMinus, FaPlus , FaChevronDown} from "react-icons/fa";
 
-export default function ShopCart() {
+export default function ShopCart({handleOpenLogin}) {
+  
+  const selectRef = useRef();
   const navigate = useNavigate();
   const [items, setItems] = useState([]);
  const [cartTotal, setCartTotal] = useState(0);
 const [subTotal, setSubTotal] = useState(0);
 const [discount, setDiscount] = useState(0);
-
+ 
   const token = localStorage.getItem("accessToken");
+  useEffect(() => {
+    if (!token) {
+      handleOpenLogin();
+      return;
+    }
+
+    fetchCart();
+  }, );
 
   const fetchCart = async () => {
     try {
@@ -22,11 +32,16 @@ const [discount, setDiscount] = useState(0);
       if (!response.ok) throw new Error("Failed to fetch cart");
 
       const data = await response.json();
-      console.log("Fetched cart data:", data);
+      
       setItems(data.items || []);
       setSubTotal(data.cart_items || 0); 
     setCartTotal(data.totalPrice || 0); 
     setDiscount(data.discount || 0);
+
+    const totalQuantity = (data.items || []).reduce((acc, item) => acc + item.quantity, 0);
+localStorage.setItem("cartCount", totalQuantity);
+window.dispatchEvent(new Event("storage")); 
+
     } catch (error) {
       console.error("Error fetching cart:", error);
     }
@@ -34,10 +49,10 @@ const [discount, setDiscount] = useState(0);
 
   useEffect(() => {
     fetchCart();
-  }, []);
+  }, );
 
-  // ✅ Update quantity API
-  const updateQuantity = async (bookId, quantity) => {
+ 
+  const handleUpdateQuantity = async (bookId, quantity) => {
     try {
       const response = await fetch("https://booksemporium.in/Microservices/Prod/05_cart/cart/items", {
         method: "PUT",
@@ -50,13 +65,13 @@ const [discount, setDiscount] = useState(0);
 
       if (!response.ok) throw new Error("Failed to update quantity");
 
-      fetchCart(); // Refresh cart after update
+      fetchCart();
     } catch (error) {
       console.error("Error updating quantity:", error);
     }
   };
 
-  // ✅ Remove item API
+ 
   const removeItem = async (bookId) => {
     try {
       const response = await fetch(
@@ -71,17 +86,18 @@ const [discount, setDiscount] = useState(0);
 
       if (!response.ok) throw new Error("Failed to delete item");
 
-      fetchCart(); // Refresh cart after deletion
+      fetchCart(); 
     } catch (error) {
       console.error("Error removing item:", error);
     }
   };
-   
+    
+
    const handleCheckout = async () => {
   const token = localStorage.getItem("accessToken");
 
   if (!token) {
-    navigate("/signin");
+  handleOpenLogin();
     return;
   }
 
@@ -109,14 +125,14 @@ const [discount, setDiscount] = useState(0);
     }
 
     const options = {
-      key: "rzp_test_qQ40l1wBMtOxc0", // ✅ Replace with your live key in production
+      key: "rzp_test_qQ40l1wBMtOxc0", 
       amount: data.razorpayOrder.amount,
       currency: "INR",
       name: "Books Emporium",
       description: "Cart Payment",
       order_id: data.razorpayOrder.id,
       handler: async function (response) {
-        // ✅ Call verify API here if needed
+        
         try {
           const verifyRes = await fetch(
             "https://booksemporium.in/Microservices/Prod/06_orders_and_payments/order/verify",
@@ -189,7 +205,7 @@ const [discount, setDiscount] = useState(0);
           <p className="text-[18px] xxxl:text-[24px] laptop:text-[20px] hd:text-[22px] font-semibold uppercase text-[#202020]">
             {item.title}
           </p>
-          <p className="text-[#A0A0A0] text-[20px]">By:{item.author} </p>
+          <p className="text-[#A0A0A0] text-[16px]">By:{item.author} </p>
           <div className=" text-[20px] font-semibold  ">
         <div className="flex  items-center  gap-4">
           <span className="text-[#FF1010]">- {item.discount} %</span>
@@ -207,16 +223,51 @@ const [discount, setDiscount] = useState(0);
 
       {/* Quantity + Delete */}
       <div className="flex items-center  w-[35%] justify-evenly">
-        <div className="flex items-center border border-[#D5D5D5] rounded-full w-[40%] px-4 justify-between py-1 gap-3">
-          <button className="text-[14px]"  onClick={() =>
-                      item.quantity > 1 &&
-                      updateQuantity(item.book_id, item.quantity - 1)
-                    }><FaMinus/></button>
-          <span className="text-[22px] font-medium">{item.quantity}</span>
-          <button className="text-[14px]"  onClick={() =>
-                      updateQuantity(item.book_id, item.quantity + 1)
-                    }><FaPlus/></button>
-        </div>
+         {item && (
+  <div className="relative inline-flex items-center border border-black rounded-md bg-[#FFF7F0] px-3 py-2 w-[220px] my-4">
+    {/* Label + Current Quantity */}
+    <span className="text-sm text-black mr-2">
+      Select Quantity:
+      
+    </span>
+
+    {/* Dropdown */}
+    <div className="relative ml-auto">
+      <select
+        ref={selectRef}
+        value={item.quantity}
+        onChange={(e) =>
+          handleUpdateQuantity(item.book_id, Number(e.target.value))
+        }
+        className="appearance-none bg-transparent text-black text-right pr-6 cursor-pointer"
+      >
+        {Array.from({
+          length: Math.min(
+            (item.quantity || 0) + (item.stock_left || 0),
+            20
+          ),
+        }, (_, i) => i + 1).map((opt, i) => (
+          <option
+            key={opt}
+            value={opt}
+            style={{
+              backgroundColor: i % 2 === 0 ? "#EFE0D3" : "#FFF7F0",
+              textAlign: "center",
+            }}
+          >
+            {opt}  
+          </option>
+        ))}
+      </select>
+
+      {/* Dropdown Icon */}
+      <div className="pointer-events-none absolute right-1 top-1/2 -translate-y-1/2 text-black">
+        <FaChevronDown size={12} />
+      </div>
+    </div>
+  </div>
+)}
+
         <button
           onClick={() => removeItem(item.book_id)}
           className="bg-[#BE0000] w-[35%] text-white  py-2 text-[16px] font-semibold rounded-full"
@@ -321,7 +372,7 @@ const [discount, setDiscount] = useState(0);
                   className="px-3"
                   onClick={() =>
                       item.quantity > 1 &&
-                      updateQuantity(item.book_id, item.quantity - 1)
+                     handleUpdateQuantity(item.book_id, item.quantity - 1)
                     }
                 >
                   <FaMinus size={16}/>
@@ -329,7 +380,7 @@ const [discount, setDiscount] = useState(0);
                 <span className="text-[#4C4B4B] text-[20px] ">{item.quantity}</span>
                 <div className="px-3 items-center flex">
                   <button onClick={() =>
-                      updateQuantity(item.book_id, item.quantity + 1)
+                     handleUpdateQuantity(item.book_id, item.quantity + 1)
                     }><FaPlus className=" " size={16}/></button>
                 </div>
               </div>

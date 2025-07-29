@@ -1,26 +1,17 @@
-import { useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { FaLock, FaUser } from 'react-icons/fa';
 import { useState } from 'react';
-import NotificationPopup from './NotificatioPopup';
 import endpoint_prefix from '../config/ApiConfig';
 import { IoEyeSharp } from "react-icons/io5";
 import { FaEyeSlash } from "react-icons/fa";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-export default function Login() {
+export default function Login({ onClose,onOpenSignup,onOpenForgot }) {
   const navigate = useNavigate();
- const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
-  const [popup, setPopup] = useState({
-    show: false,
-    type: "success",
-    message: "",
-  });
-
-  const showPopup = (type, message) => {
-    setPopup({ show: true, type, message });
-  };
 
   const handleLogin = async () => {
     try {
@@ -31,35 +22,32 @@ export default function Login() {
       });
 
       const data = await res.json();
-     
-
 
       if (res.ok && data.accessToken) {
-  localStorage.setItem('user', JSON.stringify(data));
-  localStorage.setItem('accessToken', data.accessToken);
-  localStorage.setItem('refreshToken', data.refreshToken);
-console.log(data.refreshToken);
-  showPopup('success', 'Login successful!');
+        localStorage.setItem('user', JSON.stringify(data));
+        localStorage.setItem('accessToken', data.accessToken);
+        localStorage.setItem('refreshToken', data.refreshToken);
 
-  setTimeout(() => {
-    navigate( '/');
-  }, 1500);
-} else {
-  showPopup('error', data.message || 'Login failed');
-}
+        toast.success("Login successful!");
+
+        setTimeout(() => {
+          onClose();
+          navigate('/');
+        }, 1500);
+      } else {
+        toast.error(data.message || 'Login failed');
+      }
 
     } catch (err) {
       console.error(err);
-      showPopup("error", "Something went wrong.");
+      toast.error("Something went wrong.");
     }
   };
 
-  const handleForgotPassword = async () => {
-   navigate('/forgot');
-  };
+  
   return (
-    <div className="relative bg-desktopBg h-screen w-full overflow-hidden">
-      
+    <div className="relative h-screen w-full overflow-y-auto fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+       <ToastContainer position="top-center" autoClose={1500} />
           {/* Desktop */}
       <div className="hidden lg:flex relative z-20 h-full w-full justify-center items-center font-archivo px-10">
         <div className="relative w-[75%] h-[85%] p-6 bg-white rounded-2xl overflow-hidden shadow-2xl  flex">
@@ -86,7 +74,8 @@ console.log(data.refreshToken);
               <p>emporium</p>
               </div>
             </div>
-            <div>
+            <div onClick={onClose}>
+              
               <img src="images/close.png"
               className="xxxl:w-[30px] hd:w-[20px] laptop:w-[18px]"></img>
             </div>
@@ -150,7 +139,11 @@ console.log(data.refreshToken);
                 </label>
                 <span
                   className="text-[#4E4E4E] font-medium cursor-pointer"
-                  onClick={handleForgotPassword}
+                  onClick={() => {
+  onClose();
+  onOpenForgot();
+}}
+
                 >
                   Forgot password?
                 </span>
@@ -169,7 +162,11 @@ console.log(data.refreshToken);
                 Don’t have an account?{' '}
                 <span
                   className="text-[#3A261A] font-semibold underline cursor-pointer"
-                  onClick={() => navigate('/signup')}
+                 onClick={() => {
+  onClose();
+  onOpenSignup();
+}}
+
                 >
                   Sign Up
                 </span>
@@ -180,7 +177,7 @@ console.log(data.refreshToken);
       </div>
 
       {/* Mobile View  */}
-      <div className="font-archivo py-10  h-screen w-full bg-white relative text-gray-800 overflow-hidden lg:hidden">
+      <div className="font-archivo py-10 mt-[20%] h-screen w-full  relative text-gray-800 overflow-hidden lg:hidden">
         <div className='border mx-3 py-10 rounded-xl bg-mobileGradient'>
         <div className="flex items-center px-4 justify-between xxxl:mb-30  laptop:mb-16 hd:mb-24 xxxl:px-20 laptop:px-10 hd:px-16">
            <div className="flex items-center ">
@@ -192,7 +189,8 @@ console.log(data.refreshToken);
               <p>emporium</p>
               </div>
             </div>
-            <div >
+            <div onClick={onClose}>
+              
               <img src="images/close.png"
               className="xxxl:w-[30px] hd:w-[20px] w-[20px]"></img>
             </div>
@@ -222,7 +220,7 @@ console.log(data.refreshToken);
                 autoComplete="email"
               />
             </div>
-
+           <div className='relative'>
             <div className="flex items-center bg-inputBox px-4 py-3 rounded-lg">
               <FaLock className="mr-3 text-[#624534]" />
               <input
@@ -235,7 +233,18 @@ console.log(data.refreshToken);
                 autoComplete="current-password"
               />
             </div>
-
+             <button
+    type="button"
+    onClick={() => setShowPassword((prev) => !prev)}
+    className="absolute top-1/2 right-3 -translate-y-1/2 text-[#624534]"
+  >
+    {showPassword ? (
+      <FaEyeSlash className="w-5 h-5" />
+    ) : (
+      <IoEyeSharp className="w-5 h-5" />
+    )}
+  </button>
+</div>
             <div className="flex justify-between items-center text-sm mt-2">
               <label className="flex items-center gap-2 ml-1 text-[#89A28A]">
                 <input type="checkbox" />
@@ -243,7 +252,11 @@ console.log(data.refreshToken);
               </label>
               <span
                 className="text-[#727272] font-medium cursor-pointer"
-                onClick={handleForgotPassword}
+               onClick={() => {
+  onClose();
+  onOpenForgot();
+}}
+
               >
                 Forgot password?
               </span>
@@ -261,7 +274,11 @@ console.log(data.refreshToken);
             Don’t have an account?{' '}
             <span
               className="text-[#3A261A] font-semibold underline cursor-pointer"
-              onClick={() => navigate('/signup')}
+              onClick={() => {
+  onClose();
+  onOpenSignup();
+}}
+
             >
               Sign Up
             </span>
@@ -269,12 +286,7 @@ console.log(data.refreshToken);
         </div>
       </div>
       </div>
-       <NotificationPopup
-        show={popup.show}
-        type={popup.type}
-        message={popup.message}
-        onClose={() => setPopup({ ...popup, show: false })}
-      />
+      
     </div>
   );
 }

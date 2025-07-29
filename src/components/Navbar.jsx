@@ -7,9 +7,9 @@ import { IoMenu } from "react-icons/io5";
 import { GoSearch } from "react-icons/go";
 import { FaUser } from "react-icons/fa6";
 import { MdOutlineArrowDropDown } from 'react-icons/md';
+import UserProfile from '../pages/userProfile';
 
-
-const Navbar = () => {
+const Navbar = ({handleOpenLogin}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpen2,setIsOpen2] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -19,9 +19,25 @@ const isHome = location.pathname === '/';
 const dropdownRef = useRef(null);
 const [searchTerm, setSearchTerm] = useState('');
 const [suggestions, setSuggestions] = useState([]);
-
+ const [showProfile, setShowProfile] = useState(false);
+   const toggleProfile = () => setShowProfile(!showProfile);
  const [showDropdown, setShowDropdown] = useState(false);
- 
+  
+const [cartCount, setCartCount] = useState(
+  parseInt(localStorage.getItem("cartCount")) || 0
+);
+  useEffect(() => {
+  const updateCartCount = () => {
+    const count = parseInt(localStorage.getItem("cartCount")) || 0;
+    setCartCount(count);
+  };
+
+  window.addEventListener("storage", updateCartCount);
+  updateCartCount(); // initial
+
+  return () => window.removeEventListener("storage", updateCartCount);
+}, []);
+
 useEffect(() => {
   const handleClickOutside = (event) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -48,9 +64,9 @@ useEffect(() => {
 const handleChange=()=>{
   const token = localStorage.getItem("accessToken");
     if (token) {
-      navigate("/profile"); 
+      toggleProfile();
     }  else {
-      navigate("/login"); 
+      handleOpenLogin();
     }
 
 }
@@ -118,13 +134,16 @@ const handleCart=()=>{
         </div>
 
         <div className="flex items-center gap-4">
-          <FaUser onClick={handleChange} className="text-[#492C1E] text-3xl" />
-          <div className="relative">
-            <FaShoppingCart onClick={handleCart} className="text-[#492C1E] text-[30px]" />
-            <span className="absolute -top-2 -right-1 bg-red-600 text-[10px] leading-none font-semibold text-white rounded-full px-[4px] py-[3px]">
-              0
-            </span>
-          </div>
+          <FaUser  onClick={handleChange} className="text-[#492C1E] text-3xl" />
+          <div className="relative ml-2">
+  <FaShoppingCart className="text-[#492C1E] text-[28px]" onClick={handleCart} />
+  {cartCount > 0 && (
+    <span className="absolute -top-2 -right-1 bg-red-600 text-[10px] leading-none font-semibold text-white rounded-full px-[4px] py-[3px]">
+      {cartCount}
+    </span>
+  )}
+</div>
+
         </div>
       </div>
 
@@ -202,12 +221,15 @@ const handleCart=()=>{
 </div>
       </div>
 
-      <div className="relative ml-2">
-        <FaShoppingCart className="text-[#492C1E] text-[28px]" onClick={handleCart} />
-        <span className="absolute -top-2 -right-1 bg-red-600 text-[10px] leading-none font-semibold text-white rounded-full px-[4px] py-[3px]">
-          0
-        </span>
-      </div>
+     <div className="relative ml-2">
+  <FaShoppingCart className="text-[#492C1E] text-[28px]" onClick={handleCart} />
+  {cartCount > 0 && (
+    <span className="absolute -top-2 -right-1 bg-red-600 text-[10px] leading-none font-semibold text-white rounded-full px-[4px] py-[3px]">
+      {cartCount}
+    </span>
+  )}
+</div>
+
     </div>
   ) : (
     //  Other Page Layout
@@ -250,12 +272,15 @@ const handleCart=()=>{
 </div>
       </div>
 
-      <div className="relative ml-2">
-        <FaShoppingCart className="text-[#492C1E] text-[28px]" onClick={handleCart} />
-        <span className="absolute -top-2 -right-1 bg-red-600 text-[10px] leading-none font-semibold text-white rounded-full px-[4px] py-[3px]">
-          0
-        </span>
-      </div>
+    <div className="relative ml-2">
+  <FaShoppingCart className="text-[#492C1E] text-[28px]" onClick={handleCart} />
+  {cartCount > 0 && (
+    <span className="absolute -top-2 -right-1 bg-red-600 text-[10px] leading-none font-semibold text-white rounded-full px-[4px] py-[3px]">
+      {cartCount}
+    </span>
+  )}
+</div>
+
     </div>
   )}
 </div>
@@ -283,12 +308,7 @@ const handleCart=()=>{
       >
         Home
       </NavLink>
-      <NavLink
-        to="/about"
-        className={({ isActive }) => `${isActive ? 'border-b-2 border-[#3A261A] font-semibold' : ''}`}
-      >
-        About
-      </NavLink>
+      
       <NavLink
         to="/contact"
         className={({ isActive }) => `${isActive ? 'border-b-2 border-[#3A261A] font-semibold' : ''}`}
@@ -319,9 +339,9 @@ const handleCart=()=>{
      
       <input
         type="text"
-        placeholder="Search for books, Publishers & More..."
+        placeholder="Search for books"
          onChange={(e) => setSearchTerm(e.target.value)}
-        className="bg-transparent outline-none xxxl:text-[16px] px-2 laptop:text-[12px]  w-full placeholder-[#080000] text-[#080000] "
+        className="bg-transparent outline-none xxxl:text-[20px] px-2 laptop:text-[12px]  w-full placeholder-[#080000] text-[#080000] "
       />
        <BiSearchAlt className="xxxl:w-6 xxxl:h-6 hd:w-5  laptop:w-4 laptop:h-6  mr-2 shrink-0 text-[#080000]" />
        {suggestions.length > 0 && (
@@ -369,10 +389,15 @@ const handleCart=()=>{
   )}
 </div>
 
-    <FaShoppingCart
-      className="text-2xl laptop:text-2xl hd:text-3xl xxxl:text-4xl cursor-pointer shrink-0 text-[#492C1E]"
-      onClick={handleCart}
-    />
+   <div className="relative ml-2">
+  <FaShoppingCart className="text-[#492C1E] text-[35px]" onClick={handleCart} />
+  {cartCount > 0 && (
+    <span className="absolute -top-2 -right-2 bg-red-600 text-[14px] leading-none font-semibold text-white rounded-full px-[5px] py-[3px]">
+      {cartCount}
+    </span>
+  )}
+</div>
+
    
   </div>
 </div>
@@ -422,7 +447,6 @@ const handleCart=()=>{
   >
     <ul className="space-y-4  uppercase font-semibold  text-[20px]">
       <li><a href="/">Home</a></li>
-      <li><a href="/about">About</a></li>
       <li><a href="/contact">contact</a></li>
       <li><a href="/bookcrate">books crate</a></li>
       <li><a href="/shop">shop</a></li>
@@ -432,7 +456,7 @@ const handleCart=()=>{
   </div>
 </div>
 
-
+{showProfile && <UserProfile onClose={() => setShowProfile(false)} />}
     </>
   );
 };

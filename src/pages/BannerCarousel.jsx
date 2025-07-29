@@ -1,5 +1,6 @@
-import  { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+
 const slides = [
   {
     id: 1,
@@ -22,19 +23,30 @@ const slides = [
 ];
 
 const BannerCarousel = () => {
-  const [activeIndex, setActiveIndex] = useState(1);
+  const [activeIndex, setActiveIndex] = useState(0);
   const navigate = useNavigate();
+
   const handleDotClick = (index) => {
     setActiveIndex(index);
   };
- 
-  const handleNavigate =()=>{
-    navigate('/shop');
-  }
+
+  const handleNavigate = () => {
+    navigate("/shop");
+  };
+
+  // Auto slide logic
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveIndex((prevIndex) => (prevIndex + 1) % slides.length);
+    }, 4000); // 2 seconds
+
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, []);
+
   return (
     <div className="w-[94%] lg:w-[96%] xxxl:max-w-[80%] mt-3 lg:mt-0 mx-auto overflow-hidden rounded-xl lg:rounded-none">
       <div
-        className="flex  transition-transform duration-700 ease-in-out"
+        className="flex transition-transform duration-700 ease-in-out"
         style={{ transform: `translateX(-${activeIndex * 100}%)` }}
       >
         {slides.map((slide, index) => (
@@ -45,7 +57,7 @@ const BannerCarousel = () => {
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}
-            className="min-w-full h-[175px] md:h-[420px] relative px-8 lg:px-10 py-4  flex items-center  text-white"
+            className="min-w-full h-[175px] md:h-[420px] relative px-8 lg:px-10 py-4 flex items-center text-white"
           >
             {slide.imagePosition === "left" && (
               <img
@@ -65,7 +77,10 @@ const BannerCarousel = () => {
               <h2 className="whitespace-pre-line font-bold text-[20px] md:text-[64px] leading-tight mb-3 lg:mb-6">
                 {slide.title}
               </h2>
-              <button onClick={handleNavigate} className="lg:bg-[#B4541F] bg-[#145974] text-white px-6 py-2 lg:py-6 lg:px-16 rounded-full text-sm md:text-[26px] font-semibold">
+              <button
+                onClick={handleNavigate}
+                className="lg:bg-[#B4541F] bg-[#145974] text-white px-6 py-2 lg:py-6 lg:px-16 rounded-full text-sm md:text-[26px] font-semibold"
+              >
                 {slide.button}
               </button>
             </div>
@@ -78,7 +93,7 @@ const BannerCarousel = () => {
               />
             )}
 
-            {/* Dots inside the banner */}
+            {/* Dots */}
             {index === activeIndex && (
               <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex items-center gap-2">
                 {slides.map((_, dotIndex) => (
@@ -87,7 +102,7 @@ const BannerCarousel = () => {
                     onClick={() => handleDotClick(dotIndex)}
                     className={`w-2.5 h-2.5 rounded-full cursor-pointer ${
                       activeIndex === dotIndex
-                        ? "lg:bg-[#E86A33] bg-white "
+                        ? "lg:bg-[#E86A33] bg-white"
                         : "lg:bg-white bg-white w-1.5 h-1.5"
                     }`}
                   ></div>

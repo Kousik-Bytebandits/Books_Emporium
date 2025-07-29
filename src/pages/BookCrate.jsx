@@ -12,13 +12,13 @@ function ProductCard({ product, addToCrate }) {
  return (
      <div 
    
-  className="xxxl:w-[195px] xxxl:h-[350px] w-[170px]  h-[263px] font-figtree mx-auto mb-4 border shadow-around-soft rounded-lg bg-white flex flex-col"
+  className="xxxl:w-[195px] xxxl:h-[350px] hd:h-[300px] laptop:h-[300px] w-[170px]  h-[263px] font-figtree mx-auto mb-4 border shadow-around-soft rounded-lg bg-white flex flex-col"
 >
   <div className="p-2 flex flex-col flex-grow">
     <img
       src={product.image_url}
       alt={product.title}
-      className="xxxl:w-[170px] xxxl:h-[230px] w-[96px] h-[148px] mx-auto  object-cover rounded-md shadow-around-soft"
+      className="xxxl:w-[170px] laptop:w-[150px] laptop:h-[210px] hd:w-[150px] hd:h-[200px] xxxl:h-[230px] w-[96px] h-[148px] mx-auto  object-cover rounded-md shadow-around-soft"
     />
 
     <div className="mt-2 min-h-[38px] text-left px-2">
@@ -72,7 +72,7 @@ const crates = [
 ];
 
 
-export default function BookCrate() {
+export default function BookCrate({handleOpenLogin}) {
   const [products, setProducts] = useState([]);
   const [sortOption, setSortOption] = useState("Relevance");
    const [showFilter, setShowFilter] = useState(false);
@@ -160,24 +160,41 @@ const toggleCategory = (category) => {
       : [...prev, category]
   );
 };
+const crateLimit = {
+  "small crate": 10,
+  "medium crate": 20,
+  "large crate": 30,
+};
+
 const sortOptionMapping = {
   Relevance: "name_asc",
   NameDesc: "name_desc",
   PriceLowHigh: "price_low_high",
   PriceHighLow: "price_high_low",
 };
-const handle403Redirect = (res, navigate) => {
-  if (res.status === 403) {
-    localStorage.removeItem("accessToken");
-    navigate("/signin");
+const handle403Redirect = (res) => {
+    if (res.status === 403) {
+    handleOpenLogin();
     return true;
   }
-  return false;
+
+  const token = localStorage.getItem("accessToken");
+  if (!token) {
+    handleOpenLogin();
+    return true;
+  }
 };
 
 const addToCrate = async (bookId) => {
   try {
     const crate_type = crateNameToApiValue[selectedCrate.name];
+     
+   const limit = crateLimit[selectedCrate.name];
+
+    if (books.length >= limit) {
+      toast.error(`You can't add more than ${limit} books to ${selectedCrate.name}`);
+      return;
+    }
 
     const payload = {
       bookId: Number(bookId),
@@ -202,7 +219,7 @@ const addToCrate = async (bookId) => {
     } else {
       const error = await res.json();
       if (error?.error?.includes("already added")) {
-        toast.info("Book already in crate");
+        toast.error("You can't add the same book");
       } else {
         toast.error("Failed to add book to crate");
       }
@@ -307,7 +324,7 @@ const fetchProducts = () => {
 useEffect(() => {
   fetchProducts();
   fetchCrateBooks();
-}, [selectedCrate, currentPage, sortOption]);
+}, );
 
 
   useEffect(() => {
@@ -583,12 +600,8 @@ const verifyCratePayment = async (response, token) => {
     });
 
     const result = await verifyRes.json();
-
-    if (result.message === "Payment verified and order updated!") {
-      alert("Payment Successful!");
-    } else {
-      alert("Payment verification failed.");
-    }
+    console.log(result);      
+   
   } catch (error) {
     console.error("Verification error:", error);
     alert("Error verifying payment.");
@@ -765,7 +778,7 @@ const verifyCratePayment = async (response, token) => {
      
 
       {/* Selected Books Slider */}
-      <div className=" w-full  bg-white  rounded-xl p-4 relative">
+      <div className=" w-full  bg-white   rounded-xl p-4 relative">
         <div className="flex justify-between text-black items-center mb-2">
           <h4 className="font-semibold  text-lg">Selected Books</h4>
           <button
@@ -986,13 +999,13 @@ const verifyCratePayment = async (response, token) => {
           <FaChevronLeft className="text-gray-600 " size={22} />
         </button>
 
-      <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide px-10" ref={scrollRef}>
+      <div className="flex items-center gap-10 overflow-x-auto hide-scrollbar px-10" ref={scrollRef}>
   {books.map((book) => (
    <img
   key={book.book_id}
   src={book.image_url}
   alt="image"
-  className="w-[108px] xxxl:h-[168px]  object-cover rounded-lg shadow-around-soft"
+  className="w-[108px] xxxl:h-[168px]   object-cover rounded-lg shadow-around-soft"
 />
 
   ))}
@@ -1016,17 +1029,17 @@ const verifyCratePayment = async (response, token) => {
         <button onClick={() => setShowPopup(false)} ><img src="images/close.png" className="w-5"/></button>
       </div>
 
-      <div className="grid grid-cols-3 sm:grid-cols-4  gap-4">
+      <div className="grid grid-cols-3 xxxl:grid-cols-10 laptop:grid-cols-8  gap-4">
         {books.map((book) => (
   <div key={book.book_id} className="text-">
     <img
       src={book.image_url}
       alt="image"
-      className=" h-30 object-cover rounded mb-2"
+      className="w-[101px] h-[160px] object-cover rounded mb-2"
     />
     <button
       onClick={() => removeBook(book.book_id)}
-      className="bg-[#AA1414] text-white px-8 py-1  rounded hover:bg-red-600"
+      className="bg-[#AA1414] text-white px-5 py-1  rounded hover:bg-red-600"
     >
       Remove
     </button>

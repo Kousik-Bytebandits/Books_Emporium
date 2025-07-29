@@ -1,13 +1,15 @@
-import { useState, useEffect ,useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {  FaChevronDown } from "react-icons/fa";
+import { FaChevronDown } from "react-icons/fa";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const selectRef = useRef(null);
 
   const [product, setProduct] = useState(null);
-   const selectRef = useRef(null);
   const [showDescription, setShowDescription] = useState(true);
   const [showDetails, setShowDetails] = useState(true);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -15,16 +17,13 @@ const ProductDetails = () => {
   const [options, setOptions] = useState([]);
   const [quantity, setQuantity] = useState(1);
 
- useEffect(() => {
-  if (maxStock > 0) {
-    const limit = Math.min(maxStock, 20);
-    const opts = Array.from({ length: limit }, (_, i) => i + 1);
-    setOptions(opts);
-  }
-}, [maxStock]);
-
-
-
+  useEffect(() => {
+    if (maxStock > 0) {
+      const limit = Math.min(maxStock, 20);
+      const opts = Array.from({ length: limit }, (_, i) => i + 1);
+      setOptions(opts);
+    }
+  }, [maxStock]);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -33,19 +32,17 @@ const ProductDetails = () => {
           `https://booksemporium.in/Microservices/Prod/04_user_website/api/books/${id}`
         );
         const data = await response.json();
-        
-         setProduct(data);
-      const stockQty = Number(data.product_details.stock_quantity);
-setMaxStock(stockQty);
+        setProduct(data);
 
+        const stockQty = Number(data.product_details.stock_quantity);
+        setMaxStock(stockQty);
 
-if (!quantity || quantity < 1) {
-  setQuantity(1);
-}
-
-      
+        if (!quantity || quantity < 1) {
+          setQuantity(1);
+        }
       } catch (error) {
         console.error("Failed to fetch product:", error);
+        toast.error("Failed to load product details.");
       }
     };
 
@@ -56,61 +53,132 @@ if (!quantity || quantity < 1) {
     return <div className="text-center py-10">Loading...</div>;
   }
 
+  const handleAddToCart = async () => {
+    const token = localStorage.getItem("accessToken");
 
+    if (!quantity || quantity < 1) {
+      toast.warning("Please select a valid quantity before adding to cart.");
+      return;
+    }
 
-const handleAddToCart = async () => {
-  const token = localStorage.getItem("accessToken");
-if (!quantity || quantity < 1) {
-  alert("Please select a valid quantity before adding to cart.");
-  return;
-}
-  if (!token) {
-    navigate("/signin");
-   
+    if (!token) {
+      navigate("/signin");
+      return;
+    }
 
-    return;
-  }
-console.log("Sending to cart API:", {
-   bookId: product.product_details.book_id
-,
-  quantity
-});
+    try {
+      const response = await fetch(
+        "https://booksemporium.in/Microservices/Prod/05_cart/cart/items",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            bookId: product.product_details.book_id,
+            quantity: quantity,
+          }),
+        }
+      );
 
+      const contentType = response.headers.get("content-type");
+
+      if (!response.ok) {
+        if (contentType && contentType.includes("application/json")) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || "Failed to add product to cart");
+        } else {
+          const errorText = await response.text();
+          throw new Error(errorText || "Failed to add product to cart");
+        }
+      }
+
+      const result = await response.json();
+      console.log(result);
+      toast.success("Product added to cart successfully!");
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      toast.error("Error: " + error.message);
+    }
+  };
+
+    const handleBuyNow = async () => {
+    const token = localStorage.getItem("accessToken");
+
+    try {
+      const res = await fetch("https://booksemporium.in/Microservices/Prod/06_orders_and_payments/order/purchase-book", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          source_type: "single_book",
+          payment_method: "online",
+          book_id: product.book_id || id,
+          quantity: quantity,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data?.razorpayOrder) {
+        const options = {
+          key: "rzp_test_qQ40l1wBMtOxc0",
+          amount: data.razorpayOrder.amount,
+          currency: "INR",
+          name: data.user.name,
+          description: data.items[0].title,
+          image: "/logo.png",
+          order_id: data.razorpayOrder.id,
+          handler: async function (response) {
+            await verifyCratePayment(response, token);
+          },
+          prefill: {
+            name: data.user.name,
+            email: data.user.email,
+            contact: data.user.phone,
+          },
+          notes: data.razorpayOrder.notes,
+          theme: { color: "#00aaff" },
+        };
+
+        const rzp1 = new window.Razorpay(options);
+        rzp1.open();
+      } else {
+        alert("Failed to create Razorpay order.");
+      }
+    } catch (error) {
+      console.error("Checkout error:", error);
+      alert("An error occurred during checkout.");
+    }
+  };
+
+  const verifyCratePayment = async (response, token) => {
   try {
-    const response = await fetch("https://booksemporium.in/Microservices/Prod/05_cart/cart/items", {
+    const verifyRes = await fetch("https://booksemporium.in/Microservices/Prod/06_orders_and_payments/order/verify", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
       },
-      
       body: JSON.stringify({
-        bookId: product.product_details.book_id
-,
-        quantity: quantity,
+        razorpay_order_id: response.razorpay_order_id,
+        razorpay_payment_id: response.razorpay_payment_id,
+        razorpay_signature: response.razorpay_signature,
       }),
     });
 
-    const contentType = response.headers.get("content-type");
-
-    if (!response.ok) {
-      
-      if (contentType && contentType.includes("application/json")) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to add product to cart");
-      } else {
-        const errorText = await response.text();
-        throw new Error(errorText || "Failed to add product to cart");
-      }
-    }
-
-    const result = await response.json();
-    alert("Product added to cart successfully!",result);
+    const result = await verifyRes.json();
+    console.log(result);      
+   
   } catch (error) {
-    console.error("Error adding to cart:", error);
-    alert("Error: " + error.message);
+    console.error("Verification error:", error);
+    alert("Error verifying payment.");
   }
 };
+
 
   return (
    <>
@@ -184,7 +252,7 @@ console.log("Sending to cart API:", {
            className="bg-[#3A261A] text-md lg:text-[24px] text-white w-[45%] px-4 py-2 rounded-md font-semibold hover:bg-[#4a2615]">
               Add To Cart
             </button>
-            <button className="bg-[#145974] text-md lg:text-[24px] text-white px-4 py-2 w-[45%] rounded-md font-semibold hover:bg-[#084464]">
+            <button  onClick={handleBuyNow} className="bg-[#145974] text-md lg:text-[24px] text-white px-4 py-2 w-[45%] rounded-md font-semibold hover:bg-[#084464]">
               Buy Now
             </button>
           </div>
@@ -328,7 +396,8 @@ console.log("Sending to cart API:", {
         className="flex-1 bg-[#3A261A] text-white rounded-md py-3 text-[14px] font-semibold">
         Add To Cart
       </button>
-      <button className="flex-1 bg-[#145974] text-white rounded-md py-3 text-[14px] font-semibold">
+      <button  onClick={handleBuyNow}
+       className="flex-1 bg-[#145974] text-white rounded-md py-3 text-[14px] font-semibold">
         Buy Now
       </button>
     </div>
@@ -427,8 +496,9 @@ console.log("Sending to cart API:", {
 
 
 
+      
 </div>
-
+<ToastContainer position="top-center" autoClose={3000} />
 </>
   );
 };
