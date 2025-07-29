@@ -1,10 +1,14 @@
-
-
 const Loader = () => {
   const style = `
     .outer_shell {
-      background: rgba(0, 0, 0, 0.5);
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
       height: 100vh;
+      background: rgba(0, 0, 0, 0.4);
+
+      z-index: 9999;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -21,7 +25,7 @@ const Loader = () => {
       width: 100%;
       height: 100%;
       background: rgb(77, 42, 23);
-      border: solid rgb(223 165 134);
+      border: solid rgb(223, 165, 134);
       position: absolute;
       left: 50%;
       transform-origin: left;
@@ -47,7 +51,6 @@ const Loader = () => {
       }
     }
 
-    /* Media query for mobile devices */
     @media (max-width: 600px) {
       .loader {
         width: 30px;
