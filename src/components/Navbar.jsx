@@ -22,10 +22,23 @@ const [suggestions, setSuggestions] = useState([]);
  const [showProfile, setShowProfile] = useState(false);
    const toggleProfile = () => setShowProfile(!showProfile);
  const [showDropdown, setShowDropdown] = useState(false);
-  
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+
 const [cartCount, setCartCount] = useState(
   parseInt(localStorage.getItem("cartCount")) || 0
 );
+  const [user, setUser] = useState(null);
+
+  
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      const parsed = JSON.parse(storedUser);
+     
+      setUser(parsed.user || parsed);
+    }
+  }, []);
+  
   useEffect(() => {
   const updateCartCount = () => {
     const count = parseInt(localStorage.getItem("cartCount")) || 0;
@@ -75,38 +88,57 @@ const handleCart=()=>{
   navigate('/shopcart');
 }
 
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      const fetchSuggestions = async () => {
-        try {
-          const response = await fetch(
-            `https://booksemporium.in/Microservices/Prod/04_user_website/api/books/suggestions?query=${searchTerm}`
-          );
-          const result = await response.json();
-          console.log("Suggestions:", result);
-          setSuggestions(result.suggestions || []);
-          setShowDropdown(true);
-        } catch (error) {
-          console.error("Error fetching suggestions:", error);
-        }
-      };
-
-      if (searchTerm.trim() !== "") {
-        fetchSuggestions();
-      } else {
+useEffect(() => {
+  const timer = setTimeout(() => {
+    const fetchSuggestions = async () => {
+      if (searchTerm.trim() === "") {
         setSuggestions([]);
         setShowDropdown(false);
+        setLoadingSuggestions(false);
+        return;
       }
-    }, 300);
 
-    return () => clearTimeout(timer);
-  }, [searchTerm]);
+      try {
+        setLoadingSuggestions(true); // Start loader
+
+        const response = await fetch(
+          `https://booksemporium.in/Microservices/Prod/04_user_website/api/books/suggestions?query=${searchTerm}`
+        );
+        const result = await response.json();
+        console.log("Suggestions:", result);
+
+        setSuggestions(result.suggestions || []);
+        setShowDropdown(true);
+      } catch (error) {
+        console.error("Error fetching suggestions:", error);
+      } finally {
+        setLoadingSuggestions(false); // Stop loader
+      }
+    };
+
+    fetchSuggestions();
+  }, 300); // debounce
+
+  return () => clearTimeout(timer);
+}, [searchTerm]);
+
+  
   return (
     <>
       <nav className="flex flex-col lg:flex-row text-white w-full ">
        
 {/* Mobile Navbar*/}
+{loadingSuggestions ? (
+  <div className="p-4 text-center">
+    <div className="searchloader mx-auto" />
+  </div>
+) : (
+  suggestions.map((suggestion, index) => (
+    <div key={index} className="p-2 hover:bg-gray-100 cursor-pointer">
+      {suggestion}
+    </div>
+  ))
+)}
 
 <div
   className={`w-full lg:hidden px-4 py-3 pb-3 z-50 transition-all duration-300 fixed top-0 ${
@@ -332,7 +364,7 @@ const handleCart=()=>{
   </div>
 
   {/* Right Section */}
-  <div className="bg-nav flex items-center gap-4 laptop:gap-10 xxxl:gap-16 hd:gap-12 px-4 laptop:px-6 xxxl:px-2 py-3  justify-start w-[55%] xxxl:w-[55%]">
+  <div className="bg-nav flex items-center gap-4 laptop:gap-8 xxxl:gap-6 hd:gap-4 px-4 laptop:px-6 xxxl:px-2 py-3  justify-start w-[55%] xxxl:w-[55%]">
    
 
     <div className="bg-white border border-[#080000] flex items-center px-3  xxxl:py-3 laptop:py-1 hd:py-2 rounded-full w-[50%] ">
@@ -345,7 +377,7 @@ const handleCart=()=>{
       />
        <BiSearchAlt className="xxxl:w-6 xxxl:h-6 hd:w-5  laptop:w-4 laptop:h-6  mr-2 shrink-0 text-[#080000]" />
        {suggestions.length > 0 && (
-  <ul className="absolute z-50 top-full left-0 w-full bg-white border border-gray-200 mt-1 rounded shadow max-h-60 overflow-y-auto">
+  <ul className="absolute z-50 top-full  w-[50%] hide-scrollbar bg-white border border-gray-200  rounded shadow max-h-80 overflow-y-auto">
     {suggestions.map((item, index) => (
       <li
         key={index}
@@ -365,14 +397,18 @@ const handleCart=()=>{
     </div>
    <FaUser
       onClick={handleChange}
-      className="cursor-pointer text-2xl hd:text-3xl laptop:text-2xl xxxl:text-4xl shrink-0 text-[#492C1E]"
+      className="cursor-pointer text-[35px] xxxl:ml-16 hd:ml-10 shrink-0 text-[#492C1E]"
     />
      <div className="relative text-center  z-50" ref={dropdownRef}>
   <button
     onClick={() => setIsOpen2(!isOpen2)}
-    className="flex items-center gap-1 xxxl:text-[24px] laptop:text-[18px] hd:text-[20px] text-[#492C1E] hover:text-black font-medium"
+    className="flex items-center uppercase gap-1 xxxl:text-[24px] laptop:text-[18px] hd:text-[20px] text-[#492C1E] hover:text-black font-medium"
   >
-    My Account
+    {user ? (
+          <span className=""> {user.firstName}</span>
+        ) : (
+          <span className="">My Account</span>
+        )}
     <MdOutlineArrowDropDown
       className={`text-[35px]  transition-transform duration-200 ${isOpen2 ? 'rotate-180' : ''}`}
     />
@@ -381,8 +417,7 @@ const handleCart=()=>{
   {isOpen2 && (
     <div className="absolute right-0 mt-2 w-28 bg-white border rounded shadow-lg z-50">
       <ul className="py-1 text-md text-gray-700">
-        <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Profile</li>
-        <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Orders</li>
+        <li onClick={handleChange} className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Profile</li>
         <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Logout</li>
       </ul>
     </div>

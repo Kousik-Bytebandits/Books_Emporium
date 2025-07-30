@@ -3,12 +3,12 @@ import { useParams, useNavigate } from "react-router-dom";
 import { FaChevronDown } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import Loader from "../components/Loader";
 const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const selectRef = useRef(null);
-
+const [loading, setLoading] = useState(false);
   const [product, setProduct] = useState(null);
   const [showDescription, setShowDescription] = useState(true);
   const [showDetails, setShowDetails] = useState(true);
@@ -47,7 +47,7 @@ const ProductDetails = () => {
     };
 
     if (id) fetchProduct();
-  }, [id]);
+  }, );
 
   if (!product) {
     return <div className="text-center py-10">Loading...</div>;
@@ -103,8 +103,10 @@ const ProductDetails = () => {
     }
   };
 
-    const handleBuyNow = async () => {
+  
+  const handleBuyNow = async () => {
     const token = localStorage.getItem("accessToken");
+    setLoading(true); // Start loader
 
     try {
       const res = await fetch("https://booksemporium.in/Microservices/Prod/06_orders_and_payments/order/purchase-book", {
@@ -122,7 +124,7 @@ const ProductDetails = () => {
       });
 
       const data = await res.json();
-
+console.log("pd",data);
       if (data?.razorpayOrder) {
         const options = {
           key: "rzp_test_qQ40l1wBMtOxc0",
@@ -152,10 +154,12 @@ const ProductDetails = () => {
     } catch (error) {
       console.error("Checkout error:", error);
       alert("An error occurred during checkout.");
+    } finally {
+      setLoading(false); // Stop loader
     }
   };
-
-  const verifyCratePayment = async (response, token) => {
+    
+ const verifyCratePayment = async (response, token) => {
   try {
     const verifyRes = await fetch("https://booksemporium.in/Microservices/Prod/06_orders_and_payments/order/verify", {
       method: "POST",
@@ -171,18 +175,31 @@ const ProductDetails = () => {
     });
 
     const result = await verifyRes.json();
-    console.log(result);      
+    console.log("Payment verified:", result);
+
+    
+    await fetch("https://booksemporium.in/Microservices/Prod/07_contact_us/payment", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        payment_id: response.razorpay_payment_id,
+      }),
+    });
+
    
+
   } catch (error) {
-    console.error("Verification error:", error);
-    alert("Error verifying payment.");
+    console.error("Verification or callback error:", error);
+    alert("Error verifying payment or sending payment ID.");
   }
 };
 
 
   return (
    <>
-   
+      {loading && <Loader />}
     <div className="bg-background  hidden lg:block  lg:pt-[8%] min-h-screen px-4 py-6 font-sans">
       {/* Breadcrumb */}
       <p className="text-black font-semibold text-[24px] tracking-wider font-archivo mb-10 hidden lg:block">

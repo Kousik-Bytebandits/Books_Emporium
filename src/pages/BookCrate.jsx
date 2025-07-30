@@ -6,6 +6,7 @@ import { RiArrowDropLeftLine } from "react-icons/ri";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
+import Loader from "../components/Loader";
 
 function ProductCard({ product, addToCrate }) {
 
@@ -95,6 +96,9 @@ const [crateSummary, setCrateSummary] = useState({
   totalAmount: 0,
 });
 const navigate = useNavigate();
+const [loading, setLoading] = useState(false);
+
+
 const categories = [
   "Sports",
   "History",
@@ -347,6 +351,7 @@ useEffect(() => {
 
  const FilterSidebar = (
   <>
+   {loading && <Loader />}
     <div className=" relative  top-[4%] -left-[56%] w-[111%] lg:w-[280px] bg-white font-sans    lg:left-[0%] lg:z-0 z-0  lg:shadow-around-soft  text-black">
         <div className="px-4 pb-6 hidden lg:block">
           <h1 className="flex items-center justify-between pt-4 font-sans font-semibold text-[20px] text-black">Refine Your Search <FaFilter/></h1>
@@ -544,6 +549,8 @@ useEffect(() => {
 const handleCrateCheckout = async () => {
   const token = localStorage.getItem("accessToken");
 
+  setLoading(true); // show loader
+
   try {
     const res = await fetch("https://booksemporium.in/Microservices/Prod/06_orders_and_payments/order/create", {
       method: "POST",
@@ -561,15 +568,23 @@ const handleCrateCheckout = async () => {
 
     if (data?.razorpayOrder) {
       const options = {
-        key: "rzp_test_qQ40l1wBMtOxc0", // replace with live key later
+        key: "rzp_test_qQ40l1wBMtOxc0",
         amount: data.razorpayOrder.amount,
         currency: "INR",
-        name: "Book Emporium",
+        name: data.user.name,
         description: "Book Crate Purchase",
+        image: "/logo.png",
         order_id: data.razorpayOrder.id,
         handler: async function (response) {
+          setLoading(true); // show loader again for verification
           await verifyCratePayment(response, token);
         },
+        prefill: {
+          name: data.user.name,
+          email: data.user.email,
+          contact: data.user.phone || "", 
+        },
+        notes: data.razorpayOrder.notes || {},
         theme: { color: "#00aaff" },
       };
 
@@ -581,8 +596,11 @@ const handleCrateCheckout = async () => {
   } catch (error) {
     console.error("Checkout error:", error);
     alert("An error occurred during checkout.");
+  } finally {
+    setLoading(false); // always stop loader
   }
 };
+
 
 const verifyCratePayment = async (response, token) => {
   try {
@@ -600,11 +618,24 @@ const verifyCratePayment = async (response, token) => {
     });
 
     const result = await verifyRes.json();
-    console.log(result);      
+    console.log("Payment verified:", result);
+
+    await fetch("https://booksemporium.in/Microservices/Prod/07_contact_us/payment", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        payment_id: response.razorpay_payment_id,
+      }),
+    });
+
    
+    setLoading(false); 
   } catch (error) {
-    console.error("Verification error:", error);
-    alert("Error verifying payment.");
+    console.error("Verification or callback error:", error);
+    alert("Error verifying payment or sending payment ID.");
+    setLoading(false); 
   }
 };
 

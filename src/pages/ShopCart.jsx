@@ -1,6 +1,7 @@
 import { useState, useEffect,useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaMinus, FaPlus , FaChevronDown} from "react-icons/fa";
+import Loader from "../components/Loader";
 
 export default function ShopCart({handleOpenLogin}) {
   
@@ -10,7 +11,9 @@ export default function ShopCart({handleOpenLogin}) {
  const [cartTotal, setCartTotal] = useState(0);
 const [subTotal, setSubTotal] = useState(0);
 const [discount, setDiscount] = useState(0);
- 
+ const [loading, setLoading] = useState(false);
+
+
   const token = localStorage.getItem("accessToken");
   useEffect(() => {
     if (!token) {
@@ -92,16 +95,18 @@ window.dispatchEvent(new Event("storage"));
     }
   };
     
-
-   const handleCheckout = async () => {
+const handleCheckout = async () => {
   const token = localStorage.getItem("accessToken");
 
   if (!token) {
-  handleOpenLogin();
+    handleOpenLogin();
     return;
   }
 
   try {
+    setLoading(true);
+
+    // Step 1: Create Razorpay order
     const response = await fetch(
       "https://booksemporium.in/Microservices/Prod/06_orders_and_payments/order/create",
       {
@@ -121,19 +126,26 @@ window.dispatchEvent(new Event("storage"));
 
     if (!response.ok || !data.razorpayOrder) {
       alert("Failed to create order.");
+      setLoading(false);
       return;
     }
 
+    // Step 2: Configure Razorpay checkout
     const options = {
-      key: "rzp_test_qQ40l1wBMtOxc0", 
+      key: "rzp_test_qQ40l1wBMtOxc0",
       amount: data.razorpayOrder.amount,
       currency: "INR",
-      name: "Books Emporium",
+      name: data.user.name,
       description: "Cart Payment",
       order_id: data.razorpayOrder.id,
+       prefill: {
+          name: data.user.name,
+          email: data.user.email,
+          contact: data.user.phone || "", 
+        },
       handler: async function (response) {
-        
         try {
+          // Step 3: Verify payment
           const verifyRes = await fetch(
             "https://booksemporium.in/Microservices/Prod/06_orders_and_payments/order/verify",
             {
@@ -149,19 +161,34 @@ window.dispatchEvent(new Event("storage"));
               }),
             }
           );
-
+         
           if (!verifyRes.ok) {
             alert("Payment verification failed");
+            setLoading(false);
             return;
           }
+          
+          // Step 4: Send payment_id to contact_us/payment API
+          await fetch(
+            "https://booksemporium.in/Microservices/Prod/07_contact_us/payment",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                payment_id: response.razorpay_payment_id,
+              }),
+            }
+          );
 
-          const verifyData = await verifyRes.json();
-          alert("Payment successful!");
-          navigate("/"); 
-          console.log(verifyData);
+         
+          navigate("/");
         } catch (err) {
-          console.error("Verification failed:", err);
-          alert("Error verifying payment.");
+          console.error("Verification or post-payment failed:", err);
+          alert("Something went wrong after payment.");
+        } finally {
+          setLoading(false);
         }
       },
       theme: {
@@ -174,11 +201,16 @@ window.dispatchEvent(new Event("storage"));
   } catch (err) {
     console.error("Checkout failed:", err);
     alert("Something went wrong during checkout.");
+    setLoading(false);
   }
 };
 
+
+
   return (
     <>
+      {loading && <Loader />}
+
       <div className="max-w-[100%]  lg:bg-background  pt-[35%] lg:pt-[6%] mx-auto py-8 font-archivon">
         <h2 className="xxxl:text-[50px]  font-archivo font-semibold uppercase text-center laptop:text-[35px] hd:text-[40px]  pt-4 font-tenor  text-[20px]">
           Shopping Cart
@@ -222,7 +254,7 @@ window.dispatchEvent(new Event("storage"));
      
 
       {/* Quantity + Delete */}
-      <div className="flex items-center  w-[35%] justify-evenly">
+      <div className="flex items-center gap-2  w-[35%] justify-evenly">
          {item && (
   <div className="relative inline-flex items-center border border-black rounded-md bg-[#FFF7F0] px-3 py-2 w-[220px] my-4">
     {/* Label + Current Quantity */}

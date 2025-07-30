@@ -14,13 +14,13 @@ function ProductCard({ product }) {
   return (
       <div
   onClick={handleCardClick}
-  className="xxxl:w-[195px] xxxl:h-[350px] w-[170px] h-[280px] font-figtree mx-auto border p-3 shadow-around-soft rounded-lg bg-white flex flex-col justify-between"
+  className="lg:w-[185px] lg:h-[340px]  w-[170px] h-[280px] font-figtree mx-auto border p-3 shadow-around-soft rounded-lg bg-white flex flex-col justify-between"
 >
   {/* Image */}
   <img
     src={product.image_url}
     alt={product.title}
-    className="xxxl:w-[170px] xxxl:h-[230px] w-[100px] h-[148px] object-cover rounded shadow-around-soft mx-auto"
+    className="xxxl:w-[150px] xxxl:h-[220px] hd:w-[140px] hd:h-[210px] laptop:w-[150px] laptop:h-[220px] w-[100px] h-[148px] object-cover rounded shadow-around-soft mx-auto"
   />
 
   {/* Title + Author + Price */}
@@ -59,11 +59,15 @@ export default function ShopList() {
    const [showFilter, setShowFilter] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
    const totalPages = 10;
-  const [limit] = useState(12);
+  const [limit] = useState(20);
  const [priceRange, setPriceRange] = useState([100, 5000]);
-const [discountRange, setDiscountRange] = useState([10, 70]);
+const [discountRange, setDiscountRange] = useState([0, 70]);
 const [yearRange, setYearRange] = useState(['2000 BC', 2024]);
 const [isDropdownOpen, setIsDropdownOpen] = useState(true);
+const [tempPrice, setTempPrice] = useState(priceRange[1]);
+const [tempDiscount, setTempDiscount] = useState(discountRange[1]);
+const [tempYear, setTempYear] = useState(yearRange[1]);
+
 const categories = [
   "Fiction",
   "Romance",
@@ -91,23 +95,45 @@ const sortOptionMapping = {
   PriceLowHigh: "price_low_high",
   PriceHighLow: "price_high_low",
 };
-
 const fetchProducts = () => {
-    const sortQuery = sortOptionMapping[sortOption] || "name_asc";
 
-    fetch(`https://booksemporium.in/Microservices/Prod/04_user_website/api/books/list?page=${currentPage}&limit=${limit}&sort=${sortQuery}`)
-      .then(res => res.json())
-      .then(data => {
-        if (Array.isArray(data.results)) {
-          setProducts(data.results);
-         
-         
-        } else {
-          console.error("Unexpected API response:", data);
-        }
-      })
-      .catch(err => console.error("Failed to fetch products", err));
-  };
+
+  // Prepare query values
+  const sortQuery = sortOptionMapping[sortOption] || "name_asc";
+  const [minPrice, maxPrice] = priceRange;
+  const [ ,maxDiscount] = discountRange;
+  const [fromYear, toYear] = yearRange;
+
+  // Handle category (using first category or all joined)
+  const category = selectedCategories.length > 0 ? selectedCategories[0] : "";
+
+  // Convert discount max into label for API
+  let discountLabel = "";
+  if (maxDiscount <= 20) discountLabel = "upto_20";
+  else if (maxDiscount <= 30) discountLabel = "upto_30";
+  else if (maxDiscount <= 50) discountLabel = "upto_50";
+  else discountLabel = "upto_70";
+
+  // Build API URL
+  const apiURL = `https://booksemporium.in/Microservices/Prod/04_user_website/api/books/list?page=${currentPage}&limit=${limit}&category=${encodeURIComponent(
+    category
+  )}&sort=${sortQuery}&min_price=${minPrice}&max_price=${maxPrice}&date_from=${fromYear}&date_to=${toYear}&discount=${discountLabel}`;
+
+  // Fetch data
+  fetch(apiURL)
+    .then((res) => res.json())
+    .then((data) => {
+      if (Array.isArray(data.results)) {
+        setProducts(data.results);
+      } else {
+        console.error("Unexpected API response format:", data);
+      }
+    })
+    .catch((err) => {
+      console.error("Failed to fetch products:", err);
+    });
+};
+
 
   useEffect(() => {
     fetchProducts();
@@ -138,45 +164,78 @@ const fetchProducts = () => {
           <h1 className="flex items-center justify-between pt-4 font-sans font-semibold text-[20px] text-black">Refine Your Search <FaFilter/></h1>
       {/* Price Range */}
       <div className="mb-6">
+       
         <h3 className="text-[18px] font-semibold mb-2">Price Range:</h3>
         <p className="text-[16px] font-semibold mb-2 text-gray-700">₹{priceRange[0]} - ₹{priceRange[1]}</p>
-        <input
-          type="range"
-          min={49}
-          max={5000}
-         
-          value={priceRange[1]}
-          onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
-          className="w-full accent-[#77C7F6] "
-        />
+        <div className="flex gap-2">
+       <input
+  type="range"
+  min={49}
+  max={5000}
+  value={tempPrice}
+  onChange={(e) => setTempPrice(parseInt(e.target.value))}
+  className="w-full accent-[#77C7F6]"
+/>
+        <div>
+      <button
+  onClick={() => setPriceRange([priceRange[0], tempPrice])}
+  className="rounded-full bg-orange-400 w-10 text-white font-semibold py-[2px]"
+>
+  Go
+</button>
+              </div>
+        </div>
       </div>
 
       {/* Discount Range */}
       <div className="mb-6 font-semibold">
         <h3 className="text-[18px] font-semibold mb-2">Discount Range:</h3>
         <p className="text-[16px] mb-2 text-gray-700">{discountRange[0]}% - {discountRange[1]}%</p>
-        <input
-          type="range"
-          min={0}
-          max={100}
-          value={discountRange[1]}
-          onChange={(e) => setDiscountRange([discountRange[0], parseInt(e.target.value)])}
-          className="w-full accent-[#77C7F6]"
-        />
+       <div className="flex gap-2">
+       <input
+  type="range"
+  min={0}
+  max={70}
+  step={10}
+  value={tempDiscount}
+  onChange={(e) => setTempDiscount(parseInt(e.target.value))}
+  className="w-full accent-[#77C7F6]"
+/>
+
+        <div>
+        <button
+  onClick={() => setDiscountRange([discountRange[0], tempDiscount])}
+  className="rounded-full bg-orange-400 w-10 text-white font-semibold py-[2px]"
+>
+  Go
+</button>
+
+        </div>
+        </div>
       </div>
 
       {/* Year Published */}
       <div className="mb-6 font-semibold">
         <h3 className="text-[18px] font-semibold mb-2">Year Published:</h3>
         <p className="text-[16px] mb-2 text-gray-700">{yearRange[0]} - {yearRange[1]}</p>
-        <input
-          type="range"
-          min={-2000}
-          max={2024}
-          value={yearRange[1]}
-          onChange={(e) => setYearRange([yearRange[0], parseInt(e.target.value)])}
-          className="w-full accent-[#77C7F6]"
-        />
+       <div className="flex gap-2">
+       <input
+  type="range"
+  min={-2000}
+  max={2024}
+  value={tempYear}
+  onChange={(e) => setTempYear(parseInt(e.target.value))}
+  className="w-full accent-[#77C7F6]"
+/>
+         <div>
+        <button
+  onClick={() => setYearRange([yearRange[0], tempYear])}
+  className="rounded-full bg-orange-400 w-10 text-white font-semibold py-[2px]"
+>
+  Go
+</button>
+        </div>
+        </div>
       </div>
 
       {/* Categories */}
@@ -270,6 +329,8 @@ const fetchProducts = () => {
   <p className="text-[18px] text-[#676A5E] font-tenor lg:text-[22px] uppercase mb-3">Categories</p>
   <div className="grid grid-cols-2 gap-3 text-[px]">
     {[
+      "Fiction",
+      "Horror",
       "Action & Adventure",
       "Arts, Film & Photography",
       "Biographies, Diaries & True Accounts",
@@ -387,8 +448,8 @@ const fetchProducts = () => {
       <h1 className="text-[32px] hidden lg:block font-semibold font-sans text-center text-black">Popular Indian Used-Book Marketplaces</h1>
       <div className="grid lg:grid-cols-[270px_1fr] gap-8 hidden lg:grid">
         
-        <div>{FilterSidebar}</div>
-        <div className="flex flex-col gap-8 bg-white mt-16  shadow-around-soft p-6">
+        <div className="mt-2">{FilterSidebar}</div>
+        <div className="flex flex-col gap-8 bg-white mt-20  shadow-around-soft p-6">
          <div className="flex justify-between items-center"> 
        <div className="text-[20px] font-sans font-semibold text-black tracking-wide"> {totalProducts} Results Found</div>
         <div className=" flex items-center gap-2 text-[18px] text-black   rounded-lg">
@@ -412,7 +473,7 @@ const fetchProducts = () => {
         </div>
         </div>
 
-         <div className="grid grid-cols-2 md:grid-cols-3 xxxl:grid-cols-6 hd:grid-cols-5 laptop:grid-cols-4 gap-4">
+         <div className="grid grid-cols-2 md:grid-cols-3 xxxl:grid-cols-5 hd:grid-cols-5 laptop:grid-cols-4 gap-4">
   {products.map((product) => (
     <ProductCard key={product.book_id} product={product} />
   ))}

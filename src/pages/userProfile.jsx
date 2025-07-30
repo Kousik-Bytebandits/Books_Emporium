@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -41,19 +40,24 @@ useEffect(() => {
       );
 
       const result = await res.json();
-      console.log("Fetched profile result:", result); 
+      
       const { user = {}, address = {} } = result;
 
-     setProfile({
-  firstName: user.firstName ?? "",
-  lastName: user.lastName ?? "",
-  phone: user.phone ?? "",
-  email: user.email ?? "",
-  address: address.street ?? "",
-  city: address.city ?? "",
-  state: address.state ?? "",
-  pincode: address.postal_code ?? "",
-});
+      const updatedProfile = {
+        firstName: user.firstName ?? "",
+        lastName: user.lastName ?? "",
+        phone: user.phone ?? "",
+        email: user.email ?? "",
+        address: address.street ?? "",
+        city: address.city ?? "",
+        state: address.state ?? "",
+        pincode: address.postal_code ?? "",
+      };
+
+      setProfile(updatedProfile);
+
+     
+      
 
     } catch (err) {
       console.error("Error fetching profile:", err);
@@ -61,7 +65,8 @@ useEffect(() => {
   };
 
   fetchProfile();
-}, []);
+}, );
+
 
   const handleChange = (field, value) => {
     setProfile((prev) => ({
