@@ -92,7 +92,7 @@ const handleCloseAllPopups = () => {
       )}
 
       {showSignup && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex justify-center hide-scrollbar items-center overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex justify-center hide-scrollbar items-center lg:overflow-hidden overflow-y-auto">
            <SignUp
     onClose={handleCloseAllPopups}
     onOpenLogin={handleOpenLogin}
