@@ -205,7 +205,7 @@ const otpRefs = useRef([]);
 
 
   return (
-    <div className="mt-[82%] font-opensans  min-h-screen w-full relative ">
+    <div className="lg:mt-[6%] mt-[82%] font-opensans  min-h-screen w-full relative ">
        <div className="absolute inset-0  z-10 hidden lg:block" />
        <div className="rounded-2xl bg-mobileGradient lg:bg-none lg:b-white mb-4 px-6 pb-10 mt-4 mx-4 flex flex-col justify-center pt-4">
          <div className="lg:hidden flex items-center justify-between mb-6 lg:mb-0">
