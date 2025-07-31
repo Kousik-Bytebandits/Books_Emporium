@@ -14,37 +14,37 @@ function ProductCard({ product }) {
   return (
       <div
   onClick={handleCardClick}
-  className="lg:w-[185px] lg:h-[340px]  w-[170px] h-[280px] font-figtree mx-auto border p-3 shadow-around-soft rounded-lg bg-white flex flex-col justify-between"
+  className="lg:w-[206px] lg:h-[352px]  w-[170px] h-[280px] font-figtree mx-auto border p-3 shadow-around-soft rounded-lg bg-white flex flex-col justify-between"
 >
   {/* Image */}
   <img
     src={product.image_url}
     alt={product.title}
-    className="xxxl:w-[150px] xxxl:h-[220px] hd:w-[140px] hd:h-[210px] laptop:w-[150px] laptop:h-[220px] w-[100px] h-[148px] object-cover rounded shadow-around-soft mx-auto"
+    className="lg:w-[169px] lg:h-[253px] w-[100px] h-[148px] object-cover rounded shadow-around-soft mx-auto"
   />
 
   {/* Title + Author + Price */}
-  <div className="flex flex-col justify-between flex-1 mt-2">
+  <div className="flex flex-col justify-between flex-1 mt-1 ">
     {/* Title */}
-    <div className="min-h-[38px] text-left px-2">
-      <h3 className="font-semibold text-black text-[14px] leading-snug line-clamp-2">
+    <div className="lg:min-h-[22px] text-left px-2">
+      <h3 className="font-semibold  text-black text-[16px] leading-[1rem] ">
         {product.title}
       </h3>
     </div>
 
     {/* Author */}
-    <p className="text-xs text-gray-600 mt-1 px-2 text-left min-h-[18px]">
+    <p className="text-[13px] text-gray-600 mt-[2px] px-2 text-left min-h-[18px]">
       By: {product.author}
     </p>
 
     {/* Price Section */}
-    <div className="flex items-center gap-2 mt-2 mx-2 min-h-[20px]">
-      <p className="text-black font-bold text-xs">₹{product.price}</p>
-      <p className="line-through text-gray-400 font-sans lg:text-xs text-[9px]">
+    <div className="flex items-center gap-2  mx-2 min-h-[20px]">
+      <p className="text-black font-bold text-[13px]">₹{product.price}</p>
+      <p className="line-through text-gray-400 font-sans lg:text-[13px] text-[9px]">
         ₹{product.oldprice}
       </p>
       {product.discount && (
-        <p className="lg:text-xs text-[8px] text-[#CA1D1D]">-{product.discount}%</p>
+        <p className="lg:text-[13px] text-[8px] text-[#CA1D1D]">-{product.discount}%</p>
       )}
     </div>
   </div>
@@ -400,10 +400,8 @@ useEffect(() => {
 
   return (
     <div>
-    <div className="pt-[33%] min-h-screen overflow-hidden  pb-20 bg-background   lg:px-8 lg:pt-[6%] font-archivo text-[#676A5E]">
-      <div className="hidden lg:flex justify-between items-center mb-4 px-4">
-       
-      </div>
+    <div className="lg:mt-[2%]  min-h-screen overflow-hidden  pb-20 bg-background   lg:px-8 lg:pt-[6%] font-archivo text-[#676A5E]">
+     
 
       <div className="lg:hidden bg-[#B4541F] py-2 rounded flex items-center text-white justify-center mb-4">
         
@@ -455,8 +453,8 @@ useEffect(() => {
 
   </div>
      <div>
-      <h1 className="text-[32px] hidden lg:block font-semibold font-sans text-center text-black">Popular Indian Used-Book Marketplaces</h1>
-      <div className="grid lg:grid-cols-[270px_1fr] gap-8 hidden lg:grid">
+      <h1 className="text-[32px]  hidden lg:block font-semibold font-sans text-center text-black">Popular Indian Used-Book Marketplaces</h1>
+      <div className="grid lg:grid-cols-[270px_1fr] gap-8 hidden lg:grid xxxl:w-[80%] mx-auto">
         
         <div className="mt-2">{FilterSidebar}</div>
         <div className="flex flex-col gap-8 bg-white mt-20  shadow-around-soft p-6">
@@ -499,7 +497,7 @@ useEffect(() => {
        
       <div className=" ">
  {/* Pagination Section */}
-<div className=" hidden lg:flex justify-end items-center text-[18px] text-[#676A5E] mt-8 pb-20">
+<div className=" hidden lg:flex xxxl:w-[90%] w-full justify-end items-center text-[18px] text-[#676A5E] mt-8 pb-20">
   <div className="flex items-center gap-2">
 
     {/* Previous Button */}
