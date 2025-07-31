@@ -104,6 +104,8 @@ const [loading, setLoading] = useState(false);
 
 
 const categories = [
+  "Fiction",
+  "Horror",
   "Sports",
   "History",
   "Reference",
