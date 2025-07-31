@@ -60,13 +60,14 @@ export default function ShopList() {
   const [currentPage, setCurrentPage] = useState(1);
    const totalPages = 10;
   const [limit] = useState(20);
- const [priceRange, setPriceRange] = useState([100, 5000]);
+ const [priceRange, setPriceRange] = useState([49, 5000]);
 const [discountRange, setDiscountRange] = useState([0, 70]);
 const [yearRange, setYearRange] = useState(['2000 BC', 2024]);
 const [isDropdownOpen, setIsDropdownOpen] = useState(true);
 const [tempPrice, setTempPrice] = useState(priceRange[1]);
 const [tempDiscount, setTempDiscount] = useState(discountRange[1]);
 const [tempYear, setTempYear] = useState(yearRange[1]);
+
 
 const categories = [
   "Fiction",
@@ -120,24 +121,28 @@ const fetchProducts = () => {
   )}&sort=${sortQuery}&min_price=${minPrice}&max_price=${maxPrice}&date_from=${fromYear}&date_to=${toYear}&discount=${discountLabel}`;
 
   // Fetch data
-  fetch(apiURL)
-    .then((res) => res.json())
-    .then((data) => {
-      if (Array.isArray(data.results)) {
-        setProducts(data.results);
-      } else {
-        console.error("Unexpected API response format:", data);
-      }
-    })
-    .catch((err) => {
-      console.error("Failed to fetch products:", err);
-    });
-};
+ fetch(apiURL)
+  .then((res) => res.json())
+  
+  .then((data) => {
+    if (Array.isArray(data.results)) {
+      setProducts(data.results);
 
 
-  useEffect(() => {
-    fetchProducts();
-  }, );
+    } else {
+      console.error("Unexpected API response format:", data);
+    }
+  })
+  .catch((err) => {
+    console.error("Failed to fetch products:", err);
+  })
+ 
+
+}
+ useEffect(() => {
+  fetchProducts();
+}, [sortOption, priceRange, discountRange, yearRange, selectedCategories, currentPage]);
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -166,7 +171,7 @@ const fetchProducts = () => {
       <div className="mb-6">
        
         <h3 className="text-[18px] font-semibold mb-2">Price Range:</h3>
-        <p className="text-[16px] font-semibold mb-2 text-gray-700">₹{priceRange[0]} - ₹{priceRange[1]}</p>
+        <p className="text-[16px] font-semibold mb-2 text-gray-700">₹{priceRange[0]} - ₹{tempPrice}</p>
         <div className="flex gap-2">
        <input
   type="range"
@@ -190,7 +195,7 @@ const fetchProducts = () => {
       {/* Discount Range */}
       <div className="mb-6 font-semibold">
         <h3 className="text-[18px] font-semibold mb-2">Discount Range:</h3>
-        <p className="text-[16px] mb-2 text-gray-700">{discountRange[0]}% - {discountRange[1]}%</p>
+        <p className="text-[16px] mb-2 text-gray-700">{discountRange[0]}% - {tempDiscount}%</p>
        <div className="flex gap-2">
        <input
   type="range"
@@ -217,7 +222,7 @@ const fetchProducts = () => {
       {/* Year Published */}
       <div className="mb-6 font-semibold">
         <h3 className="text-[18px] font-semibold mb-2">Year Published:</h3>
-        <p className="text-[16px] mb-2 text-gray-700">{yearRange[0]} - {yearRange[1]}</p>
+        <p className="text-[16px] mb-2 text-gray-700">{yearRange[0]} - {tempYear}</p>
        <div className="flex gap-2">
        <input
   type="range"
@@ -387,6 +392,11 @@ const fetchProducts = () => {
  
   </>
 );
+useEffect(() => {
+  setTempPrice(priceRange[1]);
+  setTempDiscount(discountRange[1]);
+  setTempYear(yearRange[1]);
+}, []);
 
   return (
     <div>
@@ -437,13 +447,13 @@ const fetchProducts = () => {
       </div>
  <h1 className="text-[18px] lg:hidden font-bold font-sans text-center text-black">Popular Indian Used-Book Marketplaces</h1>
       <div className="grid grid-cols-2 gap-3 px-3 pb-4 pt-2 font-archivo text-[#676A5E] lg:hidden">
-       {Array.isArray(products) && products.map((product) => (
-   <ProductCard key={product.book_id} product={product} />
+       
+  { (Array.isArray(products) && products.map((product) => (
+    <ProductCard key={product.book_id} product={product} />
+  ))
+)}
 
-))}
-
-
-      </div>
+  </div>
      <div>
       <h1 className="text-[32px] hidden lg:block font-semibold font-sans text-center text-black">Popular Indian Used-Book Marketplaces</h1>
       <div className="grid lg:grid-cols-[270px_1fr] gap-8 hidden lg:grid">
@@ -474,9 +484,10 @@ const fetchProducts = () => {
         </div>
 
          <div className="grid grid-cols-2 md:grid-cols-3 xxxl:grid-cols-5 hd:grid-cols-5 laptop:grid-cols-4 gap-4">
-  {products.map((product) => (
+  {(Array.isArray(products) && products.map((product) => (
     <ProductCard key={product.book_id} product={product} />
-  ))}
+  ))
+)}
 </div>
 
 

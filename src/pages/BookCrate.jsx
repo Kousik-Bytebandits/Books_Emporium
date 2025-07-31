@@ -79,10 +79,14 @@ export default function BookCrate({handleOpenLogin}) {
    const [showFilter, setShowFilter] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
    const totalPages = 10;
-  const [limit] = useState(12);
- const [priceRange, setPriceRange] = useState([100, 5000]);
+  const [limit] = useState(20);
+ const [priceRange, setPriceRange] = useState([49, 5000]);
 const [discountRange, setDiscountRange] = useState([10, 70]);
 const [yearRange, setYearRange] = useState(['2000 BC', 2024]);
+const [tempPrice, setTempPrice] = useState(priceRange[1]);
+const [tempDiscount, setTempDiscount] = useState(discountRange[1]);
+const [tempYear, setTempYear] = useState(yearRange[1]);
+
 const [isDropdownOpen, setIsDropdownOpen] = useState(true);
 const [selectedCrate, setSelectedCrate] = useState(crates[0]);
  const scrollRef = useRef(null);
@@ -308,27 +312,56 @@ const discardCrate = async () => {
 
 
 const fetchProducts = () => {
+
+
+  // Prepare query values
   const sortQuery = sortOptionMapping[sortOption] || "name_asc";
+  const [minPrice, maxPrice] = priceRange;
+  const [ ,maxDiscount] = discountRange;
+  const [fromYear, toYear] = yearRange;
+
+  // Handle category (using first category or all joined)
+  const category = selectedCategories.length > 0 ? selectedCategories[0] : "";
+
+  // Convert discount max into label for API
+  let discountLabel = "";
+  if (maxDiscount <= 20) discountLabel = "upto_20";
+  else if (maxDiscount <= 30) discountLabel = "upto_30";
+  else if (maxDiscount <= 50) discountLabel = "upto_50";
+  else discountLabel = "upto_70";
+
+  // Build API URL
+  const apiURL = `https://booksemporium.in/Microservices/Prod/04_user_website/api/books/list?page=${currentPage}&limit=${limit}&category=${encodeURIComponent(
+    category
+  )}&sort=${sortQuery}&min_price=${minPrice}&max_price=${maxPrice}&date_from=${fromYear}&date_to=${toYear}&discount=${discountLabel}`;
+
+  // Fetch data
+ fetch(apiURL)
+  .then((res) => res.json())
+  
+  .then((data) => {
+    if (Array.isArray(data.results)) {
+      setProducts(data.results);
+
+
+    } else {
+      console.error("Unexpected API response format:", data);
+    }
+  })
+  .catch((err) => {
+    console.error("Failed to fetch products:", err);
+  })
  
 
-  fetch(`https://booksemporium.in/Microservices/Prod/04_user_website/api/books/list?page=${currentPage}&limit=${limit}&sort=${sortQuery}`)
-
-    .then((res) => res.json())
-    .then((data) => {
-      if (Array.isArray(data.results)) {
-        setProducts(data.results);
-      } else {
-        console.error("Unexpected API response:", data);
-      }
-    })
-    .catch((err) => console.error("Failed to fetch products", err));
-};
+}
 
 
 useEffect(() => {
-  fetchProducts();
-  fetchCrateBooks();
-}, );
+   fetchProducts();
+    fetchCrateBooks();
+}, [sortOption, priceRange, discountRange, yearRange, selectedCategories, currentPage]);
+ 
+ 
 
 
   useEffect(() => {
@@ -347,55 +380,85 @@ useEffect(() => {
 
   const totalProducts = products.length;
   
-
-
- const FilterSidebar = (
+const FilterSidebar = (
   <>
-   {loading && <Loader />}
     <div className=" relative  top-[4%] -left-[56%] w-[111%] lg:w-[280px] bg-white font-sans    lg:left-[0%] lg:z-0 z-0  lg:shadow-around-soft  text-black">
         <div className="px-4 pb-6 hidden lg:block">
           <h1 className="flex items-center justify-between pt-4 font-sans font-semibold text-[20px] text-black">Refine Your Search <FaFilter/></h1>
       {/* Price Range */}
       <div className="mb-6">
+       
         <h3 className="text-[18px] font-semibold mb-2">Price Range:</h3>
-        <p className="text-[16px] font-semibold mb-2 text-gray-700">₹{priceRange[0]} - ₹{priceRange[1]}</p>
-        <input
-          type="range"
-          min={49}
-          max={5000}
-         
-          value={priceRange[1]}
-          onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
-          className="w-full accent-[#77C7F6] "
-        />
+        <p className="text-[16px] font-semibold mb-2 text-gray-700">₹{priceRange[0]} - ₹{tempPrice}</p>
+        <div className="flex gap-2">
+       <input
+  type="range"
+  min={49}
+  max={5000}
+  value={tempPrice}
+  onChange={(e) => setTempPrice(parseInt(e.target.value))}
+  className="w-full accent-[#77C7F6]"
+/>
+        <div>
+      <button
+  onClick={() => setPriceRange([priceRange[0], tempPrice])}
+  className="rounded-full bg-orange-400 w-10 text-white font-semibold py-[2px]"
+>
+  Go
+</button>
+              </div>
+        </div>
       </div>
 
       {/* Discount Range */}
       <div className="mb-6 font-semibold">
         <h3 className="text-[18px] font-semibold mb-2">Discount Range:</h3>
-        <p className="text-[16px] mb-2 text-gray-700">{discountRange[0]}% - {discountRange[1]}%</p>
-        <input
-          type="range"
-          min={0}
-          max={100}
-          value={discountRange[1]}
-          onChange={(e) => setDiscountRange([discountRange[0], parseInt(e.target.value)])}
-          className="w-full accent-[#77C7F6]"
-        />
+        <p className="text-[16px] mb-2 text-gray-700">{discountRange[0]}% - {tempDiscount}%</p>
+       <div className="flex gap-2">
+       <input
+  type="range"
+  min={0}
+  max={70}
+  step={10}
+  value={tempDiscount}
+  onChange={(e) => setTempDiscount(parseInt(e.target.value))}
+  className="w-full accent-[#77C7F6]"
+/>
+
+        <div>
+        <button
+  onClick={() => setDiscountRange([discountRange[0], tempDiscount])}
+  className="rounded-full bg-orange-400 w-10 text-white font-semibold py-[2px]"
+>
+  Go
+</button>
+
+        </div>
+        </div>
       </div>
 
       {/* Year Published */}
       <div className="mb-6 font-semibold">
         <h3 className="text-[18px] font-semibold mb-2">Year Published:</h3>
-        <p className="text-[16px] mb-2 text-gray-700">{yearRange[0]} - {yearRange[1]}</p>
-        <input
-          type="range"
-          min={-2000}
-          max={2024}
-          value={yearRange[1]}
-          onChange={(e) => setYearRange([yearRange[0], parseInt(e.target.value)])}
-          className="w-full accent-[#77C7F6]"
-        />
+        <p className="text-[16px] mb-2 text-gray-700">{yearRange[0]} - {tempYear}</p>
+       <div className="flex gap-2">
+       <input
+  type="range"
+  min={-2000}
+  max={2024}
+  value={tempYear}
+  onChange={(e) => setTempYear(parseInt(e.target.value))}
+  className="w-full accent-[#77C7F6]"
+/>
+         <div>
+        <button
+  onClick={() => setYearRange([yearRange[0], tempYear])}
+  className="rounded-full bg-orange-400 w-10 text-white font-semibold py-[2px]"
+>
+  Go
+</button>
+        </div>
+        </div>
       </div>
 
       {/* Categories */}
@@ -414,14 +477,14 @@ useEffect(() => {
     {isDropdownOpen && (
       <div className="space-y-2 mt-2">
         {categories.map((category) => (
-          <label key={category} className="flex items-center   space-x-2 ">
+          <label key={category} className="flex items-center space-x-2">
             <input
               type="checkbox"
-              className="w-5 h-4"
+              className="w-4 h-4"
               checked={selectedCategories.includes(category)}
               onChange={() => toggleCategory(category)}
             />
-            <span className="text-[15px] leading-tight">{category}</span>
+            <span>{category}</span>
           </label>
         ))}
       </div>
@@ -484,11 +547,13 @@ useEffect(() => {
           </div>
         </div>
 
-        
+        {/* PRODUCT TYPE (Left column short, Right column long) */}
         <div className="mb-6">
   <p className="text-[18px] text-[#676A5E] font-tenor lg:text-[22px] uppercase mb-3">Categories</p>
   <div className="grid grid-cols-2 gap-3 text-[px]">
     {[
+      "Fiction",
+      "Horror",
       "Action & Adventure",
       "Arts, Film & Photography",
       "Biographies, Diaries & True Accounts",
@@ -541,11 +606,16 @@ useEffect(() => {
       </div>
     
     </div>
-     
- 
+    
   </>
 );
 
+ 
+useEffect(() => {
+  setTempPrice(priceRange[1]);
+  setTempDiscount(discountRange[1]);
+  setTempYear(yearRange[1]);
+}, []);
 const handleCrateCheckout = async () => {
   const token = localStorage.getItem("accessToken");
 
@@ -576,7 +646,7 @@ const handleCrateCheckout = async () => {
         image: "/logo.png",
         order_id: data.razorpayOrder.id,
         handler: async function (response) {
-          setLoading(true); // show loader again for verification
+          
           await verifyCratePayment(response, token);
         },
         prefill: {
@@ -589,6 +659,7 @@ const handleCrateCheckout = async () => {
       };
 
       const rzp1 = new window.Razorpay(options);
+      setLoading(false);
       rzp1.open();
     } else {
       alert("Failed to create Razorpay order.");
@@ -642,6 +713,7 @@ const verifyCratePayment = async (response, token) => {
 
   return (
     <div>
+      {loading && <Loader />}
     <div className="pt-[31%]  min-h-screen overflow-hidden  pb-20 bg-background   lg:px-8 lg:pt-[6%] font-archivo text-[#676A5E]">
     
     <div className="lg:hidden bg-[#B4541F] py-2 rounded flex items-center text-white justify-center mb-4">

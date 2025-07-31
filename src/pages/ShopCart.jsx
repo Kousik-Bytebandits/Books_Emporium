@@ -123,7 +123,7 @@ const handleCheckout = async () => {
     );
 
     const data = await response.json();
-
+    setLoading(false);
     if (!response.ok || !data.razorpayOrder) {
       alert("Failed to create order.");
       setLoading(false);
