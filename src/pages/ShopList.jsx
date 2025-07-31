@@ -400,7 +400,7 @@ useEffect(() => {
 
   return (
     <div>
-    <div className="lg:mt-[2%]  min-h-screen overflow-hidden  pb-20 bg-background   lg:px-8 lg:pt-[6%] font-archivo text-[#676A5E]">
+    <div className="lg:mt-[2%] mt-[30%]  min-h-screen overflow-hidden  pb-20 bg-background   lg:px-8 lg:pt-[6%] font-archivo text-[#676A5E]">
      
 
       <div className="lg:hidden bg-[#B4541F] py-2 rounded flex items-center text-white justify-center mb-4">

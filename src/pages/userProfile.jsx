@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-export default function UserProfile({ onClose }) {
+export default function UserProfile({ onClose, }) {
   const popupRef = useRef();
   const token = localStorage.getItem("accessToken");
   const [profile, setProfile] = useState({

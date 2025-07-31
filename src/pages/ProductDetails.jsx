@@ -33,7 +33,7 @@ const [loading, setLoading] = useState(false);
         );
         const data = await response.json();
         setProduct(data);
-
+        
         const stockQty = Number(data.product_details.stock_quantity);
         setMaxStock(stockQty);
 
@@ -46,8 +46,8 @@ const [loading, setLoading] = useState(false);
       }
     };
 
-    if (id) fetchProduct();
-  }, );
+    fetchProduct();
+  },[id] );
 
   if (!product) {
     return <div className="text-center py-10">Loading...</div>;
@@ -62,7 +62,7 @@ const [loading, setLoading] = useState(false);
     }
 
     if (!token) {
-      navigate("/signin");
+      toast.info("Please login via 'My Account' to add products to cart")
       return;
     }
 
@@ -149,7 +149,7 @@ console.log("pd",data);
         const rzp1 = new window.Razorpay(options);
         rzp1.open();
       } else {
-        alert("Failed to create Razorpay order.");
+        toast.error("Please login to Buy products");
       }
     } catch (error) {
       console.error("Checkout error:", error);
@@ -515,7 +515,7 @@ console.log("pd",data);
 
       
 </div>
-<ToastContainer position="top-center" autoClose={3000} />
+<ToastContainer position="top-right" autoClose={5000} />
 </>
   );
 };

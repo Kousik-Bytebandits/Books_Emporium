@@ -74,12 +74,13 @@ useEffect(() => {
   return () => window.removeEventListener('scroll', handleScroll);
 }, []);
 
-const handleChange=()=>{
+const handleChange=(res)=>{
   const token = localStorage.getItem("accessToken");
-    if (token) {
-      toggleProfile();
-    }  else {
+    if (!token || res.status === 401 || res.status === 403) {
       handleOpenLogin();
+    }  else {
+      
+      toggleProfile();
     }
 
 }
@@ -134,11 +135,21 @@ useEffect(() => {
   </div>
 ) : (
   suggestions.map((suggestion, index) => (
-    <div key={index} className="p-2 hover:bg-gray-100 cursor-pointer">
-      {suggestion}
+    <div
+      key={index}
+      className="p-2 hover:bg-gray-100 cursor-pointer text-black"
+      onMouseDown={() => {
+        navigate(`/productdetails/${suggestion.Book_id}`);
+        setSearchTerm(" ");
+        setShowDropdown(false);
+        setSuggestions([]);
+      }}
+    >
+      {suggestion.Title}
     </div>
   ))
 )}
+
 
 <div
   className={`w-full lg:hidden px-4 py-3 pb-3 z-50 transition-all duration-300 fixed top-0 ${
@@ -195,17 +206,20 @@ useEffect(() => {
       {showDropdown && suggestions.length > 0 && (
         <ul className="absolute z-10 w-full mt-1 text-black bg-white border border-gray-300 rounded-md shadow-md max-h-60 overflow-y-auto">
           {suggestions.map((item, index) => (
-            <li
-              key={index}
-              className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-              onMouseDown={() => {
-                setSearchTerm(item);
-                setShowDropdown(false);
-              }}
-            >
-              {item}
-            </li>
-          ))}
+  <li
+    key={index}
+    className="cursor-pointer hover:bg-gray-100 px-4 py-2 text-black"
+    onMouseDown={() => {
+      navigate(`/productdetails/${item.Book_id}`);
+      setSearchTerm(" ");
+      setShowDropdown(false);
+      setSuggestions([]);
+    }}
+  >
+    {item.Title}
+  </li>
+))}
+
         </ul>
       )}
 </div>
@@ -236,18 +250,21 @@ useEffect(() => {
   
       {showDropdown && suggestions.length > 0 && (
         <ul className="absolute z-10 w-full mt-1 text-black bg-white border border-gray-300 rounded-md shadow-md max-h-60 overflow-y-auto">
-          {suggestions.map((item, index) => (
-            <li
-              key={index}
-              className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-              onMouseDown={() => {
-                setSearchTerm(item);
-                setShowDropdown(false);
-              }}
-            >
-              {item}
-            </li>
-          ))}
+         {suggestions.map((item, index) => (
+  <li
+    key={index}
+    className="cursor-pointer hover:bg-gray-100 px-4 py-2 text-black"
+    onMouseDown={() => {
+      navigate(`/productdetails/${item.Book_id}`);
+      setSearchTerm(" ");
+      setShowDropdown(false);
+      setSuggestions([]);
+    }}
+  >
+    {item.Title}
+  </li>
+))}
+
         </ul>
       )}
 </div>
@@ -287,18 +304,21 @@ useEffect(() => {
   
       {showDropdown && suggestions.length > 0 && (
         <ul className="absolute z-10 w-full mt-1 text-black bg-white border border-gray-300 rounded-md shadow-md max-h-60 overflow-y-auto">
-          {suggestions.map((item, index) => (
-            <li
-              key={index}
-              className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-              onMouseDown={() => {
-                setSearchTerm(item);
-                setShowDropdown(false);
-              }}
-            >
-              {item}
-            </li>
-          ))}
+         {suggestions.map((item, index) => (
+  <li
+    key={index}
+    className="cursor-pointer hover:bg-gray-100 px-4 py-2 text-black"
+    onMouseDown={() => {
+      navigate(`/productdetails/${item.Book_id}`);
+      setSearchTerm(" ");
+      setShowDropdown(false);
+      setSuggestions([]);
+    }}
+  >
+    {item.Title}
+  </li>
+))}
+
         </ul>
       )}
 </div>
@@ -373,24 +393,26 @@ useEffect(() => {
         type="text"
         placeholder="Search for books"
          onChange={(e) => setSearchTerm(e.target.value)}
-        className="bg-transparent outline-none xxxl:text-[20px] px-2 laptop:text-[12px]  w-full placeholder-[#080000] text-[#080000] "
+        className="bg-transparent outline-none xxxl:text-[22px] px-2 hd:text-[18px] laptop:text-[15px]  w-full placeholder-[#080000] text-[#080000] "
       />
        <BiSearchAlt className="xxxl:w-6 xxxl:h-6 hd:w-5  laptop:w-4 laptop:h-6  mr-2 shrink-0 text-[#080000]" />
        {suggestions.length > 0 && (
   <ul className="absolute z-50 top-full  w-[50%] hide-scrollbar bg-white border border-gray-200  rounded shadow max-h-80 overflow-y-auto">
     {suggestions.map((item, index) => (
-      <li
-        key={index}
-        className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-black"
-        onClick={() => {
-          // Optional: handle click logic
-          setSearchTerm(item); // or item.title if it’s an object
-          setSuggestions([]);
-        }}
-      >
-        {item}
-      </li>
-    ))}
+  <li
+    key={index}
+    className="cursor-pointer hover:bg-gray-100 px-4 py-2 text-black"
+    onMouseDown={() => {
+      navigate(`/productdetails/${item.Book_id}`);
+      setSearchTerm("");
+      setShowDropdown(false);
+      setSuggestions([]);
+    }}
+  >
+    {item.Title}
+  </li>
+))}
+
   </ul>
 )}
 

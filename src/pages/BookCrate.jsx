@@ -73,7 +73,7 @@ const crates = [
 ];
 
 
-export default function BookCrate({handleOpenLogin}) {
+export default function BookCrate() {
   const [products, setProducts] = useState([]);
   const [sortOption, setSortOption] = useState("Relevance");
    const [showFilter, setShowFilter] = useState(false);
@@ -182,18 +182,19 @@ const sortOptionMapping = {
   PriceLowHigh: "price_low_high",
   PriceHighLow: "price_high_low",
 };
-const handle403Redirect = (res) => {
-    if (res.status === 403) {
-    handleOpenLogin();
-    return true;
-  }
+const hasShown403 = useRef(false);
 
-  const token = localStorage.getItem("accessToken");
-  if (!token) {
-    handleOpenLogin();
+const handle403Redirect = (res) => {
+  if (res.status === 403 && !hasShown403.current) {
+    toast.error("Please log in via 'My Account' in the navigation bar. The session has expired.");
+    hasShown403.current = true;
     return true;
   }
+  return false;
 };
+useEffect(() => {
+  hasShown403.current = false;
+}, []);
 
 const addToCrate = async (bookId) => {
   try {
@@ -222,7 +223,8 @@ const addToCrate = async (bookId) => {
       body: JSON.stringify(payload),
     });
 
-    if (handle403Redirect(res, navigate)) return;
+    
+ 
     if (res.ok) {
       toast.success("Book added to crate!");
       fetchCrateBooks();
@@ -236,7 +238,7 @@ const addToCrate = async (bookId) => {
       console.error("Failed to add book to crate:", error);
     }
   } catch (err) {
-    toast.error("Something went wrong");
+    toast.error("Please log in via 'My Account' in the navigation bar to add items to your cart");
     console.error("Error adding book:", err);
   }
 };
@@ -246,7 +248,7 @@ const fetchCrateBooks = async () => {
     const res = await fetch(API_URL, {
       headers: { Authorization: `Bearer ${getToken()}` },
     });
- if (handle403Redirect(res, navigate)) return;
+ if (handle403Redirect(res)) return;
     const data = await res.json();
 
     const apiKey = crateNameToApiValue[selectedCrate.name]; 
@@ -664,7 +666,7 @@ const handleCrateCheckout = async () => {
       setLoading(false);
       rzp1.open();
     } else {
-      alert("Failed to create Razorpay order.");
+      toast.error("Please Login in to Buy orders");
     }
   } catch (error) {
     console.error("Checkout error:", error);
@@ -1258,7 +1260,7 @@ const verifyCratePayment = async (response, token) => {
 </div>
 
 </div>
-<ToastContainer position="top-right" autoClose={3000} />
+<ToastContainer position="top-right" autoClose={5000}  />
 </div>
 
     </div>

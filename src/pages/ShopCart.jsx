@@ -2,8 +2,10 @@ import { useState, useEffect,useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaMinus, FaPlus , FaChevronDown} from "react-icons/fa";
 import Loader from "../components/Loader";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-export default function ShopCart({handleOpenLogin}) {
+export default function ShopCart() {
   
   const selectRef = useRef();
   const navigate = useNavigate();
@@ -17,12 +19,12 @@ const [discount, setDiscount] = useState(0);
   const token = localStorage.getItem("accessToken");
   useEffect(() => {
     if (!token) {
-      handleOpenLogin();
+     toast.info("Please login to see the Added products")
       return;
     }
 
     fetchCart();
-  }, );
+  },[] );
 
   const fetchCart = async () => {
     try {
@@ -99,7 +101,7 @@ const handleCheckout = async () => {
   const token = localStorage.getItem("accessToken");
 
   if (!token) {
-    handleOpenLogin();
+    toast.error("Please login to checkout")
     return;
   }
 
@@ -125,7 +127,7 @@ const handleCheckout = async () => {
     const data = await response.json();
     setLoading(false);
     if (!response.ok || !data.razorpayOrder) {
-      alert("Failed to create order.");
+      toast.error("Failed to create order.");
       setLoading(false);
       return;
     }
@@ -163,7 +165,7 @@ const handleCheckout = async () => {
           );
          
           if (!verifyRes.ok) {
-            alert("Payment verification failed");
+            toast.error("Payment verification failed");
             setLoading(false);
             return;
           }
@@ -186,7 +188,7 @@ const handleCheckout = async () => {
           navigate("/");
         } catch (err) {
           console.error("Verification or post-payment failed:", err);
-          alert("Something went wrong after payment.");
+          toast("Something went wrong after payment.");
         } finally {
           setLoading(false);
         }
@@ -200,7 +202,7 @@ const handleCheckout = async () => {
     rzp.open();
   } catch (err) {
     console.error("Checkout failed:", err);
-    alert("Something went wrong during checkout.");
+    toast.error("Something went wrong during checkout.");
     setLoading(false);
   }
 };
@@ -211,7 +213,7 @@ const handleCheckout = async () => {
     <>
       {loading && <Loader />}
 
-      <div className="max-w-[100%]  lg:bg-background  pt-[35%] lg:pt-[6%] mx-auto py-8 font-archivon">
+      <div className="max-w-[100%]  lg:bg-background  pt-[35%] lg:pt-[9%]  hide-scrollbar mx-auto py-8 font-archivon">
         <h2 className="xxxl:text-[50px]  font-archivo font-semibold uppercase text-center laptop:text-[35px] hd:text-[40px]  pt-4 font-tenor  text-[20px]">
           Shopping Cart
         </h2>
@@ -463,6 +465,7 @@ const handleCheckout = async () => {
             </div>
           </>
         )}
+        <ToastContainer position="top-right" autoClose={5000} />
       </div>
     
     </>
