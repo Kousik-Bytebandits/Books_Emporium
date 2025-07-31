@@ -71,15 +71,42 @@ const [tempYear, setTempYear] = useState(yearRange[1]);
 
 const categories = [
   "Fiction",
+  "Horror",
+  "Sports",
+  "History",
+  "Reference",
   "Romance",
-  "Mythology & Retellings",
-  "Thriller",
-  "Crime",
-  "Mystery",
-  "Historical Fiction",
-  "Self-Help & Motivation",
-  "Biographies & Memoirs",
+  "Action & Adventure",
+  "Literature & Fiction",
+  "Arts, Film & Photography",
+  "Crafts, Hobbies & Home",
+  "Crime, Thriller & Mystery",
+  "Exam Preparation",
+  "Medicine and Health Sciences Textbooks",
+  "Health, Fitness & Nutrition",
+  "Science and Mathematics Textbooks",
+  "Diaries & True Accounts",
+  "Sciences, Technology & Medicine",
+  "Linguistics & Writing",
+  "Textbooks & Study Guides",
+  "Law",
+  "Humour",
   "Business & Economics",
+  "Children's Books",
+  "Comics & Mangas",
+  "Computers & Internet",
+  "Engineering",
+  "Historical Fiction",
+  "Maps & Atlases",
+  "Politics",
+  "Religion & Spirituality",
+  "School Books",
+  "Biographies",
+  "Teen & Young Adult",
+  "Science Fiction & Fantasy",
+  "Travel & Tourism",
+  "Health, Family & Personal Development",
+  
 ];
   const filterRef = useRef(null);
 const [selectedCategories, setSelectedCategories] = useState([]);
@@ -457,7 +484,7 @@ useEffect(() => {
       <div className="grid lg:grid-cols-[270px_1fr] gap-8 hidden lg:grid xxxl:w-[80%] mx-auto">
         
         <div className="mt-2">{FilterSidebar}</div>
-        <div className="flex flex-col gap-8 bg-white mt-20  shadow-around-soft p-6">
+        <div className="flex flex-col gap-8 bg-white mt-28   shadow-around-soft p-6">
          <div className="flex justify-between items-center"> 
        <div className="text-[20px] font-sans font-semibold text-black tracking-wide"> {totalProducts} Results Found</div>
         <div className=" flex items-center gap-2 text-[18px] text-black   rounded-lg">
