@@ -72,7 +72,7 @@ export default function Footer() {
         <div className="lg:hidden text-center space-y-2 font-figtree">
           <h3 className="font-semibold text-[20px] ">Reach us out</h3>
           <div className="flex justify-center items-center gap-2 text-gray-300">
-          <img src="images/bookmail.png"/>
+          <img src="/images/bookmail.png"/>
             <span>booksemporium@gmail.com</span>
           </div>
           
