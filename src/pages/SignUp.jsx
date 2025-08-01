@@ -1,9 +1,9 @@
 import { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+
 import NotificationPopup from "./NotificatioPopup"
 import endpoint_prefix from "../config/ApiConfig";
-export default function SignUp({ onClose, onOpenLogin }) {
-  const navigate = useNavigate();
+export default function SignUp({ onClose, handleOpenLogin }) {
+ 
 
   const [form, setForm] = useState({
     first_name: "",
@@ -191,7 +191,7 @@ const otpRefs = useRef([]);
       showPopup("success", "Account created successfully");
       setTimeout(() => {
         onClose();
-        navigate("/signin");
+        handleOpenLogin();
       }, 1500);
     } else {
       showPopup("error", data.message || "Signup failed");
@@ -432,7 +432,7 @@ const otpRefs = useRef([]);
                 Don’t have an account?{' '}
                 <span
                   className="text-[#3A261A] font-semibold underline cursor-pointer"
-                  onClick={onOpenLogin}
+                  onClick={handleOpenLogin}
                 >
                   Sign In 
                 </span>

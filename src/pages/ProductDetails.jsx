@@ -4,6 +4,8 @@ import { FaChevronDown } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loader from "../components/Loader";
+import AddressPopup from "./AddressPopup";
+
 const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -16,6 +18,8 @@ const [loading, setLoading] = useState(false);
   const [maxStock, setMaxStock] = useState(0);
   const [options, setOptions] = useState([]);
   const [quantity, setQuantity] = useState(1);
+const [showPopup, setShowPopup] = useState(false);
+
 
   useEffect(() => {
     if (maxStock > 0) {
@@ -103,62 +107,71 @@ const [loading, setLoading] = useState(false);
     }
   };
 
-  
-  const handleBuyNow = async () => {
-    const token = localStorage.getItem("accessToken");
-    setLoading(true); // Start loader
+  const handleBuyNow = () => {
+  const token = localStorage.getItem("accessToken");
+  if (!token) {
+    toast.error("Please login to continue.");
+    return;
+  }
+  setShowPopup(true); // show the address popup first
+};
 
-    try {
-      const res = await fetch("https://booksemporium.in/Microservices/Prod/06_orders_and_payments/order/purchase-book", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+
+    const processBuyNowPayment = async () => {
+  const token = localStorage.getItem("accessToken");
+  setLoading(true);
+
+  try {
+    const res = await fetch("https://booksemporium.in/Microservices/Prod/06_orders_and_payments/order/purchase-book", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        source_type: "single_book",
+        payment_method: "online",
+        book_id: product.book_id || id,
+        quantity: quantity,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (data?.razorpayOrder) {
+      const options = {
+        key: "rzp_test_qQ40l1wBMtOxc0",
+        amount: data.razorpayOrder.amount,
+        currency: "INR",
+        name: data.user.name,
+        description: data.items[0].title,
+        image: "/logo.png",
+        order_id: data.razorpayOrder.id,
+        handler: async function (response) {
+          await verifyCratePayment(response, token);
         },
-        body: JSON.stringify({
-          source_type: "single_book",
-          payment_method: "online",
-          book_id: product.book_id || id,
-          quantity: quantity,
-        }),
-      });
-
-      const data = await res.json();
-console.log("pd",data);
-      if (data?.razorpayOrder) {
-        const options = {
-          key: "rzp_test_qQ40l1wBMtOxc0",
-          amount: data.razorpayOrder.amount,
-          currency: "INR",
+        prefill: {
           name: data.user.name,
-          description: data.items[0].title,
-          image: "/logo.png",
-          order_id: data.razorpayOrder.id,
-          handler: async function (response) {
-            await verifyCratePayment(response, token);
-          },
-          prefill: {
-            name: data.user.name,
-            email: data.user.email,
-            contact: data.user.phone,
-          },
-          notes: data.razorpayOrder.notes,
-          theme: { color: "#00aaff" },
-        };
+          email: data.user.email,
+          contact: data.user.phone,
+        },
+        notes: data.razorpayOrder.notes,
+        theme: { color: "#00aaff" },
+      };
 
-        const rzp1 = new window.Razorpay(options);
-        rzp1.open();
-      } else {
-        toast.error("Please login to Buy products");
-      }
-    } catch (error) {
-      console.error("Checkout error:", error);
-      alert("An error occurred during checkout.");
-    } finally {
-      setLoading(false); // Stop loader
+      const rzp1 = new window.Razorpay(options);
+      rzp1.open();
+    } else {
+      toast.error("Please login to Buy products");
     }
-  };
-    
+  } catch (error) {
+    console.error("Checkout error:", error);
+    alert("An error occurred during checkout.");
+  } finally {
+    setLoading(false);
+  }
+};
+
  const verifyCratePayment = async (response, token) => {
   try {
     const verifyRes = await fetch("https://booksemporium.in/Microservices/Prod/06_orders_and_payments/order/verify", {
@@ -200,6 +213,20 @@ console.log("pd",data);
   return (
    <>
       {loading && <Loader />}
+     
+  <AddressPopup
+    isOpen={showPopup}
+    onClose={() => {
+      
+      setShowPopup(false);
+    }}
+    onProceed={() => {
+      setShowPopup(false);
+      processBuyNowPayment(); // now do the actual Razorpay call
+    }}
+  />
+
+
     <div className="bg-background  hidden lg:block  lg:pt-[8%] min-h-screen px-4 py-6 font-sans">
       {/* Breadcrumb */}
       <p className="text-black font-semibold text-[24px] tracking-wider font-archivo mb-10 hidden lg:block">

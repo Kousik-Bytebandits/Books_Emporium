@@ -4,6 +4,7 @@ import { FaMinus, FaPlus , FaChevronDown} from "react-icons/fa";
 import Loader from "../components/Loader";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import AddressPopup from "./AddressPopup";
 
 export default function ShopCart() {
   
@@ -14,6 +15,7 @@ export default function ShopCart() {
 const [subTotal, setSubTotal] = useState(0);
 const [discount, setDiscount] = useState(0);
  const [loading, setLoading] = useState(false);
+const [showPopup, setShowPopup] = useState(false);
 
 
   const token = localStorage.getItem("accessToken");
@@ -25,6 +27,19 @@ const [discount, setDiscount] = useState(0);
 
     fetchCart();
   },[] );
+const handleCheckout = () => {
+  if (!token) {
+    toast.error("Please login to checkout");
+    return;
+  }
+
+  if (items.length === 0) {
+    toast.info("Your cart is empty.");
+    return;
+  }
+
+  setShowPopup(true); 
+};
 
   const fetchCart = async () => {
     try {
@@ -97,13 +112,8 @@ window.dispatchEvent(new Event("storage"));
     }
   };
     
-const handleCheckout = async () => {
+const proceedToPayment = async () => {
   const token = localStorage.getItem("accessToken");
-
-  if (!token) {
-    toast.error("Please login to checkout")
-    return;
-  }
 
   try {
     setLoading(true);
@@ -126,13 +136,12 @@ const handleCheckout = async () => {
 
     const data = await response.json();
     setLoading(false);
+
     if (!response.ok || !data.razorpayOrder) {
       toast.error("Failed to create order.");
-      setLoading(false);
       return;
     }
 
-    // Step 2: Configure Razorpay checkout
     const options = {
       key: "rzp_test_qQ40l1wBMtOxc0",
       amount: data.razorpayOrder.amount,
@@ -140,14 +149,13 @@ const handleCheckout = async () => {
       name: data.user.name,
       description: "Cart Payment",
       order_id: data.razorpayOrder.id,
-       prefill: {
-          name: data.user.name,
-          email: data.user.email,
-          contact: data.user.phone || "", 
-        },
+      prefill: {
+        name: data.user.name,
+        email: data.user.email,
+        contact: data.user.phone || "",
+      },
       handler: async function (response) {
         try {
-          // Step 3: Verify payment
           const verifyRes = await fetch(
             "https://booksemporium.in/Microservices/Prod/06_orders_and_payments/order/verify",
             {
@@ -163,14 +171,12 @@ const handleCheckout = async () => {
               }),
             }
           );
-         
+
           if (!verifyRes.ok) {
             toast.error("Payment verification failed");
-            setLoading(false);
             return;
           }
-          
-          // Step 4: Send payment_id to contact_us/payment API
+
           await fetch(
             "https://booksemporium.in/Microservices/Prod/07_contact_us/payment",
             {
@@ -184,7 +190,6 @@ const handleCheckout = async () => {
             }
           );
 
-         
           navigate("/");
         } catch (err) {
           console.error("Verification or post-payment failed:", err);
@@ -209,9 +214,18 @@ const handleCheckout = async () => {
 
 
 
+
   return (
     <>
       {loading && <Loader />}
+      <AddressPopup
+  isOpen={showPopup}
+  onClose={() => setShowPopup(false)}
+  onProceed={() => {
+    setShowPopup(false);
+    proceedToPayment();
+  }}
+/>
 
       <div className="max-w-[100%]  lg:bg-background  pt-[35%] lg:pt-[9%]  hide-scrollbar mx-auto py-8 font-archivon">
         <h2 className="xxxl:text-[50px]  font-archivo font-semibold uppercase text-center laptop:text-[35px] hd:text-[40px]  pt-4 font-tenor  text-[20px]">

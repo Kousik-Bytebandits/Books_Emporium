@@ -7,6 +7,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import Loader from "../components/Loader";
+import AddressPopup from "./AddressPopup";
 
 function ProductCard({ product, addToCrate }) {
 
@@ -101,6 +102,8 @@ const [crateSummary, setCrateSummary] = useState({
 });
 const navigate = useNavigate();
 const [loading, setLoading] = useState(false);
+const [showAddressPopup, setShowAddressPopup] = useState(false);
+
 
 
 const categories = [
@@ -620,11 +623,20 @@ useEffect(() => {
   setTempDiscount(discountRange[1]);
   setTempYear(yearRange[1]);
 }, []);
+
+const handleCrateCheckoutClick = () => {
+  const token = localStorage.getItem("accessToken");
+  if (!token) {
+    toast.error("Please login to proceed");
+    return;
+  }
+  setShowAddressPopup(true); 
+};
+
 const handleCrateCheckout = async () => {
   const token = localStorage.getItem("accessToken");
 
-  setLoading(true); // show loader
-
+  setLoading(true);
   try {
     const res = await fetch("https://booksemporium.in/Microservices/Prod/06_orders_and_payments/order/create", {
       method: "POST",
@@ -650,31 +662,30 @@ const handleCrateCheckout = async () => {
         image: "/logo.png",
         order_id: data.razorpayOrder.id,
         handler: async function (response) {
-          
           await verifyCratePayment(response, token);
         },
         prefill: {
           name: data.user.name,
           email: data.user.email,
-          contact: data.user.phone || "", 
+          contact: data.user.phone || "",
         },
         notes: data.razorpayOrder.notes || {},
         theme: { color: "#00aaff" },
       };
 
       const rzp1 = new window.Razorpay(options);
-      setLoading(false);
       rzp1.open();
     } else {
-      toast.error("Please Login in to Buy orders");
+      toast.error("Something went wrong while creating the order.");
     }
   } catch (error) {
     console.error("Checkout error:", error);
-    alert("An error occurred during checkout.");
+    toast.error("An error occurred during checkout.");
   } finally {
-    setLoading(false); // always stop loader
+    setLoading(false);
   }
 };
+
 
 
 const verifyCratePayment = async (response, token) => {
@@ -718,6 +729,20 @@ const verifyCratePayment = async (response, token) => {
   return (
     <div>
       {loading && <Loader />}
+      
+  <AddressPopup
+    isOpen={showAddressPopup}
+    onClose={() => {
+      setShowAddressPopup(false);
+     
+    }}
+    onProceed={() => {
+      setShowAddressPopup(false);
+      handleCrateCheckout(); 
+    }}
+  />
+
+
     <div className="pt-[31%]  min-h-screen overflow-hidden  pb-20 bg-background   lg:px-8 lg:pt-[6%] font-archivo text-[#676A5E]">
     
     <div className="lg:hidden bg-[#B4541F] py-2 rounded flex items-center text-white justify-center mb-4">
@@ -874,7 +899,7 @@ const verifyCratePayment = async (response, token) => {
       View Crate
     </button>
     <button  
-    onClick={handleCrateCheckout}
+    onClick={handleCrateCheckoutClick}
     className="flex-1 bg-[#0e1f36] hover:bg-[#091426] text-white  xxxl:py-3 laptop:py-1.5 hd:py-2 py-2  rounded font-semibold">
       Place My Order
     </button>
@@ -1077,7 +1102,7 @@ const verifyCratePayment = async (response, token) => {
     >
       View Crate
     </button>
-    <button onClick={handleCrateCheckout}
+    <button onClick={handleCrateCheckoutClick}
      className="flex-1 bg-[#0e1f36] hover:bg-[#091426] text-white  xxxl:py-3 laptop:py-1.5 hd:py-2 py-2  rounded font-semibold">
       Place My Order
     </button>
