@@ -13,40 +13,44 @@ export default function Login({ onClose,onOpenSignup,onOpenForgot }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = async () => {
-    try {
-      const res = await fetch(`${endpoint_prefix}02_Authentication/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
+ const handleLogin = async () => {
+  try {
+    const res = await fetch(`${endpoint_prefix}02_Authentication/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
 
-      const data = await res.json();
+    const data = await res.json();
 
-      if (res.ok && data.accessToken) {
-        localStorage.setItem('user', JSON.stringify(data));
-        localStorage.setItem('accessToken', data.accessToken);
-        localStorage.setItem('refreshToken', data.refreshToken);
+    if (res.ok && data.accessToken) {
+      localStorage.setItem('accessToken', data.accessToken);
+      localStorage.setItem('refreshToken', data.refreshToken);
+      localStorage.setItem('user', JSON.stringify(data.user)); // ✅ Save only the user object
 
-        toast.success("Login successful!");
+      toast.success("Login successful!");
 
-        setTimeout(() => {
-          onClose();
-          navigate('/');
-        }, 1500);
-      } else {
-        toast.error(data.message || 'Login failed');
-      }
+      // 🔄 Notify Navbar to update user state
+      window.dispatchEvent(new Event("profileUpdated"));
 
-    } catch (err) {
-      console.error(err);
-      toast.error("Something went wrong.");
+      setTimeout(() => {
+        onClose();
+        navigate('/');
+      }, 1500);
+    } else {
+      toast.error(data.message || 'Login failed');
     }
-  };
+
+  } catch (err) {
+    console.error(err);
+    toast.error("Something went wrong.");
+  }
+};
 
   
   return (
-    <div className="relative h-screen w-full overflow-y-auto fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+   <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center overflow-y-auto">
+
        <ToastContainer position="top-center" autoClose={1500} />
           {/* Desktop */}
       <div className="hidden lg:flex relative z-20 h-full w-full justify-center items-center font-archivo px-10">
@@ -177,7 +181,7 @@ export default function Login({ onClose,onOpenSignup,onOpenForgot }) {
       </div>
 
       {/* Mobile View  */}
-      <div className="font-archivo py-10 mt-[20%] h-screen w-full  relative text-gray-800 overflow-hidden lg:hidden">
+      <div className="font-archivo py-10 mt-[24%] h-screen w-full  relative text-gray-800 overflow-hidden lg:hidden">
         <div className='border mx-3 py-10 rounded-xl bg-mobileGradient'>
         <div className="flex items-center px-4 justify-between xxxl:mb-30  laptop:mb-16 hd:mb-24 xxxl:px-20 laptop:px-10 hd:px-16">
            <div className="flex items-center ">

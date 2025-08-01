@@ -8,6 +8,9 @@ import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import Loader from "../components/Loader";
 import AddressPopup from "./AddressPopup";
+import Login from "./Login";
+import { showLoginToast } from "../components/ShowLoginToast";
+
 
 function ProductCard({ product, addToCrate }) {
 
@@ -103,6 +106,7 @@ const [crateSummary, setCrateSummary] = useState({
 const navigate = useNavigate();
 const [loading, setLoading] = useState(false);
 const [showAddressPopup, setShowAddressPopup] = useState(false);
+const [showLogin, setShowLogin] = useState(false);
 
 
 
@@ -189,7 +193,7 @@ const hasShown403 = useRef(false);
 
 const handle403Redirect = (res) => {
   if (res.status === 403 && !hasShown403.current) {
-    toast.error("Please log in via 'My Account' in the navigation bar. The session has expired.");
+    toast.error(" The session has expired. Please log in via 'My Account' ");
     hasShown403.current = true;
     return true;
   }
@@ -200,6 +204,12 @@ useEffect(() => {
 }, []);
 
 const addToCrate = async (bookId) => {
+    const token = localStorage.getItem("accessToken");
+
+  if (!token) {
+    showLoginToast(() => setShowLogin(true));
+    return;
+  }
   try {
     const crate_type = crateNameToApiValue[selectedCrate.name];
      
@@ -238,10 +248,12 @@ const addToCrate = async (bookId) => {
       } else {
         toast.error("Failed to add book to crate");
       }
+
       console.error("Failed to add book to crate:", error);
     }
   } catch (err) {
-    toast.error("Please log in via 'My Account' in the navigation bar to add items to your cart");
+   
+   toast.error("Something went wrong. Please try again.");
     console.error("Error adding book:", err);
   }
 };
@@ -726,10 +738,12 @@ const verifyCratePayment = async (response, token) => {
 };
 
 
+
   return (
     <div>
       {loading && <Loader />}
-      
+      {showLogin && <Login onClose={() => setShowLogin(false)} />}
+
   <AddressPopup
     isOpen={showAddressPopup}
     onClose={() => {

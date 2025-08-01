@@ -34,13 +34,25 @@ const [cartCount, setCartCount] = useState(
     navigate('/');
   }
   useEffect(() => {
+  const loadUserFromLocalStorage = () => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       const parsed = JSON.parse(storedUser);
-     
       setUser(parsed.user || parsed);
     }
-  }, []);
+  };
+
+  // Load initially
+  loadUserFromLocalStorage();
+
+  // Listen for updates
+  window.addEventListener("profileUpdated", loadUserFromLocalStorage);
+
+  return () => {
+    window.removeEventListener("profileUpdated", loadUserFromLocalStorage);
+  };
+}, []);
+
   
   useEffect(() => {
   const updateCartCount = () => {

@@ -5,6 +5,8 @@ import Loader from "../components/Loader";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AddressPopup from "./AddressPopup";
+import {showLoginToast} from "../components/ShowLoginToast";
+import Login from "./Login";
 
 export default function ShopCart() {
   
@@ -16,12 +18,13 @@ const [subTotal, setSubTotal] = useState(0);
 const [discount, setDiscount] = useState(0);
  const [loading, setLoading] = useState(false);
 const [showPopup, setShowPopup] = useState(false);
+const [showLogin, setShowLogin] = useState(false);
 
 
   const token = localStorage.getItem("accessToken");
   useEffect(() => {
     if (!token) {
-     toast.info("Please login to see the Added products")
+      showLoginToast(() => setShowLogin(true));
       return;
     }
 
@@ -29,7 +32,7 @@ const [showPopup, setShowPopup] = useState(false);
   },[] );
 const handleCheckout = () => {
   if (!token) {
-    toast.error("Please login to checkout");
+     showLoginToast(() => setShowLogin(true));
     return;
   }
 
@@ -218,6 +221,8 @@ const proceedToPayment = async () => {
   return (
     <>
       {loading && <Loader />}
+      {showLogin && <Login onClose={() => setShowLogin(false)} />}
+
       <AddressPopup
   isOpen={showPopup}
   onClose={() => setShowPopup(false)}

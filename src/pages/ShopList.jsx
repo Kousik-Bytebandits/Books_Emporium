@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { FaFilter } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
@@ -27,7 +28,7 @@ function ProductCard({ product }) {
   <div className="flex flex-col justify-between flex-1 mt-1 ">
     {/* Title */}
     <div className="lg:min-h-[22px] text-left px-2">
-      <h3 className="font-semibold  text-black text-[16px] leading-[1rem] ">
+      <h3 className="font-semibold  text-black text-[16px] leading-[1rem] line-clamp-2 ">
         {product.title}
       </h3>
     </div>

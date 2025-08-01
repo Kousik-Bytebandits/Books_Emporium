@@ -5,6 +5,8 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loader from "../components/Loader";
 import AddressPopup from "./AddressPopup";
+import Login from "./Login";
+import { showLoginToast } from "../components/ShowLoginToast";
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -19,6 +21,7 @@ const [loading, setLoading] = useState(false);
   const [options, setOptions] = useState([]);
   const [quantity, setQuantity] = useState(1);
 const [showPopup, setShowPopup] = useState(false);
+const [showLogin, setShowLogin] = useState(false);
 
 
   useEffect(() => {
@@ -65,8 +68,8 @@ const [showPopup, setShowPopup] = useState(false);
       return;
     }
 
-    if (!token) {
-      toast.info("Please login via 'My Account' to add products to cart")
+    if (!token || token === "forbidden") {
+         showLoginToast(() => setShowLogin(true));
       return;
     }
 
@@ -110,10 +113,10 @@ const [showPopup, setShowPopup] = useState(false);
   const handleBuyNow = () => {
   const token = localStorage.getItem("accessToken");
   if (!token) {
-    toast.error("Please login to continue.");
+    showLoginToast(() => setShowLogin(true));
     return;
   }
-  setShowPopup(true); // show the address popup first
+  setShowPopup(true); 
 };
 
 
@@ -213,7 +216,8 @@ const [showPopup, setShowPopup] = useState(false);
   return (
    <>
       {loading && <Loader />}
-     
+     {showLogin && <Login onClose={() => setShowLogin(false)} />}
+
   <AddressPopup
     isOpen={showPopup}
     onClose={() => {
