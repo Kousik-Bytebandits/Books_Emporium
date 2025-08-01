@@ -29,7 +29,10 @@ const [cartCount, setCartCount] = useState(
 );
   const [user, setUser] = useState(null);
 
-  
+  const handleLogout =()=>{
+    localStorage.removeItem("accessToken");
+    navigate('/');
+  }
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -440,7 +443,7 @@ useEffect(() => {
     <div className="absolute right-0 mt-2 w-28 bg-white border rounded shadow-lg z-50">
       <ul className="py-1 text-md text-gray-700">
         <li onClick={handleChange} className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Profile</li>
-        <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Logout</li>
+        <li onClick={handleLogout} className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Logout</li>
       </ul>
     </div>
   )}
