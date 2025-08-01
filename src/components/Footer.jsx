@@ -59,9 +59,17 @@ export default function Footer() {
             {/* Email: shown in grid on desktop, separate center on mobile */}
             <div className="hidden lg:block">
               <h3 className="font-semibold mb-3 xxxl:text-[20px] laptop:text-[14px] hd:text-[17px]">Reach us out</h3>
-              <div className="flex items-center gap-2 text-gray-300">
-              <img src="images/bookmail.png"/>
+              <div className="flex mb-2 items-center gap-2 text-gray-300">
+              <img src="/images/bookmail.png"/>
                 <span className="xxxl:text-[16px] laptop:text-[12px] hd:text-[14px]">booksemporium@gmail.com</span>
+              </div>
+              <div className="flex mb-2 items-center gap-2 text-gray-300">
+              <img src="/images/wp.png"/>
+                <span className="xxxl:text-[16px] laptop:text-[12px] hd:text-[14px]">+91 75982 41312</span>
+              </div>
+              <div className="flex items-center gap-2 text-gray-300">
+              <img src="/images/mb.png"/>
+                <span className="xxxl:text-[16px] laptop:text-[12px] hd:text-[14px]">+91 75982 41312</span>
               </div>
               
             </div>
@@ -74,6 +82,17 @@ export default function Footer() {
           <div className="flex justify-center items-center gap-2 text-gray-300">
           <img src="/images/bookmail.png"/>
             <span>booksemporium@gmail.com</span>
+            
+          </div>
+           <div className="flex justify-center items-center gap-2 text-gray-300">
+          <img src="/images/wp.png"/>
+            <span>+91 75982 41312</span>
+            
+          </div>
+           <div className="flex justify-center items-center gap-2 text-gray-300">
+          <img src="/images/mb.png"/>
+            <span>+91 75982 41312</span>
+            
           </div>
           
         </div>
