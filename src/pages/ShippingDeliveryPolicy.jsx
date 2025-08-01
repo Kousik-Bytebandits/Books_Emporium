@@ -3,7 +3,7 @@
 const ShippingDeliveryPolicy = () => {
   return (
    
-  <div className="max-w-4xl mx-auto px-6 py-10">
+  <div className="mt-[30%] lg:mt-[5%] max-w-4xl mx-auto px-6 py-10">
     <h1 className="text-3xl font-bold mb-2 text-center">
       Shipping &amp; Delivery Policy
     </h1>
