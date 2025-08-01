@@ -1,4 +1,5 @@
-import { MdEmail } from "react-icons/md";
+import { Link } from "react-router-dom";
+
 
 export default function Footer() {
   return (
@@ -20,15 +21,15 @@ export default function Footer() {
           </div>
 
           {/* Right - Footer Links */}
-          <div className="flex flex-row justify-between lg:gap-6 lg:grid lg:grid-cols-4  text-sm">
+          <div className="flex flex-row justify-between lg:mt-[5.5%] lg:gap-6 lg:grid lg:grid-cols-4  text-sm">
             
               {/* Useful Links */}
             <div>
               <h3 className="font-semibold mb-3 text-[15px] xxxl:text-[20px] laptop:text-[14px] hd:text-[17px]">Useful Links</h3>
               <ul className="space-y-2 text-gray-300 xxxl:text-[16px] laptop:text-[12px] hd:text-[14px]">
                 <li>About Us</li>
-                <li>Contact Us</li>
-                <li>Book Crate</li>
+                <li><Link to="/contact">Contact Us</Link></li>
+  <li><Link to="/bookcrate">Book Crate</Link></li>
               </ul>
             </div>
 
@@ -36,9 +37,9 @@ export default function Footer() {
             <div>
               <h3 className="font-semibold mb-3 text-[15px] xxxl:text-[20px] laptop:text-[14px] hd:text-[17px]">Help</h3>
               <ul className="space-y-2 text-gray-300 xxxl:text-[16px] laptop:text-[12px] hd:text-[14px]">
-                <li>Payment</li>
-                <li>Shipping</li>
-                <li>Return</li>
+                 <li><Link to="/payment-policy">Payment</Link></li>
+  <li><Link to="/shipping-policy">Shipping</Link></li>
+  <li><Link to="/cancellation-policy">Return</Link></li>
                 <li className="lg:hidden">FAQ</li> {/* Only mobile */}
               </ul>
             </div>
@@ -49,9 +50,9 @@ export default function Footer() {
             <div>
               <h3 className="font-semibold mb-3 text-[15px] xxxl:text-[20px] laptop:text-[14px] hd:text-[17px]">Policies</h3>
               <ul className="space-y-2 text-gray-300 xxxl:text-[16px] laptop:text-[12px] hd:text-[14px]">
-                <li>Privacy Policy</li>
-                <li>Terms & Conditions</li>
-                <li>Copyright Policy</li>
+                 <li><Link to="/privacy-policy">Privacy Policy</Link></li>
+  <li><Link to="/terms-and-conditions">Terms & Conditions</Link></li>
+  <li><Link to="/copyright-policy">Copyright Policy</Link></li>
               </ul>
             </div>
 
@@ -62,6 +63,7 @@ export default function Footer() {
               <img src="images/bookmail.png"/>
                 <span className="xxxl:text-[16px] laptop:text-[12px] hd:text-[14px]">booksemporium@gmail.com</span>
               </div>
+              
             </div>
           </div>
         </div>
@@ -73,6 +75,7 @@ export default function Footer() {
           <img src="images/bookmail.png"/>
             <span>booksemporium@gmail.com</span>
           </div>
+          
         </div>
 
         {/* Bottom Section */}

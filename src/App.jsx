@@ -13,6 +13,13 @@ import ScrollToTop from './components/ScrollToTop';
 import ShopCart from './pages/ShopCart';
 import BookCrate from './pages/BookCrate';
 import Contact from './pages/Contact';
+import ShippingDeliveryPolicy from './pages/ShippingDeliveryPolicy';
+import CancellationRefundPolicy from "./pages/CancellationRefundPolicy";
+import PaymentPolicy from "./pages/PaymentPolicy";
+import CopyrightPolicy from "./pages/CopyrightPolicy";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsAndConditions from "./pages/TermsAndConditions";
+
 
 export default function App() {
   const location = useLocation();
@@ -76,6 +83,12 @@ const handleCloseAllPopups = () => {
         <Route path="/shopcart" element={<ShopCart handleOpenLogin={handleOpenLogin} />} />
         <Route path="/bookcrate" element={<BookCrate  handleOpenLogin={handleOpenLogin}  handleOpenSignup={handleOpenSignup}  handleOpenForgot={handleOpenForgot} />}  />
         <Route path="/contact" element={<Contact />} />
+         <Route path="/shipping-policy" element={<ShippingDeliveryPolicy />} />
+      <Route path="/cancellation-policy" element={<CancellationRefundPolicy />} />
+      <Route path="/payment-policy" element={<PaymentPolicy />} />
+      <Route path="/copyright-policy" element={<CopyrightPolicy />} />
+      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+      <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
       </Routes>
 
       <Footer />
