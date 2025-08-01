@@ -326,7 +326,7 @@ const fetchProducts = () => {
 
   // Handle category (using first category or all joined)
   const category = selectedCategories.length > 0 ? selectedCategories[0] : "";
-    const crate_type = crateNameToApiValue[selectedCrate.name];
+
   // Convert discount max into label for API
   let discountLabel = "";
   if (maxDiscount <= 20) discountLabel = "upto_20";
@@ -337,7 +337,7 @@ const fetchProducts = () => {
   // Build API URL
    const apiURL = `https://booksemporium.in/Microservices/Prod/04_user_website/api/books/list?page=${currentPage}&limit=${limit}&category=${encodeURIComponent(
     category
-  )}&crate_type=${encodeURIComponent(crate_type)}&sort=${sortQuery}&min_price=${minPrice}&max_price=${maxPrice}&date_from=${fromYear}&date_to=${toYear}&discount=${discountLabel}`;
+  )}&sort=${sortQuery}&min_price=${minPrice}&max_price=${maxPrice}&date_from=${fromYear}&date_to=${toYear}&discount=${discountLabel}`;
 
   // Fetch data
  fetch(apiURL)
