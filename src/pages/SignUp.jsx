@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 
 import NotificationPopup from "./NotificatioPopup"
 import endpoint_prefix from "../config/ApiConfig";
-export default function SignUp({ onClose, handleOpenLogin }) {
+export default function SignUp({ onClose, onOpenLogin }) {
  
 
   const [form, setForm] = useState({
@@ -191,7 +191,7 @@ const otpRefs = useRef([]);
       showPopup("success", "Account created successfully");
       setTimeout(() => {
         onClose();
-        handleOpenLogin();
+        onOpenLogin();
       }, 1500);
     } else {
       showPopup("error", data.message || "Signup failed");
@@ -432,7 +432,7 @@ const otpRefs = useRef([]);
                 Don’t have an account?{' '}
                 <span
                   className="text-[#3A261A] font-semibold underline cursor-pointer"
-                  onClick={handleOpenLogin}
+                  onClick={onOpenLogin}
                 >
                   Sign In 
                 </span>

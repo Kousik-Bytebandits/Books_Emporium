@@ -5,10 +5,10 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loader from "../components/Loader";
 import AddressPopup from "./AddressPopup";
-import Login from "./Login";
+
 import { showLoginToast } from "../components/ShowLoginToast";
 
-const ProductDetails = () => {
+const ProductDetails = ({ handleOpenLogin }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const selectRef = useRef(null);
@@ -21,7 +21,7 @@ const [loading, setLoading] = useState(false);
   const [options, setOptions] = useState([]);
   const [quantity, setQuantity] = useState(1);
 const [showPopup, setShowPopup] = useState(false);
-const [showLogin, setShowLogin] = useState(false);
+
 
 
   useEffect(() => {
@@ -69,7 +69,8 @@ const [showLogin, setShowLogin] = useState(false);
     }
 
     if (!token || token === "forbidden") {
-         showLoginToast(() => setShowLogin(true));
+         showLoginToast(() => handleOpenLogin());
+
       return;
     }
 
@@ -113,7 +114,7 @@ const [showLogin, setShowLogin] = useState(false);
   const handleBuyNow = () => {
   const token = localStorage.getItem("accessToken");
   if (!token) {
-    showLoginToast(() => setShowLogin(true));
+    showLoginToast(() => handleOpenLogin(true));
     return;
   }
   setShowPopup(true); 
@@ -216,7 +217,7 @@ const [showLogin, setShowLogin] = useState(false);
   return (
    <>
       {loading && <Loader />}
-     {showLogin && <Login onClose={() => setShowLogin(false)} />}
+     
 
   <AddressPopup
     isOpen={showPopup}

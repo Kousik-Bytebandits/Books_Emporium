@@ -63,7 +63,7 @@ const handleCloseAllPopups = () => {
       const timer = setTimeout(() => {
         setShowLogin(true);
         localStorage.setItem('loginPopupShown', 'true');
-      }, 5000); 
+      }, 4000); 
       return () => clearTimeout(timer);
     }
   }, [location]);
@@ -79,8 +79,8 @@ const handleCloseAllPopups = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/shop" element={<ShopList />} />
-        <Route path="/productdetails/:id" element={<ProductDetails />} />
-        <Route path="/shopcart" element={<ShopCart handleOpenLogin={handleOpenLogin} />} />
+        <Route path="/productdetails/:id" element={<ProductDetails  handleOpenLogin={handleOpenLogin}  handleOpenSignup={handleOpenSignup}  handleOpenForgot={handleOpenForgot} />} />
+        <Route path="/shopcart" element={<ShopCart handleOpenLogin={handleOpenLogin} handleOpenSignup={handleOpenSignup}  handleOpenForgot={handleOpenForgot} />} />
         <Route path="/bookcrate" element={<BookCrate  handleOpenLogin={handleOpenLogin}  handleOpenSignup={handleOpenSignup}  handleOpenForgot={handleOpenForgot} />}  />
         <Route path="/contact" element={<Contact />} />
          <Route path="/shipping-policy" element={<ShippingDeliveryPolicy />} />

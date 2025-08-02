@@ -1,7 +1,7 @@
 // utils/showLoginToast.js
 import { toast } from "react-toastify";
 
-export const showLoginToast = (handleOpenLogin) => {
+export const showLoginToast = (handleOpenLogin ) => {
   toast(
     ({ closeToast }) => (
       <div>
@@ -9,6 +9,7 @@ export const showLoginToast = (handleOpenLogin) => {
         <button
           onClick={() => {
             handleOpenLogin(); 
+            
             closeToast();
           }}
           style={{

@@ -8,7 +8,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import Loader from "../components/Loader";
 import AddressPopup from "./AddressPopup";
-import Login from "./Login";
+
+
 import { showLoginToast } from "../components/ShowLoginToast";
 
 
@@ -21,7 +22,7 @@ function ProductCard({ product, addToCrate }) {
 >
   <div className="p-2 flex flex-col flex-grow">
     <img
-      src={product.image_url}
+      src={product.image_url || "/images/book-left.png"}
       alt={product.title}
       className="xxxl:w-[170px] laptop:w-[150px] laptop:h-[210px] hd:w-[150px] hd:h-[200px] xxxl:h-[230px] w-[96px] h-[148px] mx-auto  object-cover rounded-md shadow-around-soft"
     />
@@ -77,7 +78,8 @@ const crates = [
 ];
 
 
-export default function BookCrate() {
+export default function BookCrate({ handleOpenLogin}) {
+
   const [products, setProducts] = useState([]);
   const [sortOption, setSortOption] = useState("Relevance");
    const [showFilter, setShowFilter] = useState(false);
@@ -107,6 +109,7 @@ const navigate = useNavigate();
 const [loading, setLoading] = useState(false);
 const [showAddressPopup, setShowAddressPopup] = useState(false);
 const [showLogin, setShowLogin] = useState(false);
+const [showSignup, setShowSignup] = useState(false);
 
 
 
@@ -207,7 +210,8 @@ const addToCrate = async (bookId) => {
     const token = localStorage.getItem("accessToken");
 
   if (!token) {
-    showLoginToast(() => setShowLogin(true));
+   showLoginToast(() => handleOpenLogin());
+
     return;
   }
   try {
@@ -742,7 +746,29 @@ const verifyCratePayment = async (response, token) => {
   return (
     <div>
       {loading && <Loader />}
-      {showLogin && <Login onClose={() => setShowLogin(false)} />}
+     {showLogin && (
+  <Login
+    onClose={() => setShowLogin(false)}
+    onOpenSignup={() => {
+      setShowLogin(false);
+      setShowSignup(true);
+    }}
+    onOpenForgot={() => {
+      setShowLogin(false);
+    }}
+  />
+)}
+{showSignup && (
+  <SignUp
+    onClose={() => setShowSignup(false)}
+    onOpenLogin={() => {
+        console.log("Switching to signup");
+      setShowSignup(false);
+      setShowLogin(true);
+    }}
+  />
+)}
+
 
   <AddressPopup
     isOpen={showAddressPopup}
