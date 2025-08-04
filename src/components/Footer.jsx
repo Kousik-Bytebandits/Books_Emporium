@@ -80,17 +80,17 @@ export default function Footer() {
         <div className="lg:hidden text-center space-y-2 font-figtree">
           <h3 className="font-semibold text-[20px] ">Reach us out</h3>
           <div className="flex justify-center items-center gap-2 text-gray-300">
-          <img src="/images/bookmail.png"/>
+          <img src="/images/bookmail.png" alt="Email"/>
             <span>booksemporium@gmail.com</span>
             
           </div>
            <div className="flex justify-center items-center gap-2 text-gray-300">
-          <img src="/images/wp.png"/>
+          <img src="/images/wp.png" alt="WhatsApp"/>
             <span>+91 75982 41312</span>
             
           </div>
            <div className="flex justify-center items-center gap-2 text-gray-300">
-          <img src="/images/mb.png"/>
+          <img src="/images/mb.png" alt="Mobile"/>
             <span>+91 75982 41312</span>
             
           </div>

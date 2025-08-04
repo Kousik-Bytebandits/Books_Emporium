@@ -170,7 +170,7 @@ const navigate = useNavigate();
         <div className="hidden lg:flex  w-1/2 text-center  ">
          
           <img
-            src="images/forgot-bg.png"
+            src="/images/forgot-bg.png"
             alt="Forgot Password Illustration"
             className="w-full h-full rounded-xl"
           />
@@ -178,7 +178,7 @@ const navigate = useNavigate();
           
            <div className="flex items-center lg:hidden  justify-between xxxl:mb-14  laptop:mb-4 hd:mb-8 xxxl:px-10 laptop:px-6 hd:px-10">
            <div className="flex items-center ">
-            <img src="images/be-logo.png"
+            <img src="/images/be-logo.png"
             className="xxxl:w-[58px] laptop:w-[40px] hd:w-[45px] w-[30px]"> 
             </img>
             <div className="flex flex-col text-left uppercase text-[#3A261A] text-[12px] leading-tight font-opensans font-bold xxxl:text-[25px] hd:text-[20px] laptop:text-[16px] xxxl:leading-[22px] hd:leading-[18px] laptop:leading-[14px]">
@@ -191,7 +191,7 @@ const navigate = useNavigate();
               className="text-gray-500 hover:text-black"
              onClick={onClose}
               aria-label="Close"
-            ><img src="images/close.png"
+            ><img src="/images/close.png" alt="Close"
               className="xxxl:w-[30px] hd:w-[20px] laptop:w-[18px] w-[20px]"></img></button>
               
             </div>
@@ -203,7 +203,7 @@ const navigate = useNavigate();
           
            <div className="hidden lg:flex items-center   justify-between xxxl:mb-14  laptop:mb-4 hd:mb-8 xxxl:px-10 laptop:px-6 hd:px-10">
            <div className="flex items-center ">
-            <img src="images/be-logo.png"
+            <img src="/images/be-logo.png"
             className="xxxl:w-[58px] laptop:w-[40px] hd:w-[45px] w-[30px]"> 
             </img>
             <div className="flex flex-col text-left uppercase text-[#3A261A] text-[12px] leading-tight font-opensans font-bold xxxl:text-[25px] hd:text-[20px] laptop:text-[16px] xxxl:leading-[22px] hd:leading-[18px] laptop:leading-[14px]">
@@ -216,7 +216,7 @@ const navigate = useNavigate();
               className="text-gray-500 hover:text-black"
               onClick={onClose}
               aria-label="Close"
-            ><img src="images/close.png"
+            ><img src="/images/close.png" alt="Close"
               className="xxxl:w-[30px] hd:w-[20px] laptop:w-[18px] w-[20px]"></img></button>
               
             </div>

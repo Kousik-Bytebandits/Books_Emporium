@@ -70,7 +70,7 @@ export default function Login({ onClose,onOpenSignup,onOpenForgot }) {
           <div className="w-1/2 text-center bg-white flex flex-col justify-start ">
            <div className="flex items-center  justify-between xxxl:mb-30  laptop:mb-16 hd:mb-24 xxxl:px-20 laptop:px-10 hd:px-16">
            <div className="flex items-center ">
-            <img src="/images/be-logo.png"
+            <img src="/images/be-logo.png" alt='logo'
             className="xxxl:w-[58px] laptop:w-[40px] hd:w-[45px] "> 
             </img>
             <div className="flex flex-col text-left uppercase text-[#3A261A] font-opensans font-bold xxxl:text-[25px] hd:text-[20px] laptop:text-[16px] xxxl:leading-[22px] hd:leading-[18px] laptop:leading-[14px]">
@@ -80,7 +80,7 @@ export default function Login({ onClose,onOpenSignup,onOpenForgot }) {
             </div>
             <div onClick={onClose}>
               
-              <img src="/images/close.png"
+              <img src="/images/close.png" alt='close'
               className="xxxl:w-[30px] hd:w-[20px] laptop:w-[18px]"></img>
             </div>
             </div>
@@ -185,9 +185,7 @@ export default function Login({ onClose,onOpenSignup,onOpenForgot }) {
         <div className='border mx-3 py-10 rounded-xl bg-mobileGradient'>
         <div className="flex items-center px-4 justify-between xxxl:mb-30  laptop:mb-16 hd:mb-24 xxxl:px-20 laptop:px-10 hd:px-16">
            <div className="flex items-center ">
-            <img src="/images/be-logo.png"
-            className="w-[50px] "> 
-            </img>
+            <img src="/images/be-logo.png" alt='logo' className="w-[50px] " />
             <div className="flex flex-col text-left uppercase text-[#3A261A] font-opensans font-bold xxxl:text-[25px] hd:text-[20px] laptop:text-[16px] xxxl:leading-[22px] hd:leading-[18px] leading-[18px]">
               <p>books</p>
               <p>emporium</p>
@@ -195,7 +193,7 @@ export default function Login({ onClose,onOpenSignup,onOpenForgot }) {
             </div>
             <div onClick={onClose}>
               
-              <img src="/images/close.png"
+              <img src="/images/close.png" alt='close'
               className="xxxl:w-[30px] hd:w-[20px] w-[20px]"></img>
             </div>
             </div>

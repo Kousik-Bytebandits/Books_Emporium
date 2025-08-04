@@ -220,7 +220,7 @@ const otpRefs = useRef([]);
               </div>
             </div>
             <div onClick={onClose}>
-              <img src="/images/close.png"
+              <img src="/images/close.png" alt="Close"
               className="w-[25px] xxxl:w-[30px] hd:w-[20px] laptop:w-[18px]"></img>
             </div>
             </div>
@@ -244,7 +244,7 @@ const otpRefs = useRef([]);
               </div>
             </div>
             <div onClick={onClose}>
-              <img src="/images/close.png"
+              <img src="/images/close.png" alt="Close"
               className="w-[20px] xxxl:w-[30px] hd:w-[20px] laptop:w-[18px]"></img>
             </div>
             </div>
