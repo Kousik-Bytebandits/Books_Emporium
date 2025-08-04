@@ -144,7 +144,7 @@ const [showPopup, setShowPopup] = useState(false);
 
     if (data?.razorpayOrder) {
       const options = {
-        key: "rzp_test_qQ40l1wBMtOxc0",
+        key: "rzp_live_7MP3Y4nGgwo2nH",
         amount: data.razorpayOrder.amount,
         currency: "INR",
         name: data.user.name,
