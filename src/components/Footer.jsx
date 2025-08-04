@@ -60,15 +60,15 @@ export default function Footer() {
             <div className="hidden lg:block">
               <h3 className="font-semibold mb-3 xxxl:text-[20px] laptop:text-[14px] hd:text-[17px]">Reach us out</h3>
               <div className="flex mb-2 items-center gap-2 text-gray-300">
-              <img src="/images/bookmail.png"/>
+              <img src="/images/bookmail.png" alt="email"/>
                 <span className="xxxl:text-[16px] laptop:text-[12px] hd:text-[14px]">booksemporium@gmail.com</span>
               </div>
               <div className="flex mb-2 items-center gap-2 text-gray-300">
-              <img src="/images/wp.png"/>
+              <img src="/images/wp.png" alt="whatsapp"/>
                 <span className="xxxl:text-[16px] laptop:text-[12px] hd:text-[14px]">+91 75982 41312</span>
               </div>
               <div className="flex items-center gap-2 text-gray-300">
-              <img src="/images/mb.png"/>
+              <img src="/images/mb.png" alt="phone"/>
                 <span className="xxxl:text-[16px] laptop:text-[12px] hd:text-[14px]">+91 75982 41312</span>
               </div>
               
