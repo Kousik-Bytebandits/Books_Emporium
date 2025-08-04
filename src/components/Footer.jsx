@@ -72,6 +72,7 @@ export default function Footer() {
                 <span className="xxxl:text-[16px] laptop:text-[12px] hd:text-[14px]">+91 75982 41312</span>
               </div>
               
+              
             </div>
           </div>
         </div>

@@ -6,7 +6,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AddressPopup from "./AddressPopup";
 import {showLoginToast} from "../components/ShowLoginToast";
-
+import { showSessionExpiredToast } from "../components/showSessionExpiredToast";
 
 export default function ShopCart({handleOpenLogin}) {
   
@@ -120,10 +120,14 @@ window.dispatchEvent(new Event("storage"));
 const proceedToPayment = async () => {
   const token = localStorage.getItem("accessToken");
 
+  if (!token) {
+    toast.error("Session expired. Please log in again.");
+    return;
+  }
+
   try {
     setLoading(true);
 
-    // Step 1: Create Razorpay order
     const response = await fetch(
       "https://booksemporium.in/Microservices/Prod/06_orders_and_payments/order/create",
       {
@@ -139,16 +143,21 @@ const proceedToPayment = async () => {
       }
     );
 
+    if (!token) {
+        showSessionExpiredToast(handleOpenLogin);
+        return;
+      }
+
     const data = await response.json();
-    setLoading(false);
 
     if (!response.ok || !data.razorpayOrder) {
       toast.error("Failed to create order.");
+      setLoading(false);
       return;
     }
 
     const options = {
-      key: "rzp_live_7MP3Y4nGgwo2nH",
+      key: "rzp_test_qQ40l1wBMtOxc0",
       amount: data.razorpayOrder.amount,
       currency: "INR",
       name: data.user.name,
@@ -186,26 +195,43 @@ const proceedToPayment = async () => {
             "https://booksemporium.in/Microservices/Prod/07_contact_us/payment",
             {
               method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
+              headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 payment_id: response.razorpay_payment_id,
               }),
             }
           );
 
+          // ✅ Remove all cart books
+          await fetch(
+            "https://booksemporium.in/Microservices/Prod/05_cart/cart/all",
+            {
+              method: "DELETE",
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          toast.success("Payment successful.");
           navigate("/");
         } catch (err) {
-          console.error("Verification or post-payment failed:", err);
-          toast("Something went wrong after payment.");
+          console.error("Post-payment error:", err);
+          toast.error("Something went wrong after payment.");
         } finally {
           setLoading(false);
         }
       },
+        modal: {
+        ondismiss: function () {
+          
+          setLoading(false);
+        },
+      },
       theme: {
         color: "#121212",
       },
+      
     };
 
     const rzp = new window.Razorpay(options);
@@ -216,6 +242,7 @@ const proceedToPayment = async () => {
     setLoading(false);
   }
 };
+
 
 
 

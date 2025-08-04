@@ -8,7 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import Loader from "../components/Loader";
 import AddressPopup from "./AddressPopup";
-
+import  {showSessionExpiredToast}  from "../components/showSessionExpiredToast";
 
 import { showLoginToast } from "../components/ShowLoginToast";
 
@@ -649,10 +649,17 @@ const handleCrateCheckoutClick = () => {
   setShowAddressPopup(true); 
 };
 
+
 const handleCrateCheckout = async () => {
   const token = localStorage.getItem("accessToken");
 
+  if (!token) {
+    showSessionExpiredToast(handleOpenLogin);
+    return;
+  }
+
   setLoading(true);
+
   try {
     const res = await fetch("https://booksemporium.in/Microservices/Prod/06_orders_and_payments/order/create", {
       method: "POST",
@@ -670,15 +677,34 @@ const handleCrateCheckout = async () => {
 
     if (data?.razorpayOrder) {
       const options = {
-        key: "rzp_live_7MP3Y4nGgwo2nH",
+        key: "rzp_test_qQ40l1wBMtOxc0",
         amount: data.razorpayOrder.amount,
         currency: "INR",
         name: data.user.name,
         description: "Book Crate Purchase",
-        image: "/logo.png",
+        image: "/images/be-logo.png",
         order_id: data.razorpayOrder.id,
         handler: async function (response) {
           await verifyCratePayment(response, token);
+
+          try {
+            const deleteRes = await fetch("https://booksemporium.in/Microservices/Prod/05_cart/crate/books_crate/all", {
+              method: "DELETE",
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            });
+
+            if (deleteRes.ok) {
+              console.log("Crate successfully deleted.");
+            } else {
+              console.error("Failed to delete crate.");
+            }
+          } catch (err) {
+            console.error("Error deleting crate:", err);
+          }
+
+          navigate("/");
         },
         prefill: {
           name: data.user.name,
@@ -696,7 +722,12 @@ const handleCrateCheckout = async () => {
     }
   } catch (error) {
     console.error("Checkout error:", error);
-    toast.error("An error occurred during checkout.");
+
+    if (error?.response?.status === 401 || error?.message.includes("401")) {
+      showSessionExpiredToast(handleOpenLogin);
+    } else {
+      toast.error("An error occurred during checkout.");
+    }
   } finally {
     setLoading(false);
   }
@@ -1325,7 +1356,7 @@ const verifyCratePayment = async (response, token) => {
 </div>
 
 </div>
-<ToastContainer position="top-right" autoClose={5000}  />
+<ToastContainer position="top-right" autoClose={3000}  />
 </div>
 
     </div>
