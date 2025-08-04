@@ -29,18 +29,25 @@ const [cartCount, setCartCount] = useState(
 );
   const [user, setUser] = useState(null);
 
-  const handleLogout =()=>{
-    localStorage.removeItem("accessToken");
-     localStorage.removeItem("user"); 
+ const handleLogout = () => {
+  console.log("Logging out...");
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("user");
+  console.log("Removed from localStorage:", localStorage.getItem("user")); // should be null
   setUser(null);
-    navigate('/');
-  }
+  window.dispatchEvent(new Event("profileUpdated"));
+  navigate('/');
+};
+
   useEffect(() => {
   const loadUserFromLocalStorage = () => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       const parsed = JSON.parse(storedUser);
       setUser(parsed.user || parsed);
+    }
+    else{
+      setUser(null);
     }
   };
 
