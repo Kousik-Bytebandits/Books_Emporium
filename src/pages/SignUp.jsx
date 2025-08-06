@@ -180,7 +180,7 @@ const otpRefs = useRef([]);
       }
     );
     const data = await res.json();
-
+    console.log("signup response",data);
     if (res.ok) {
       if (data.accessToken) {
         localStorage.setItem("access_token", data.accessToken);
@@ -194,7 +194,7 @@ const otpRefs = useRef([]);
         onOpenLogin();
       }, 1500);
     } else {
-      showPopup("error", data.message || "Signup failed");
+      showPopup("error", data.message || "Email already registered. Please login or reset your password");
     }
   } catch (err) {
     showPopup("error", "An error occurred during signup");

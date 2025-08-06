@@ -13,7 +13,7 @@ export default function Login({ onClose,onOpenSignup,onOpenForgot }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
- const handleLogin = async () => {
+  const handleLogin = async () => {
   try {
     const res = await fetch(`${endpoint_prefix}02_Authentication/auth/login`, {
       method: 'POST',
@@ -24,13 +24,13 @@ export default function Login({ onClose,onOpenSignup,onOpenForgot }) {
     const data = await res.json();
 
     if (res.ok && data.accessToken) {
+      // Store tokens & user
       localStorage.setItem('accessToken', data.accessToken);
       localStorage.setItem('refreshToken', data.refreshToken);
-      localStorage.setItem('user', JSON.stringify(data.user)); // ✅ Save only the user object
+      localStorage.setItem('user', JSON.stringify(data.user));
 
       toast.success("Login successful!");
 
-      // 🔄 Notify Navbar to update user state
       window.dispatchEvent(new Event("profileUpdated"));
 
       setTimeout(() => {
@@ -38,12 +38,26 @@ export default function Login({ onClose,onOpenSignup,onOpenForgot }) {
         navigate('/');
       }, 1500);
     } else {
-      toast.error(data.message || 'Login failed');
-    }
+     
+      const errorMessage = data.message || data.error || 'Login failed';
 
+      if (errorMessage.toLowerCase().includes('password')) {
+        toast.error("Invalid credentials. Please check your password.");
+      } else if (
+        errorMessage.toLowerCase().includes('not registered') ||
+        errorMessage.toLowerCase().includes('no user') ||
+        errorMessage.toLowerCase().includes('not found')
+      ) {
+        toast.error("User not found. Please create an account to log in.");
+      } else if (errorMessage.toLowerCase().includes('not active')) {
+        toast.error("Your account is not active. Please contact support.");
+      } else {
+        toast.error(errorMessage);
+      }
+    }
   } catch (err) {
     console.error(err);
-    toast.error("Something went wrong.");
+    toast.error("Something went wrong. Please try again.");
   }
 };
 

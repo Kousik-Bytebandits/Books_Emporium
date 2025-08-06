@@ -355,8 +355,7 @@ const fetchProducts = () => {
 
   // Build API URL
    const apiURL = `https://booksemporium.in/Microservices/Prod/04_user_website/api/books/list?page=${currentPage}&limit=${limit}&category=${encodeURIComponent(
-    category
-  )}&sort=${sortQuery}&min_price=${minPrice}&max_price=${maxPrice}&date_from=${fromYear}&date_to=${toYear}&discount=${discountLabel}`;
+    category)}&is_crate=true&sort=${sortQuery}&min_price=${minPrice}&max_price=${maxPrice}&date_from=${fromYear}&date_to=${toYear}&discount=${discountLabel}`;
 
   // Fetch data
  fetch(apiURL)
@@ -677,7 +676,7 @@ const handleCrateCheckout = async () => {
 
     if (data?.razorpayOrder) {
       const options = {
-        key: "rzp_test_qQ40l1wBMtOxc0",
+        key: "rzp_live_7MP3Y4nGgwo2nH",
         amount: data.razorpayOrder.amount,
         currency: "INR",
         name: data.user.name,
