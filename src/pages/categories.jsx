@@ -2,50 +2,50 @@ const categories = [
   {
     id: 1,
     title: "Horror",
-    brownImg: "/images/horror-brown.png",
-    whiteImg: "/images/horror-white.png"
+    brownImg: "/images/horror-brown.webp",
+    whiteImg: "/images/horror-white.webp"
   },
   {
     id: 2,
     title: "Family",
-    brownImg: "/images/family-brown.png",
-    whiteImg: "/images/family-white.png"
+    brownImg: "/images/family-brown.webp",
+    whiteImg: "/images/family-white.webp"
   },
   {
     id: 3,
     title: "Fiction",
-    brownImg: "/images/fiction-brown.png",
-    whiteImg: "/images/fiction-white.png"
+    brownImg: "/images/fiction-brown.webp",
+    whiteImg: "/images/fiction-white.webp"
   },
   {
     id: 4,
     title: "Romance",
-    brownImg: "/images/romance-brown.png",
-    whiteImg: "/images/romance-white.png"
+    brownImg: "/images/romance-brown.webp",
+    whiteImg: "/images/romance-white.webp"
   },
   {
     id: 5,
     title: "Kids",
-    brownImg: "/images/kids-brown.png",
-    whiteImg: "/images/kids-white.png"
+    brownImg: "/images/kids-brown.webp",
+    whiteImg: "/images/kids-white.webp"
   },
   {
     id: 6,
     title: "History",
-    brownImg: "/images/history-brown.png",
-    whiteImg: "/images/history-white.png"
+    brownImg: "/images/history-brown.webp",
+    whiteImg: "/images/history-white.webp"
   },
   {
     id: 7,
     title: "Biography",
-    brownImg: "/images/biography-brown.png",
-    whiteImg: "/images/biography-white.png"
+    brownImg: "/images/biography-brown.webp",
+    whiteImg: "/images/biography-white.webp"
   },
   {
     id: 8,
     title: "Fantasy",
-    brownImg: "/images/fantasy-brown.png",
-    whiteImg: "/images/fantasy-white.png"
+    brownImg: "/images/fantasy-brown.webp",
+    whiteImg: "/images/fantasy-white.webp"
   }
 ];
 
