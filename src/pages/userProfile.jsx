@@ -128,7 +128,7 @@ useEffect(() => {
         <div className="flex flex-col lg:max-w-[80%] mx-auto lg:flex-row gap-5">
           {/* Profile Card */}
           <div className="bg-white  flex flex-col items-center justify-center rounded-xl font-archivon p-6 text-center shadow w-full lg:w-1/3">
-            <img src="images/userprofile.png" alt="Profile" className="object-cover mx-auto mb-4" />
+            <img src="images/userprofile.webp" alt="Profile" className="object-cover mx-auto mb-4" />
             <h3 className="font-semibold text-[30px]  xxxl:text-[32px] laptop:text-[24px] hd:text-[28px]">{profile.firstName?.toUpperCase() || "TEMP"}</h3>
             <p className="text-[#AEAEAE] text-[20px] mt-2 mb-2 lg:mt-6 lg:mb-4 xxxl:text-[25px] laptop:text-[18px] hd:text-[20px]">{profile.email}</p>
             <p className="text-[#AEAEAE] text-[20px]  xxxl:text-[25px] laptop:text-[18px] hd:text-[20px]">+91 {profile.phone}</p>
