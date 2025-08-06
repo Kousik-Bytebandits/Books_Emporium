@@ -1,5 +1,5 @@
 import  { useState } from "react";
-import { FaEnvelope, FaWhatsapp, FaPhone } from "react-icons/fa";
+import { Helmet } from "react-helmet";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -62,6 +62,12 @@ const Contact = () => {
 
   return (
     <div className="bg-cover bg-background bg-center min-h-screen flex flex-col justify-end">
+      <Helmet>
+  <title>Contact Books Emporium | Used Bookstore in Trichy</title>
+  <meta name="description" content="Contact Books Emporium for queries about second-hand books, orders, or selling your books. We're here to help!" />
+  <meta name="keywords" content="Contact Books Emporium, Used books Trichy, Sell used books online, Book store India" />
+</Helmet>
+
       {/* Contact Form Section */}
       <img src="images/contact-bg.webp" className=" xxxl:h-[800px] laptop:h-[600px] hd:h-[700px] mt-20"/>
       <div className="bg-white  rounded-xl lg:flex p-6 shadow-around-soft inset-0 z-10 -mt-20 lg:-mt-[20%] xxxl:max-w-[80%] max-w-[90%] mx-auto">

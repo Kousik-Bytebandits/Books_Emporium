@@ -7,7 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 import AddressPopup from "./AddressPopup";
 import {showLoginToast} from "../components/ShowLoginToast";
 import { showSessionExpiredToast } from "../components/showSessionExpiredToast";
-
+import { Helmet } from "react-helmet";
 export default function ShopCart({handleOpenLogin}) {
   
   const selectRef = useRef();
@@ -260,6 +260,11 @@ const proceedToPayment = async () => {
     proceedToPayment();
   }}
 />
+<Helmet>
+  <title>Your Cart | Books Emporium</title>
+  <meta name="description" content="Review your selected second-hand books before checking out. Secure checkout, fast delivery." />
+  <meta name="keywords" content="Books cart, Used books checkout, Cheap books, Online bookstore" />
+</Helmet>
 
       <div className="max-w-[100%]  lg:bg-background  pt-[35%] lg:pt-[9%]  hide-scrollbar mx-auto py-8 font-archivon">
         <h2 className="xxxl:text-[50px]  font-archivo font-semibold uppercase text-center laptop:text-[35px] hd:text-[40px]  pt-4 font-tenor  text-[20px]">

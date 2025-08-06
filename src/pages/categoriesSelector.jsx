@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import categories from "./categories";
-
+import { Helmet } from "react-helmet";
 export default function CategorySelector({ onBooksFetched }) {
   const [activeId, setActiveId] = useState(true);
   
@@ -45,6 +45,12 @@ const defaultCategory = categories.find((cat) => cat.title === "Fiction");
 
   return (
  <div className="bg-white mt-10 overflow-x-auto w-[94%] xxxl:max-w-[80%] md:w-[96%] mx-auto rounded-md shadow-around-soft">
+ <Helmet>
+  <title>Book Categories | Buy Old Books by Genre - Books Emporium</title>
+  <meta name="description" content="Select from a variety of book categories. From fiction to educational, find the best second-hand books online." />
+  <meta name="keywords" content="Book categories, Buy used books by genre, Cheap books India, Old book categories, Book Finder" />
+</Helmet>
+
   <h1 className="text-center font-archivo font-bold lg:text-[25px] text-[18px]  py-2 lg:py-5">
     Categories
   </h1>

@@ -1,8 +1,14 @@
-
+import { Helmet } from "react-helmet";
 const CancellationRefundPolicy = () => {
   return (
    
   <div className="mt-[30%] lg:mt-[5%] max-w-4xl mx-auto px-6 py-10">
+    <Helmet>
+      <title>Cancellation & Refund Policy | Books Emporium</title>
+      <meta name="description" content="Read the cancellation and refund policy of Books Emporium to understand your rights and our procedures." />
+      <meta name="keywords" content="Cancellation policy, Refund policy, Books Emporium, Online bookstore, Customer rights" />
+    </Helmet>
+
     <h1 className="text-3xl font-bold mb-2 text-center">
       Cancellation &amp; Refund Policy
     </h1>

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import BannerCarousel from "./BannerCarousel";
 import CategorySelector from "./categoriesSelector";
 import { useNavigate } from "react-router-dom";
-
+import {Helmet} from "react-helmet";
 
 export default function Home() {
   const [books, setBooks] = useState([]);
@@ -47,7 +47,13 @@ const navigate = useNavigate();
   }
 
   return (
+    
     <div className="w-full  pt-[30%] lg:pt-[8%] font-sans bg-[#F2E3D6]">
+      <Helmet>
+  <title>Books Emporium – Buy Used & Second Hand Books Online in Trichy</title>
+  <meta name="description" content="Books Emporium offers the best selection of second hand, used books in Trichy and all over India. Cheap books, fast delivery, and more." />
+  <meta name="keywords" content="Books Emporium, Used books Trichy, Second hand books, Buy books online, Cheap books India, Moore Market Trichy, Book Finder, Used Book Marketplaces" />
+</Helmet>
       <BannerCarousel />
     
     <CategorySelector onBooksFetched={handleBooksByCategory} />

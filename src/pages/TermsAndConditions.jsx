@@ -1,9 +1,15 @@
-
+import { Helmet } from "react-helmet";
 
 const TermsAndConditions = () => {
   return (
    
   <div className="mt-[30%] lg:mt-[5%] max-w-4xl mx-auto px-6 py-10">
+    <Helmet>
+      <title>Terms & Conditions | Books Emporium</title>
+      <meta name="description" content="Read the terms and conditions of Books Emporium to understand your rights and responsibilities while using our platform." />
+      <meta name="keywords" content="Terms and conditions, Books Emporium, Online bookstore, User agreement" />
+    </Helmet>
+
     <h1 className="text-3xl font-bold mb-2 text-center">
       Terms &amp; Conditions
     </h1>

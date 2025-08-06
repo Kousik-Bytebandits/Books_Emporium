@@ -1,9 +1,16 @@
+import { Helmet } from "react-helmet";
 
 
 const ShippingDeliveryPolicy = () => {
   return (
    
   <div className="mt-[30%] lg:mt-[5%] max-w-4xl mx-auto px-6 py-10">
+   <Helmet>
+  <title>Privacy Policy | Books Emporium</title>
+  <meta name="description" content="Read the privacy policy of Books Emporium to understand how we protect your data while you shop second-hand books online." />
+  <meta name="keywords" content="Privacy policy, Books Emporium, Online bookstore safety, Data protection" />
+</Helmet>
+
     <h1 className="text-3xl font-bold mb-2 text-center">
       Shipping &amp; Delivery Policy
     </h1>

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { FaChevronDown } from "react-icons/fa";
 import { RiArrowDropRightLine } from "react-icons/ri";
 import { RiArrowDropLeftLine } from "react-icons/ri";
+import { Helmet } from "react-helmet";
 function ProductCard({ product }) {
   const navigate = useNavigate();
 
@@ -415,7 +416,7 @@ const fetchProducts = () => {
       </div>
     
     </div>
-      <img src="/images/bookfilter.png" alt="banner" className="mt-20 hidden lg:block   top-100 w-[300px]" />
+      <img src="/images/bookfilter.webp" alt="banner" className="mt-20 hidden lg:block   top-100 w-[300px]" />
  
   </>
 );
@@ -427,6 +428,12 @@ useEffect(() => {
 
   return (
     <div>
+      <Helmet>
+  <title>Shop Second Hand Books Online Near Trichy | Books Emporium</title>
+  <meta name="description" content="Browse and shop from a wide range of used books available in Trichy and all over India. Affordable second-hand books delivered to your doorstep." />
+  <meta name="keywords" content="Used books Trichy, Buy books online near Trichy, Second hand books, Cheap books online, Old book shops Trichy" />
+</Helmet>
+
     <div className="lg:mt-[2%] mt-[30%]  min-h-screen overflow-hidden  pb-20 bg-background   lg:px-8 lg:pt-[6%] font-archivo text-[#676A5E]">
      
 

@@ -5,7 +5,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loader from "../components/Loader";
 import AddressPopup from "./AddressPopup";
-
+import { Helmet } from "react-helmet";
 import { showLoginToast } from "../components/ShowLoginToast";
 
 const ProductDetails = ({ handleOpenLogin }) => {
@@ -230,6 +230,11 @@ const [showPopup, setShowPopup] = useState(false);
       processBuyNowPayment(); // now do the actual Razorpay call
     }}
   />
+ <Helmet>
+  <title>{product?.title} | Buy Used Book at Best Price - Books Emporium</title>
+  <meta name="description" content={`Buy ${product?.title} second hand online at Books Emporium. Best deals on used books with fast delivery in Trichy and India-wide.`} />
+  <meta name="keywords" content="Used books, Buy used books, Cheap second hand books online, Books Emporium, Book Finder" />
+</Helmet>
 
 
     <div className="bg-background  hidden lg:block  lg:pt-[8%] min-h-screen px-4 py-6 font-sans">

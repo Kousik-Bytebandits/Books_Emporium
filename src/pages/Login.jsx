@@ -6,7 +6,7 @@ import { IoEyeSharp } from "react-icons/io5";
 import { FaEyeSlash } from "react-icons/fa";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import { Helmet } from 'react-helmet';
 export default function Login({ onClose,onOpenSignup,onOpenForgot }) {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
@@ -64,6 +64,11 @@ export default function Login({ onClose,onOpenSignup,onOpenForgot }) {
   
   return (
    <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center overflow-y-auto">
+<Helmet>
+  <title>Login to Your Account | Books Emporium</title>
+  <meta name="description" content="Access your Books Emporium account to shop, track orders, and manage your used books wishlist." />
+  <meta name="keywords" content="Login Books Emporium, Used books online, Cheap book store login, Book Emporium account" />
+</Helmet>
 
        <ToastContainer position="top-center" autoClose={1500} />
           {/* Desktop */}
