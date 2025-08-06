@@ -10,7 +10,7 @@ export default function Footer() {
           {/* Left - Logo and Description */}
           <div className="lg:w-[25%] space-y-4">
             <div className="flex items-center ">
-              <img src="/images/be-logo.png" alt="Logo" className="w-[50px] lg:w-14 lg:h-14 " />
+              <img src="/images/be-logo.webp" alt="Logo" className="w-[50px] lg:w-14 lg:h-14 " />
               <div className="text-[18px] font-bold leading-tight font-sans xxxl:text-[20px] laptop:text-[18px] hd:text-[17px]">BOOKS <br/> EMPORIUM</div>
             </div>
             <p className="text-sm lg:text-[15px] text-gray-300 leading-relaxed font-figtree">
@@ -60,15 +60,15 @@ export default function Footer() {
             <div className="hidden lg:block">
               <h3 className="font-semibold mb-3 xxxl:text-[20px] laptop:text-[14px] hd:text-[17px]">Reach us out</h3>
               <div className="flex mb-2 items-center gap-2 text-gray-300">
-              <img src="/images/bookmail.png" alt="email"/>
+              <img src="/images/bookmail.webp" alt="email"/>
                 <span className="xxxl:text-[16px] laptop:text-[12px] hd:text-[14px]">booksemporium@gmail.com</span>
               </div>
               <div className="flex mb-2 items-center gap-2 text-gray-300">
-              <img src="/images/wp.png" alt="whatsapp"/>
+              <img src="/images/wp.webp" alt="whatsapp"/>
                 <span className="xxxl:text-[16px] laptop:text-[12px] hd:text-[14px]">+91 75982 41312</span>
               </div>
               <div className="flex items-center gap-2 text-gray-300">
-              <img src="/images/mb.png" alt="phone"/>
+              <img src="/images/mb.webp" alt="phone"/>
                 <span className="xxxl:text-[16px] laptop:text-[12px] hd:text-[14px]">+91 75982 41312</span>
               </div>
               
@@ -81,17 +81,17 @@ export default function Footer() {
         <div className="lg:hidden text-center space-y-2 font-figtree">
           <h3 className="font-semibold text-[20px] ">Reach us out</h3>
           <div className="flex justify-center items-center gap-2 text-gray-300">
-          <img src="/images/bookmail.png" alt="Email"/>
+          <img src="/images/bookmail.webp" alt="Email"/>
             <span>booksemporium@gmail.com</span>
             
           </div>
            <div className="flex justify-center items-center gap-2 text-gray-300">
-          <img src="/images/wp.png" alt="WhatsApp"/>
+          <img src="/images/wp.webp" alt="WhatsApp"/>
             <span>+91 75982 41312</span>
             
           </div>
            <div className="flex justify-center items-center gap-2 text-gray-300">
-          <img src="/images/mb.png" alt="Mobile"/>
+          <img src="/images/mb.webp" alt="Mobile"/>
             <span>+91 75982 41312</span>
             
           </div>

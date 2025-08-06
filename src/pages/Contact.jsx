@@ -63,7 +63,7 @@ const Contact = () => {
   return (
     <div className="bg-cover bg-background bg-center min-h-screen flex flex-col justify-end">
       {/* Contact Form Section */}
-      <img src="images/contact-bg.jpg" className=" xxxl:h-[800px] laptop:h-[600px] hd:h-[700px] mt-20"/>
+      <img src="images/contact-bg.webp" className=" xxxl:h-[800px] laptop:h-[600px] hd:h-[700px] mt-20"/>
       <div className="bg-white  rounded-xl lg:flex p-6 shadow-around-soft inset-0 z-10 -mt-20 lg:-mt-[20%] xxxl:max-w-[80%] max-w-[90%] mx-auto">
         {/* Left Info */}
         <div className="lg:w-1/2 lg:p-4  text-black space-y-4 ">
@@ -74,21 +74,21 @@ const Contact = () => {
 
           <div className="space-y-6 pt-4 md:text-[21px] ml-10 md:ml-28 md:pt-12  text-[#887562] font-archivon">
             <div className="flex items-center  gap-6">
-              <img src="images/mailus.png" className="w-8"/>
+              <img src="images/mailus.webp" className="w-8"/>
               <div>
                 <p className="font-semibold text-[16px] lg:text-[23px]">MAIL US</p>
                 <p>info@booksemporium.in</p>
               </div>
             </div>
             <div className="flex items-center  gap-6">
-              <img src="images/wapp.png"  className="w-8"/>
+              <img src="images/wapp.webp"  className="w-8"/>
               <div>
                 <p className="font-semibold text-[16px]  lg:text-[23px]">REACH US VIA WHATSAPP</p>
                 <p>+91 - 8939843483</p>
               </div>
             </div>
             <div className="flex items-center gap-6">
-              <img src="images/phone.png"  className="w-8" />
+              <img src="images/phone.webp"  className="w-8" />
               <div>
                 <p className="font-semibold text-[16px]  lg:text-[23px]">CALL US</p>
                 <p>+91 - 8939843483</p>
@@ -181,10 +181,10 @@ const Contact = () => {
       {/* Bottom Info */}
        <div className="xxxl:w-[80%]  w-[90%] mx-auto mb-20 h-[160px]  grid grid-cols-2 md:grid-cols-4 lg:h-[160px] mt-10  bg-white shadow-around-soft lg:py-6 rounded-md  ">
         {[
-          { icon: "Truck.png", title: "Free Delivery", desc: "Order over Rs 1000" },
-          { icon: "security.png", title: "Secured Payment", desc: "100% Guarantee Security" },
-          { icon: "Tag.png", title: "Best Deals", desc: "Upto 30% Discount" },
-          { icon: "rotate.png", title: "Free Returns", desc: "Within 15 days" },
+          { icon: "Truck.webp", title: "Free Delivery", desc: "Order over Rs 1000" },
+          { icon: "security.webp", title: "Secured Payment", desc: "100% Guarantee Security" },
+          { icon: "Tag.webp", title: "Best Deals", desc: "Upto 30% Discount" },
+          { icon: "rotate.webp", title: "Free Returns", desc: "Within 15 days" },
         ].map((item, i) => (
           <div key={i} className="md:p-2 gap-2 md:gap-4 flex justify-between items-center   mx-auto mt-4 lg:mt-0">
             <img src={`images/${item.icon}`} className="w-[32px] lg:w-[48px] lg:mt-2" alt="img" />

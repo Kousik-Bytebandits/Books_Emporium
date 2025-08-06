@@ -22,7 +22,7 @@ function ProductCard({ product, addToCrate }) {
 >
   <div className="p-2 flex flex-col flex-grow">
     <img
-      src={product.image_url || "/images/book-left.png"}
+      src={product.image_url || "/images/book-left.webp"}
       alt={product.title}
       className="xxxl:w-[170px] laptop:w-[150px] laptop:h-[210px] hd:w-[150px] hd:h-[200px] xxxl:h-[230px] w-[96px] h-[148px] mx-auto  object-cover rounded-md shadow-around-soft"
     />
@@ -681,7 +681,7 @@ const handleCrateCheckout = async () => {
         currency: "INR",
         name: data.user.name,
         description: "Book Crate Purchase",
-        image: "/images/be-logo.png",
+        image: "/images/be-logo.webp",
         order_id: data.razorpayOrder.id,
         handler: async function (response) {
           await verifyCratePayment(response, token);
@@ -876,7 +876,7 @@ const verifyCratePayment = async (response, token) => {
         {/* Box image */}
         <div className="xxxl:h-[140px] laptop:h-[80px] hd:h-[120px] h-[100px] flex items-center justify-center mb-4">
           <img
-            src={`/images/crate-${index + 1}.png`}
+            src={`/images/crate-${index + 1}.webp`}
             alt={crate.name}
             className=" object-contain"
           />
@@ -1023,7 +1023,7 @@ const verifyCratePayment = async (response, token) => {
     <div className="bg-white p-6 rounded-xl max-w-3xl w-full max-h-[80vh] overflow-y-auto">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-[20px] text-black font-semibold ">Your Crate Books</h2>
-        <button onClick={() => setShowPopup(false)} className="text-red-500 font-bold"><img src="images/close.png" className="w-5"/></button>
+        <button onClick={() => setShowPopup(false)} className="text-red-500 font-bold"><img src="images/close.webp" className="w-5"/></button>
       </div>
 
       <div className="grid grid-cols-3 sm:grid-cols-4 gap-4">
@@ -1075,7 +1075,7 @@ const verifyCratePayment = async (response, token) => {
         {/* Box image */}
         <div className="xxxl:h-[140px] laptop:h-[80px] hd:h-[120px] flex items-center justify-center mb-4">
           <img
-            src={`/images/crate-${index + 1}.png`}
+            src={`/images/crate-${index + 1}.webp`}
             alt={crate.name}
             className=" object-contain"
           />
@@ -1228,7 +1228,7 @@ const verifyCratePayment = async (response, token) => {
     <div className="bg-white p-6 rounded-xl lg:max-w-[80%] w-full max-h-[80vh] overflow-y-auto">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold">Your Crate Books</h2>
-        <button onClick={() => setShowPopup(false)} ><img src="images/close.png" className="w-5"/></button>
+        <button onClick={() => setShowPopup(false)} ><img src="images/close.webp" className="w-5"/></button>
       </div>
 
       <div className="grid grid-cols-3 xxxl:grid-cols-10 laptop:grid-cols-8  gap-4">

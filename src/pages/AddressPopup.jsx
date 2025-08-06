@@ -111,7 +111,7 @@ const AddressPopup = ({ isOpen, onClose, onProceed }) => {
           }}
           className="absolute top-4 right-4 text-2xl font-bold text-gray-700"
         >
-         <img src="/images/close.png" alt="Close" className="h-6 mt-4 mr-4"/>
+         <img src="/images/close.webp" alt="Close" className="h-6 mt-4 mr-4"/>
         </button>
 
         <h2 className="text-[32px] font-archivo font-bold mb-6 text-[#3A261A]">Deliver To This Address</h2>

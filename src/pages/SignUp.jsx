@@ -211,7 +211,7 @@ const otpRefs = useRef([]);
          <div className="lg:hidden flex items-center justify-between mb-6 lg:mb-0">
 
            <div className="flex items-center">
-            <img src="/images/be-logo.png"
+            <img src="/images/be-logo.webp"
             className="w-[40px] xxxl:w-[58px] laptop:w-[40px] hd:w-[45px] "> 
             </img>
             <div className="flex flex-col text-left uppercase text-[#3A261A]  leading-tight  font-opensans font-bold xxxl:text-[25px] hd:text-[20px] laptop:text-[16px] xxxl:leading-[22px] hd:leading-[18px] laptop:leading-[14px]">
@@ -220,7 +220,7 @@ const otpRefs = useRef([]);
               </div>
             </div>
             <div onClick={onClose}>
-              <img src="/images/close.png" alt="Close"
+              <img src="/images/close.webp" alt="Close"
               className="w-[25px] xxxl:w-[30px] hd:w-[20px] laptop:w-[18px]"></img>
             </div>
             </div>
@@ -235,7 +235,7 @@ const otpRefs = useRef([]);
           <div className="hidden lg:flex items-center justify-between mb-6 lg:mb-0">
 
            <div className="flex items-center">
-            <img src="/images/be-logo.png"
+            <img src="/images/be-logo.webp"
             className="w-[30px] xxxl:w-[58px] laptop:w-[40px] hd:w-[45px] "> 
             </img>
             <div className="flex flex-col text-left uppercase text-[#3A261A] text-[12px] leading-tight  font-opensans font-bold xxxl:text-[25px] hd:text-[20px] laptop:text-[16px] xxxl:leading-[22px] hd:leading-[18px] laptop:leading-[14px]">
@@ -244,7 +244,7 @@ const otpRefs = useRef([]);
               </div>
             </div>
             <div onClick={onClose}>
-              <img src="/images/close.png" alt="Close"
+              <img src="/images/close.webp" alt="Close"
               className="w-[20px] xxxl:w-[30px] hd:w-[20px] laptop:w-[18px]"></img>
             </div>
             </div>
@@ -441,7 +441,7 @@ const otpRefs = useRef([]);
             </div>
             <div className="hidden lg:block w-1/2 relative">
               <img
-                src="/images/signup-bg.png"
+                src="/images/signup-bg.webp"
                 alt="Background"
                 className=" absolute inset-0 w-full h-full rounded-xl object-cover"
               />

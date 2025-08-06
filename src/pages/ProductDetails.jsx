@@ -149,7 +149,7 @@ const [showPopup, setShowPopup] = useState(false);
         currency: "INR",
         name: data.user.name,
         description: data.items[0].title,
-        image: "/logo.png",
+        image: "/logo.webp",
         order_id: data.razorpayOrder.id,
         handler: async function (response) {
           await verifyCratePayment(response, token);

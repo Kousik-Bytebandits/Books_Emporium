@@ -55,10 +55,10 @@ const navigate = useNavigate();
       {/* Services */}
        <div className="xxxl:w-[80%]  w-[96%] mx-auto  h-[160px]  grid grid-cols-2 md:grid-cols-4 lg:h-[160px] mt-6  bg-white shadow-around-soft lg:py-6 rounded-md  ">
         {[
-          { icon: "Truck.png", title: "Free Delivery", desc: "Order over Rs 1000" },
-          { icon: "security.png", title: "Secured Payment", desc: "100% Guarantee Security" },
-          { icon: "Tag.png", title: "Best Deals", desc: "Upto 30% Discount" },
-          { icon: "rotate.png", title: "Free Returns", desc: "Within 15 days" },
+          { icon: "Truck.webp", title: "Free Delivery", desc: "Order over Rs 1000" },
+          { icon: "security.webp", title: "Secured Payment", desc: "100% Guarantee Security" },
+          { icon: "Tag.webp", title: "Best Deals", desc: "Upto 30% Discount" },
+          { icon: "rotate.webp", title: "Free Returns", desc: "Within 15 days" },
         ].map((item, i) => (
           <div key={i} className="md:p-2 gap-2 md:gap-4 flex justify-between items-center   mx-auto mt-4 lg:mt-0">
             <img src={`images/${item.icon}`} className="w-[32px] lg:w-[48px] lg:mt-2" alt="img" />
@@ -124,7 +124,7 @@ const navigate = useNavigate();
               <div className="w-full bg-[#FFB372] lg:h-[700px] mt-6 py-10 px-4 md:px-10">
                 <div className="max-w-screen-2xl mx-auto rounded-xl flex flex-row items-center gap-4">
                   <img
-                    src="images/offer.jpg"
+                    src="images/offer.webp"
                     alt="Promo"
                     className="w-[127px] lg:w-[525px] lg:h-[590px] rounded-2xl  object-contain h-[143px]"
                   />
