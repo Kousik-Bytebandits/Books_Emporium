@@ -92,14 +92,14 @@ const Contact = () => {
               <img src="images/wapp.webp"  className="w-8"/>
               <div>
                 <p className="font-semibold text-[16px]  lg:text-[23px]">REACH US VIA WHATSAPP</p>
-                <p>+91 - 8939843483</p>
+                <p>+91 - 7598241312</p>
               </div>
             </div>
             <div className="flex items-center gap-6">
               <img src="images/phone.webp"  className="w-8" />
               <div>
                 <p className="font-semibold text-[16px]  lg:text-[23px]">CALL US</p>
-                <p>+91 - 8939843483</p>
+                <p>+91 - 7598241312</p>
               </div>
             </div>
           </div>
