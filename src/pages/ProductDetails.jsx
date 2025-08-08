@@ -552,7 +552,7 @@ const [showPopup, setShowPopup] = useState(false);
 
       
 </div>
-<ToastContainer position="top-right" autoClose={5000} />
+<ToastContainer position="top-right" autoClose={3000} />
 </>
   );
 };

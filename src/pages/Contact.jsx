@@ -1,5 +1,7 @@
-import  { useState } from "react";
+import { useState } from "react";
 import { Helmet } from "react-helmet";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -19,45 +21,45 @@ const Contact = () => {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  const { firstName, email, message } = formData;
-  if (!firstName || !email || !message) {
-    alert("Please fill all required fields.");
-    return;
-  }
-
-  try {
-    const response = await fetch(
-      "https://booksemporium.in/Microservices/Prod/07_contact_us/submit-form",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      }
-    );
-
-    const text = await response.text();
-
-    if (response.ok) {
-      alert( text);
-      setFormData({
-        firstName: "",
-        lastName: "",
-        email: "",
-        phoneNumber: "",
-        message: "",
-      });
-    } else {
-      alert(" Submission failed: " + text);
+    e.preventDefault();
+    const { firstName, email, message } = formData;
+    if (!firstName || !email || !message) {
+      toast.error("Please fill all required fields.");
+      return;
     }
-  } catch (error) {
-    console.error("Submission error:", error);
-    alert("Something went wrong. Please try again.");
-  }
-};
 
+    try {
+      const response = await fetch(
+        "https://booksemporium.in/Microservices/Prod/07_contact_us/submit-form",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+
+      const text = await response.text();
+
+      if (response.ok) {
+        toast.success("Thank you for contacting us! We will get back to you soon.");
+      
+        setFormData({
+          firstName: "",
+          lastName: "",
+          email: "",
+          phoneNumber: "",
+          message: "",
+        });
+      } else {
+        toast.error("Submission failed: " + text);
+      }
+    } catch (error) {
+      console.error("Submission error:", error);
+      toast.error("Something went wrong. Please try again.");
+    }
+  };
 
 
   return (
@@ -201,6 +203,17 @@ const Contact = () => {
           </div>
         ))}
       </div>
+      <ToastContainer 
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </div>
   );
 };
