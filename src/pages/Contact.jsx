@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Helmet } from "react-helmet";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import Loader from "../components/Loader";
 const Contact = () => {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -11,7 +11,7 @@ const Contact = () => {
     phoneNumber: "",
     message: "",
   });
-
+const [loading, setLoading] = useState(false); 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -27,7 +27,7 @@ const Contact = () => {
       toast.error("Please fill all required fields.");
       return;
     }
-
+setLoading(true);
     try {
       const response = await fetch(
         "https://booksemporium.in/Microservices/Prod/07_contact_us/submit-form",
@@ -41,7 +41,7 @@ const Contact = () => {
       );
 
       const text = await response.text();
-
+    setLoading(true);
       if (response.ok) {
         toast.success("Thank you for contacting us! We will get back to you soon.");
       
@@ -58,7 +58,10 @@ const Contact = () => {
     } catch (error) {
       console.error("Submission error:", error);
       toast.error("Something went wrong. Please try again.");
+    }finally {
+      setLoading(false);
     }
+
   };
 
 
@@ -175,7 +178,7 @@ const Contact = () => {
                 className="w-full border border-[#8EB490] bg-[#FFC49080] rounded px-2 py-1"
               ></textarea>
             </div>
-
+            {loading && <Loader /> }
             <button
               type="submit"
               className="bg-[#E6712C] text-[20px] hover:bg-or[#492C1E] text-white px-6 py-3 rounded mt-2 w-full"
