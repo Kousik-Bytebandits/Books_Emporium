@@ -68,6 +68,11 @@ const [isDropdownOpen, setIsDropdownOpen] = useState(true);
 const [tempPrice, setTempPrice] = useState(priceRange[1]);
 const [tempDiscount, setTempDiscount] = useState(discountRange[1]);
 const [tempYear, setTempYear] = useState(yearRange[1]);
+const [selectedCondition, setSelectedCondition] = useState("");
+
+const handleConditionChange = (value) => {
+  setSelectedCondition((prev) => (prev === value ? "" : value)); 
+};
 
 
 const categories = [
@@ -124,7 +129,7 @@ const sortOptionMapping = {
   PriceLowHigh: "price_low_high",
   PriceHighLow: "price_high_low",
 };
-const fetchProducts = () => {
+const fetchProducts = (conditionValue = selectedCondition) => {
 
 
   // Prepare query values
@@ -144,9 +149,11 @@ const fetchProducts = () => {
   else discountLabel = "upto_70";
 
   // Build API URL
-  const apiURL = `https://booksemporium.in/Microservices/Prod/04_user_website/api/books/list?page=${currentPage}&limit=${limit}&category=${encodeURIComponent(
+ const apiURL = `https://booksemporium.in/Microservices/Prod/04_user_website/api/books/list?page=${currentPage}&limit=${limit}&category=${encodeURIComponent(
     category
-  )}&sort=${sortQuery}&min_price=${minPrice}&max_price=${maxPrice}&date_from=${fromYear}&date_to=${toYear}&discount=${discountLabel}`;
+  )}&sort=${sortQuery}&min_price=${minPrice}&max_price=${maxPrice}&date_from=${fromYear}&date_to=${toYear}&discount=${discountLabel}${
+    conditionValue ? `&condition=${conditionValue}` : ""
+  }`;
 
   // Fetch data
  fetch(apiURL)
@@ -169,7 +176,7 @@ const fetchProducts = () => {
 }
  useEffect(() => {
   fetchProducts();
-}, [sortOption, priceRange, discountRange, yearRange, selectedCategories, currentPage]);
+}, [sortOption, priceRange, discountRange, yearRange, selectedCategories, currentPage, selectedCondition]);
 
 
   useEffect(() => {
@@ -270,6 +277,28 @@ const fetchProducts = () => {
         </div>
         </div>
       </div>
+{/* Book Condition */}
+<div className="mb-6">
+  <h3 className="text-[18px] font-semibold mb-2">Book Condition:</h3>
+  <div className="space-y-2">
+    {[
+      { label: "New", value: "new_book" },
+      { label: "Used Good", value: "used_good" },
+      { label: "Used Old", value: "used_old" }
+    ].map((cond) => (
+      <label key={cond.value} className="flex items-center space-x-2 text-[#676A5E] text-[16px]">
+        <input
+          type="checkbox"
+          className="w-4 h-4 border border-[#B8BCA2] rounded-sm focus:ring-0 accent-[#B8BCA2]"
+          checked={selectedCondition === cond.value}
+          onChange={() => handleConditionChange(cond.value)}
+        />
+        <span className="text-[14px]">{cond.label}</span>
+      </label>
+    ))}
+  </div>
+</div>
+
 
       {/* Categories */}
       <div className="mb-6">
@@ -294,7 +323,7 @@ const fetchProducts = () => {
               checked={selectedCategories.includes(category)}
               onChange={() => toggleCategory(category)}
             />
-            <span>{category}</span>
+            <span className="text-[14px] line-clamp-1">{category}</span>
           </label>
         ))}
       </div>

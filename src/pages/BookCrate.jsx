@@ -111,6 +111,12 @@ const [showAddressPopup, setShowAddressPopup] = useState(false);
 const [showLogin, setShowLogin] = useState(false);
 const [showSignup, setShowSignup] = useState(false);
 
+const [selectedCondition, setSelectedCondition] = useState("");
+
+const handleConditionChange = (value) => {
+  setSelectedCondition((prev) => (prev === value ? "" : value)); // toggle off if same
+};
+
 
 
 const categories = [
@@ -334,7 +340,7 @@ const discardCrate = async () => {
 };
 
 
-const fetchProducts = () => {
+const fetchProducts = (conditionValue = selectedCondition) => {
 
 
   // Prepare query values
@@ -354,8 +360,12 @@ const fetchProducts = () => {
   else discountLabel = "upto_70";
 
   // Build API URL
-   const apiURL = `https://booksemporium.in/Microservices/Prod/04_user_website/api/books/list?page=${currentPage}&limit=${limit}&category=${encodeURIComponent(
-    category)}&is_crate=true&sort=${sortQuery}&min_price=${minPrice}&max_price=${maxPrice}&date_from=${fromYear}&date_to=${toYear}&discount=${discountLabel}`;
+  const apiURL = `https://booksemporium.in/Microservices/Prod/04_user_website/api/books/list?page=${currentPage}&limit=${limit}&category=${encodeURIComponent(
+    category
+  )}&sort=${sortQuery}&min_price=${minPrice}&max_price=${maxPrice}&date_from=${fromYear}&date_to=${toYear}&discount=${discountLabel}${
+    conditionValue ? `&condition=${conditionValue}` : ""
+  }`;
+
 
   // Fetch data
  fetch(apiURL)
@@ -381,9 +391,7 @@ const fetchProducts = () => {
 useEffect(() => {
    fetchProducts();
     fetchCrateBooks();
-}, [sortOption, priceRange, discountRange, yearRange, selectedCategories, currentPage,selectedCrate]);
- 
- 
+}, [sortOption, priceRange, discountRange, yearRange, selectedCategories, currentPage, selectedCrate, selectedCondition]);
 
 
   useEffect(() => {
@@ -482,6 +490,28 @@ const FilterSidebar = (
         </div>
         </div>
       </div>
+{/* Book Condition */}
+<div className="mb-6">
+  <h3 className="text-[18px] font-semibold mb-2">Book Condition:</h3>
+  <div className="space-y-2">
+    {[
+      { label: "New", value: "new_book" },
+      { label: "Used Good", value: "used_good" },
+      { label: "Used Old", value: "used_old" }
+    ].map((cond) => (
+      <label key={cond.value} className="flex items-center space-x-2 text-[#676A5E] text-[16px]">
+        <input
+          type="checkbox"
+          className="w-4 h-4 border border-[#B8BCA2] rounded-sm focus:ring-0 accent-[#B8BCA2]"
+          checked={selectedCondition === cond.value}
+          onChange={() => handleConditionChange(cond.value)}
+        />
+        <span className="text-[14px]">{cond.label}</span>
+      </label>
+    ))}
+  </div>
+</div>
+
 
       {/* Categories */}
       <div className="mb-6">
@@ -499,14 +529,14 @@ const FilterSidebar = (
     {isDropdownOpen && (
       <div className="space-y-2 mt-2">
         {categories.map((category) => (
-          <label key={category} className="flex items-center space-x-2">
+          <label key={category} className="flex items-center space-x-2 text-[#676A5E] text-[16px]">
             <input
               type="checkbox"
-              className="w-4 h-4"
+              className="w-4 h-4 accent-[#77C7F6]"
               checked={selectedCategories.includes(category)}
               onChange={() => toggleCategory(category)}
             />
-            <span>{category}</span>
+            <span className="line-clamp-1 text-[13px]">{category}</span>
           </label>
         ))}
       </div>
@@ -572,7 +602,7 @@ const FilterSidebar = (
         {/* PRODUCT TYPE (Left column short, Right column long) */}
         <div className="mb-6">
   <p className="text-[18px] text-[#676A5E] font-tenor lg:text-[22px] uppercase mb-3">Categories</p>
-  <div className="grid grid-cols-2 gap-3 text-[px]">
+  <div className="grid grid-cols-2 gap-3 text-[px] ">
     {[
       "Fiction",
       "Horror",
