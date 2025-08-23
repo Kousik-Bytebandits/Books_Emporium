@@ -83,12 +83,12 @@ export default function BookCrate({ handleOpenLogin}) {
    const [showFilter, setShowFilter] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [limit] = useState(20);
- const [priceRange, setPriceRange] = useState([49, 5000]);
-const [discountRange, setDiscountRange] = useState([10, 70]);
-const [yearRange, setYearRange] = useState(['2000 BC', 2024]);
-const [tempPrice, setTempPrice] = useState(priceRange[1]);
-const [tempDiscount, setTempDiscount] = useState(discountRange[1]);
-const [tempYear, setTempYear] = useState(yearRange[1]);
+const [priceRange, setPriceRange] = useState([0, 0]);
+const [discountRange, setDiscountRange] = useState([0, 0]);
+const [yearRange, setYearRange] = useState([0, 0]);
+const [tempPrice, setTempPrice] = useState(0);
+const [tempDiscount, setTempDiscount] = useState(0);
+const [tempYear, setTempYear] = useState(0);
 const [isDropdownOpen, setIsDropdownOpen] = useState(true);
 const [selectedCrate, setSelectedCrate] = useState(crates[0]);
  const scrollRef = useRef(null);
@@ -112,51 +112,47 @@ const [totalProducts, setTotalProducts] = useState(0);
 const start = (currentPage - 1) * limit + 1;
 const end = Math.min(currentPage * limit, totalProducts);
 const totalPages = Math.ceil(totalProducts / limit) || 1;
+const [isCrate] = useState(false);
+const [showOutOfStock] = useState(false);
+
+const [filterRanges, setFilterRanges] = useState(null);
+
+useEffect(() => {
+  const fetchFilterRanges = async () => {
+    try {
+      const res = await fetch(
+        "https://booksemporium.in/Microservices/Prod/04_user_website/api/filter-ranges"
+      );
+      if (!res.ok) throw new Error("Failed to fetch filter ranges");
+      const data = await res.json();
+
+      setFilterRanges(data);
+
+      // initialize filters from backend
+      setPriceRange([data.price_range.starting, data.price_range.ending]);
+      setDiscountRange([data.discount_range.starting, data.discount_range.ending]);
+      setYearRange([data.published_date.starting, data.published_date.ending]);
+
+      // temp values should also be arrays
+      setTempPrice([data.price_range.starting, data.price_range.ending]);
+      setTempDiscount([data.discount_range.starting, data.discount_range.ending]);
+      setTempYear([data.published_date.starting, data.published_date.ending]);
+
+    } catch (error) {
+      console.error("Error fetching filter ranges:", error);
+    }
+  };
+
+  fetchFilterRanges();
+}, []);
+
+
+
 const handleConditionChange = (value) => {
   setSelectedCondition((prev) => (prev === value ? "" : value)); // toggle off if same
 };
 
 
-
-const categories = [
-  "Fiction",
-  "Horror",
-  "Sports",
-  "History",
-  "Reference",
-  "Romance",
-  "Action & Adventure",
-  "Literature & Fiction",
-  "Arts, Film & Photography",
-  "Crafts, Hobbies & Home",
-  "Crime, Thriller & Mystery",
-  "Exam Preparation",
-  "Medicine and Health Sciences Textbooks",
-  "Health, Fitness & Nutrition",
-  "Science and Mathematics Textbooks",
-  "Diaries & True Accounts",
-  "Sciences, Technology & Medicine",
-  "Linguistics & Writing",
-  "Textbooks & Study Guides",
-  "Law",
-  "Humour",
-  "Business & Economics",
-  "Children's Books",
-  "Comics & Mangas",
-  "Computers & Internet",
-  "Engineering",
-  "Historical Fiction",
-  "Maps & Atlases",
-  "Politics",
-  "Religion & Spirituality",
-  "School Books",
-  "Biographies",
-  "Teen & Young Adult",
-  "Science Fiction & Fantasy",
-  "Travel & Tourism",
-  "Health, Family & Personal Development",
-  
-];
 const crateNameToApiValue = {
   "Mini Crate": "small crate",
   "Classic Crate": "medium crate",
@@ -201,7 +197,7 @@ const hasShown403 = useRef(false);
 
 const handle403Redirect = (res) => {
   if (res.status === 403 && !hasShown403.current) {
-    toast.error(" The session has expired. Please log in via 'My Account' ");
+    toast.error(" Please Login to continue ");
     hasShown403.current = true;
     return true;
   }
@@ -255,7 +251,7 @@ const addToCrate = async (bookId) => {
       if (error?.error?.includes("already added")) {
         toast.error("You can't add the same book");
       } else {
-        toast.error("Failed to add book to crate");
+        toast.error(error);
       }
 
       console.error("Failed to add book to crate:", error);
@@ -356,7 +352,7 @@ const fetchProducts = (conditionValue = selectedCondition) => {
     category
   )}&sort=${sortQuery}&min_price=${minPrice}&max_price=${maxPrice}&date_from=${fromYear}&date_to=${toYear}&discount=${discountLabel}${
     conditionValue ? `&condition=${conditionValue}` : ""
-  }`;
+  }&is_crate=${isCrate ? "true" : "false"}&show_out_of_stock=${showOutOfStock ? "true" : "false"}`;
 
   fetch(apiURL)
     .then((res) => res.json())
@@ -405,19 +401,19 @@ const FilterSidebar = (
       <div className="mb-6">
        
         <h3 className="text-[18px] font-semibold mb-2">Price Range:</h3>
-        <p className="text-[16px] font-semibold mb-2 text-gray-700">₹{priceRange[0]} - ₹{tempPrice}</p>
+        <p className="text-[16px] font-semibold mb-2 text-gray-700">₹{tempPrice[0]} - ₹{tempPrice[1]}</p>
         <div className="flex gap-2">
        <input
-  type="range"
-  min={49}
-  max={5000}
-  value={tempPrice}
-  onChange={(e) => setTempPrice(parseInt(e.target.value))}
+   type="range"
+  min={filterRanges?.price_range?.starting ?? 0}
+  max={filterRanges?.price_range?.ending ?? 5000}
+  value={tempPrice[1]}
+  onChange={(e) => setTempPrice([tempPrice[0], parseInt(e.target.value)])}
   className="w-full accent-[#77C7F6]"
 />
         <div>
-      <button
-  onClick={() => setPriceRange([priceRange[0], tempPrice])}
+  <button
+  onClick={() => setPriceRange(tempPrice)}
   className="rounded-full bg-orange-400 w-10 text-white font-semibold py-[2px]"
 >
   Go
@@ -426,56 +422,56 @@ const FilterSidebar = (
         </div>
       </div>
 
-      {/* Discount Range */}
-      <div className="mb-6 font-semibold">
-        <h3 className="text-[18px] font-semibold mb-2">Discount Range:</h3>
-        <p className="text-[16px] mb-2 text-gray-700">{discountRange[0]}% - {tempDiscount}%</p>
-       <div className="flex gap-2">
-       <input
-  type="range"
-  min={0}
-  max={70}
-  step={10}
-  value={tempDiscount}
-  onChange={(e) => setTempDiscount(parseInt(e.target.value))}
-  className="w-full accent-[#77C7F6]"
-/>
+{/* Discount Range */}
+<div className="mb-6 font-semibold">
+  <h3 className="text-[18px] font-semibold mb-2">Discount Range:</h3>
+  <p className="text-[16px] mb-2 text-gray-700">{tempDiscount[0]}% - {tempDiscount[1]}%</p>
+  <div className="flex gap-2">
+    <input
+      type="range"
+      min={filterRanges?.discount_range?.starting ?? 0}
+      max={filterRanges?.discount_range?.ending ?? 90}
+      step={5}
+      value={tempDiscount[1]}
+      onChange={(e) => setTempDiscount([tempDiscount[0], parseInt(e.target.value)])}
+      className="w-full accent-[#77C7F6]"
+    />
+    <div>
+      <button
+        onClick={() => setDiscountRange(tempDiscount)}
+        className="rounded-full bg-orange-400 w-10 text-white font-semibold py-[2px]"
+      >
+        Go
+      </button>
+    </div>
+  </div>
+</div>
 
-        <div>
-        <button
-  onClick={() => setDiscountRange([discountRange[0], tempDiscount])}
-  className="rounded-full bg-orange-400 w-10 text-white font-semibold py-[2px]"
->
-  Go
-</button>
+{/* Year Published */}
+<div className="mb-6 font-semibold">
+  <h3 className="text-[18px] font-semibold mb-2">Year Published:</h3>
+  <p className="text-[16px] mb-2 text-gray-700">{tempYear[0]} - {tempYear[1]}</p>
+  <div className="flex gap-2">
+    <input
+      type="range"
+      min={filterRanges?.published_date?.starting ?? 1900}
+      max={filterRanges?.published_date?.ending ?? new Date().getFullYear()}
+      value={tempYear[1]}
+      onChange={(e) => setTempYear([yearRange[0], parseInt(e.target.value)])}
+      className="w-full accent-[#77C7F6]"
+    />
+    <div>
+      <button
+        onClick={() => setYearRange( tempYear)}
+        className="rounded-full bg-orange-400 w-10 text-white font-semibold py-[2px]"
+      >
+        Go
+      </button>
+    </div>
+  </div>
+</div>
 
-        </div>
-        </div>
-      </div>
 
-      {/* Year Published */}
-      <div className="mb-6 font-semibold">
-        <h3 className="text-[18px] font-semibold mb-2">Year Published:</h3>
-        <p className="text-[16px] mb-2 text-gray-700">{yearRange[0]} - {tempYear}</p>
-       <div className="flex gap-2">
-       <input
-  type="range"
-  min={-2000}
-  max={2024}
-  value={tempYear}
-  onChange={(e) => setTempYear(parseInt(e.target.value))}
-  className="w-full accent-[#77C7F6]"
-/>
-         <div>
-        <button
-  onClick={() => setYearRange([yearRange[0], tempYear])}
-  className="rounded-full bg-orange-400 w-10 text-white font-semibold py-[2px]"
->
-  Go
-</button>
-        </div>
-        </div>
-      </div>
 {/* Book Condition */}
 <div className="mb-6">
   <h3 className="text-[18px] font-semibold mb-2">Book Condition:</h3>
@@ -512,21 +508,27 @@ const FilterSidebar = (
     </div>
 
     {/* Dropdown content */}
-    {isDropdownOpen && (
-      <div className="space-y-2 mt-2">
-        {categories.map((category) => (
-          <label key={category} className="flex items-center space-x-2 text-[#676A5E] text-[16px]">
-            <input
-              type="checkbox"
-              className="w-4 h-4 accent-[#77C7F6]"
-              checked={selectedCategories.includes(category)}
-              onChange={() => toggleCategory(category)}
-            />
-            <span className="line-clamp-1 text-[13px]">{category}</span>
-          </label>
-        ))}
-      </div>
-    )}
+  {isDropdownOpen && (
+  <div
+    className="space-y-2 mt-2 max-h-[100vh] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-[#8B4513] scrollbar-track-[#F5F5DC]"
+  >
+    {filterRanges?.categories?.type?.map((category) => (
+      <label
+        key={category}
+        className="flex items-center space-x-2 text-[#676A5E] text-[16px]"
+      >
+        <input
+          type="checkbox"
+          className="w-4 h-4 accent-[#77C7F6]"
+          checked={selectedCategories.includes(category)}
+          onChange={() => toggleCategory(category)}
+        />
+        <span className="line-clamp-1 text-[13px]">{category}</span>
+      </label>
+    ))}
+  </div>
+)}
+
 
       </div>
     </div>
@@ -534,7 +536,7 @@ const FilterSidebar = (
         <button
           className="bg-[#CA1D1D] font-tenor text-white text-[14px] px-4 py-[6px] rounded-full "
           onClick={() => {
-            setPriceRange([49, 1500]);
+            setPriceRange(tempPrice === 0 ? [0, filterRanges?.price_range?.ending ?? 5000] : [0, tempPrice]);
             setSelectedCategories([]);
           }}
         >
@@ -561,73 +563,41 @@ const FilterSidebar = (
         <div className="mb-6">
           <div className="flex justify-between text-sm font-medium mb-2">
             <h3 className="tracking-wide text-[#676A5E] mt-4 text-[16px] lg:text-[22px] font-tenor uppercase">FILTER BY PRICE</h3>
-            <span className="text-[16px] lg:hidden text-[#676A5E] mt-4">1 - 20 of 350 Products</span>
+            <span className="text-[16px] lg:hidden text-[#676A5E] mt-4">  {totalProducts} Books</span>
           </div>
 
-          <input
-            type="range"
-            min={49}
-            max={2500}
-            value={priceRange[1]}
-            onChange={(e) => setPriceRange([49, parseInt(e.target.value)])}
-            className="w-full h-2 bg-[#B4541F] rounded-lg appearance-none cursor-pointer"
-            style={{ accentColor: "#B4541F" }}
-          />
+          {/* Min price */}
+{/* Single range slider */}
+<input
+  type="range"
+  min={filterRanges?.price_range?.starting ?? 0}
+  max={filterRanges?.price_range?.ending ?? 5000}
+  value={tempPrice[1]}
+  onChange={(e) => setTempPrice([tempPrice[0], parseInt(e.target.value)])}
+  className="w-full accent-[#B4541F]"
+/>
 
-          <div className="flex justify-between items-center mt-2 text-sm">
-            <p className="text-[16px] text-[#768445] ">Price: ₹{priceRange[0]} — ₹{priceRange[1]}</p>
-            <button
-              onClick={fetchProducts}
-              className="bg-[#E6712C] text-white lg:hidden px-4 py-[6px] font-tenor rounded-full text-[14px] "
-            >
-              Apply Filter
-            </button>
-          </div>
+<div className="flex justify-between items-center mt-2 text-sm">
+  <p className="text-[16px] text-[#768445]">
+    Price: ₹{tempPrice[0]} — ₹{tempPrice[1]}
+  </p>
+  <button
+    onClick={() => setPriceRange(tempPrice)}
+    className="bg-[#E6712C] text-white px-4 py-[6px] font-tenor rounded-full text-[14px]"
+  >
+    Apply
+  </button>
+</div>
+
+
         </div>
 
         {/* PRODUCT TYPE (Left column short, Right column long) */}
         <div className="mb-6">
   <p className="text-[18px] text-[#676A5E] font-tenor lg:text-[22px] uppercase mb-3">Categories</p>
-  <div className="grid grid-cols-2 gap-3 text-[px] ">
-    {[
-      "Fiction",
-      "Horror",
-      "Action & Adventure",
-      "Arts, Film & Photography",
-      "Biographies, Diaries & True Accounts",
-      "Business & Economics",
-      "Children's Books",
-      "Comics & Mangas",
-      "Computers & Internet",
-      "Crafts, Hobbies & Home",
-      "Crime, Thriller & Mystery",
-      "Engineering",
-      "Exam Preparation",
-      "Health, Family & Personal Development",
-      "Health, Fitness & Nutrition",
-      "Historical Fiction",
-      "History",
-      "Humour",
-      "Language, Linguistics & Writing",
-      "Law",
-      "Literature & Fiction",
-      "Maps & Atlases",
-      "Medicine and Health Sciences Textbooks",
-      "Politics",
-      "Reference",
-      "Religion & Spirituality",
-      "Romance",
-      "School Books",
-      "Science and Mathematics Textbooks",
-      "Science Fiction & Fantasy",
-      "Sciences, Technology & Medicine",
-      "Society & Social Sciences",
-      "Sports",
-      "Teen & Young Adult",
-      "Textbooks & Study Guides",
-      "Travel & Tourism"
-    ].map((category, index) => (
-      <label key={index} className="flex items-center space-x-2 text-[#676A5E] text-[16px]">
+  <div className="grid grid-cols-2 gap-3 text-[px] overflow-y-auto max-h-80">
+    {filterRanges?.categories?.type?.map((category, index) => (
+      <label key={index} className="flex  items-center space-x-2 text-[#676A5E] text-[16px]">
         <input
           type="checkbox"
           className="accent-[#B2BA98] w-[14px] h-[14px]"
@@ -650,10 +620,11 @@ const FilterSidebar = (
 
  
 useEffect(() => {
-  setTempPrice(priceRange[1]);
-  setTempDiscount(discountRange[1]);
-  setTempYear(yearRange[1]);
-}, []);
+  setTempPrice(priceRange);
+  setTempDiscount(discountRange);
+  setTempYear(yearRange);
+}, [priceRange, discountRange, yearRange]);
+
 
 const handleCrateCheckoutClick = () => {
   const token = localStorage.getItem("accessToken");
@@ -1277,7 +1248,7 @@ const verifyCratePayment = async (response, token) => {
         <div className="flex flex-col gap-8 bg-white mt-16  shadow-around-soft p-6">
          <div className="flex justify-between items-center"> 
         <div className="text-[20px] font-sans font-semibold text-black tracking-wide">
-    {start}-{end} of {totalProducts} Products
+    {start}-{end} of {totalProducts} Books
   </div>
         <div className=" flex items-center gap-2 text-[18px] text-black   rounded-lg">
           Sort by:

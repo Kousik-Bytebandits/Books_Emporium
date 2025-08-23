@@ -231,18 +231,29 @@ const [showPopup, setShowPopup] = useState(false);
     }}
   />
  <Helmet>
-  <title>{product?.title} | Buy Used Book at Best Price - Books Emporium</title>
-  <meta name="description" content={`Buy ${product?.title} second hand online at Books Emporium. Best deals on used books with fast delivery in Trichy and India-wide.`} />
-  <meta name="keywords" content="Used books, Buy used books, Cheap second hand books online, Books Emporium, Book Finder" />
+  <title>{product?.title ? `${product.title} | Buy Used Book at Best Price - Books Emporium` : "Buy Used Books at Best Price - Books Emporium"}</title>
+  <meta
+    name="description"
+    content={
+      product?.title
+        ? `Buy ${product.title} second hand online at Books Emporium. Best deals on used books with fast delivery in Trichy and India-wide.`
+        : "Buy second hand books online at Books Emporium. Best deals with fast delivery in Trichy and India-wide."
+    }
+  />
+  <meta
+    name="keywords"
+    content="Used books, Buy used books, Cheap second hand books online, Books Emporium, Book Finder"
+  />
 </Helmet>
+
 
 
     <div className="bg-background  hidden lg:block  lg:pt-[8%] min-h-screen px-4 py-6 font-sans">
       {/* Breadcrumb */}
       <p className="text-black font-semibold text-[24px] tracking-wider font-archivo mb-10 hidden lg:block">
-        Books &gt; The Power Of Your Subconscious Mind
+        Books &gt; {product?.product_details?.title}
       </p>
-
+       
       <div className="bg-white font-archivon   p-6 flex flex-col  lg:pt-[4%] gap-6 shadow-around-soft">
         {/* Left: Book Image */}
         <div className="lg:flex lg:w-[80%] lg:mx-20">
@@ -259,15 +270,16 @@ const [showPopup, setShowPopup] = useState(false);
           <h2 className="text-2xl lg:text-[40px] mb-4  font-archivo font-semibold text-[#282828]">
            {product?.title}
           </h2>
-          <p className="text-[#3D3D3D] text-lg lg:text-[32px]">	 {product?.product_details?.title}</p>
-
+          <p className="font-semibold font-archivo text-lg lg:text-[40px]">	 {product?.product_details?.title}</p>
+          <p className="text-[#3D3D3D] text-lg mt-4 lg:mt-6 lg:text-[32px]">	By: {product?.product_details?.author}</p>
+          <p className="text-[#3D3D3D] text-lg lg:text-[28px] mt-4 ">Book Condition: {product?.product_details?.books_condition_text}</p>
           {/* Pricing */}
-          <div className="mt-4">
+          <div className="">
             <div className="text-[22px] lg:text-[50px] font-semibold text-black">
               ₹ {product?.product_details?.price} <span className="text-[#CA1D1D] text-[16px] lg:text-[35px] font-bold "> - {product?.product_details?.discount} %</span>
             </div>
-            <div className="text-[#666666] mt-4 text-sm lg:text-[25px]">M.R.P: <span className="line-through"> {product?.product_details?.oldprice}</span></div>
-            <div className="text-sm text-[#3D3D3D] lg:text-[25px] mt-8">Inclusive Of All Taxes</div>
+            <div className="text-[#666666] mt-2 text-sm lg:text-[25px]">M.R.P: <span className="line-through"> {product?.product_details?.oldprice}</span></div>
+            <div className="text-sm text-[#3D3D3D] lg:text-[25px] mt-6">Inclusive Of All Taxes</div>
           </div>
 
           {/* Quantity */}
@@ -300,7 +312,7 @@ const [showPopup, setShowPopup] = useState(false);
 </div>
 
 
-          <div className="flex justify-between  lg:mt-6">
+          <div className="flex justify-between  lg:mt-2">
            <button
             onClick={handleAddToCart} 
            className="bg-[#3A261A] text-md lg:text-[24px] text-white w-[45%] px-4 py-2 rounded-md font-semibold hover:bg-[#4a2615]">
@@ -401,6 +413,7 @@ const [showPopup, setShowPopup] = useState(false);
        {product?.product_details?.title}
     </h2>
     <p className="text-[20px] font-archivon text-[#3D3D3D] my-1">By:  {product?.product_details?.author}</p>
+     <p className="text-[18px] font-archivon text-[#3D3D3D] my-2">Book Condition:  {product?.product_details?.books_condition_text}</p>
 
     {/* Pricing */}
    <div className="flex items-center gap-2 mt-2 font-archivon">

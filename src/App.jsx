@@ -19,7 +19,7 @@ import PaymentPolicy from "./pages/PaymentPolicy";
 import CopyrightPolicy from "./pages/CopyrightPolicy";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsAndConditions from "./pages/TermsAndConditions";
-
+import WhatsAppButton from './components/WhatsAppButton';
 
 export default function App() {
   const location = useLocation();
@@ -92,7 +92,7 @@ const handleCloseAllPopups = () => {
       </Routes>
 
       <Footer />
-
+      <WhatsAppButton />
       {/* Modals */}
       {showLogin && (
         <div className="fixed inset-0 z-50 bg-black hide-scrollbar overflow-y-auto bg-opacity-40 flex justify-center items-center">
