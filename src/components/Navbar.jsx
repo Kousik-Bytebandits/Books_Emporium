@@ -189,7 +189,7 @@ useEffect(() => {
             <button onClick={() => setIsOpen(true)} className="text-[#492C1E]">
             <IoMenu className="text-5xl" />
           </button>
-           <div className="flex items-center ">
+           <div className="flex items-center " onClick={() => navigate('/')}>
             <img src="/images/be-logo.webp" alt='logo'
             className="xxxl:w-[58px] laptop:w-[40px] hd:w-[45px] w-[36px] "> 
             </img>
@@ -367,7 +367,7 @@ useEffect(() => {
   <div className="hidden laptop:flex w-full fixed top-0 z-50 font-archivon ">
   {/* Left Section */}
   <div className="bg-nav flex items-center px-4 laptop:px-4 xxxl:px-10 py-5 gap-6 hd:gap-10 laptop:gap-6 xxxl:gap-14 laptop:w-[55%] xxxl:w-[50%] ">
-     <div className="flex items-center ">
+     <div className="flex items-center cursor-pointer" onClick={() => navigate('/')}>
             <img src="/images/be-logo.webp" alt='logo'
             className="xxxl:w-[65px] laptop:w-[45px] hd:w-[50px] "> 
             </img>

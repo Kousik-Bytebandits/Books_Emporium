@@ -2,8 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import { FaFilter } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { FaChevronDown } from "react-icons/fa";
-import { RiArrowDropRightLine } from "react-icons/ri";
-import { RiArrowDropLeftLine } from "react-icons/ri";
 import { Helmet } from "react-helmet";
 function ProductCard({ product }) {
   const navigate = useNavigate();
@@ -59,7 +57,6 @@ export default function ShopList() {
   const [sortOption, setSortOption] = useState("Relevance");
    const [showFilter, setShowFilter] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-   const totalPages = 10;
   const [limit] = useState(20);
  const [priceRange, setPriceRange] = useState([49, 5000]);
 const [discountRange, setDiscountRange] = useState([0, 70]);
@@ -69,6 +66,10 @@ const [tempPrice, setTempPrice] = useState(priceRange[1]);
 const [tempDiscount, setTempDiscount] = useState(discountRange[1]);
 const [tempYear, setTempYear] = useState(yearRange[1]);
 const [selectedCondition, setSelectedCondition] = useState("");
+const [totalProducts, setTotalProducts] = useState(0);
+const start = (currentPage - 1) * limit + 1;
+const end = Math.min(currentPage * limit, totalProducts);
+const totalPages = Math.ceil(totalProducts / limit) || 1;
 
 const handleConditionChange = (value) => {
   setSelectedCondition((prev) => (prev === value ? "" : value)); 
@@ -130,51 +131,40 @@ const sortOptionMapping = {
   PriceHighLow: "price_high_low",
 };
 const fetchProducts = (conditionValue = selectedCondition) => {
-
-
-  // Prepare query values
   const sortQuery = sortOptionMapping[sortOption] || "name_asc";
   const [minPrice, maxPrice] = priceRange;
-  const [ ,maxDiscount] = discountRange;
+  const [, maxDiscount] = discountRange;
   const [fromYear, toYear] = yearRange;
-
-  // Handle category (using first category or all joined)
   const category = selectedCategories.length > 0 ? selectedCategories[0] : "";
 
-  // Convert discount max into label for API
   let discountLabel = "";
   if (maxDiscount <= 20) discountLabel = "upto_20";
   else if (maxDiscount <= 30) discountLabel = "upto_30";
   else if (maxDiscount <= 50) discountLabel = "upto_50";
   else discountLabel = "upto_70";
 
-  // Build API URL
- const apiURL = `https://booksemporium.in/Microservices/Prod/04_user_website/api/books/list?page=${currentPage}&limit=${limit}&category=${encodeURIComponent(
+  const apiURL = `https://booksemporium.in/Microservices/Prod/04_user_website/api/books/list?page=${currentPage}&limit=${limit}&category=${encodeURIComponent(
     category
   )}&sort=${sortQuery}&min_price=${minPrice}&max_price=${maxPrice}&date_from=${fromYear}&date_to=${toYear}&discount=${discountLabel}${
     conditionValue ? `&condition=${conditionValue}` : ""
   }`;
 
-  // Fetch data
- fetch(apiURL)
-  .then((res) => res.json())
-  
-  .then((data) => {
-    if (Array.isArray(data.results)) {
-      setProducts(data.results);
+  fetch(apiURL)
+    .then((res) => res.json())
+    .then((data) => {
+      if (Array.isArray(data.results)) {
+        setProducts(data.results);
+        setTotalProducts(data.total || 0); // ✅ capture total count from API
+      } else {
+        console.error("Unexpected API response format:", data);
+      }
+    })
+    .catch((err) => {
+      console.error("Failed to fetch products:", err);
+    });
+};
 
-
-    } else {
-      console.error("Unexpected API response format:", data);
-    }
-  })
-  .catch((err) => {
-    console.error("Failed to fetch products:", err);
-  })
- 
-
-}
- useEffect(() => {
+useEffect(() => {
   fetchProducts();
 }, [sortOption, priceRange, discountRange, yearRange, selectedCategories, currentPage, selectedCondition]);
 
@@ -193,10 +183,7 @@ const fetchProducts = (conditionValue = selectedCondition) => {
     };
   }, [showFilter]);
 
-  const totalProducts = products.length;
   
-
-
  const FilterSidebar = (
   <>
     <div className=" relative lg:mt-[6%] top-[4%] -left-[56%] w-[111%] lg:w-[280px] bg-white font-sans    lg:left-[0%] lg:z-0 z-0  lg:shadow-around-soft  text-black">
@@ -522,7 +509,9 @@ useEffect(() => {
         <div className="mt-2">{FilterSidebar}</div>
         <div className="flex flex-col gap-8 bg-white mt-28   shadow-around-soft p-6">
          <div className="flex justify-between items-center"> 
-       <div className="text-[20px] font-sans font-semibold text-black tracking-wide"> {totalProducts} Results Found</div>
+       <div className="text-[20px] font-sans font-semibold text-black tracking-wide">
+    {start}-{end} of {totalProducts} Products
+  </div>
         <div className=" flex items-center gap-2 text-[18px] text-black   rounded-lg">
           Sort by:
          <div className="relative">
@@ -560,62 +549,80 @@ useEffect(() => {
        
       <div className=" ">
  {/* Pagination Section */}
-<div className=" hidden lg:flex xxxl:w-[90%] w-full justify-end items-center text-[18px] text-[#676A5E] mt-8 pb-20">
-  <div className="flex items-center gap-2">
-
-    {/* Previous Button */}
+<div className="hidden lg:flex justify-end items-center text-[18px] text-[#676A5E] mt-8 mb-20">
+  <div className="flex gap-2">
+    {/* Prev */}
     <button
-      onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-      className="w-[64px] h-[64px] rounded-full border border-[#3A261A] bg-white flex items-center justify-center text-black text-xl"
-    >
-    <RiArrowDropLeftLine className="w-10 h-10"/>
-    </button>
-
-    {/* Page Numbers */}
-    {[1, 2, 3].map((page) => (
-      <button
-        key={page}
-        onClick={() => setCurrentPage(page)}
-        className={`w-[64px] h-[64px] border border-[#3A261A] rounded-md font-semibold ${
-          currentPage === page
-            ? "bg-[#3A261A] text-white"
-            : "bg-white text-[#3A261A]"
-        }`}
-      >
-        {page}
-      </button>
-    ))}
-
-{totalPages > 4 && (
-      <button
-        onClick={() => setCurrentPage(Math.min(currentPage + 3, totalPages))}
-        className="w-[64px] h-[64px] border border-[#3A261A] rounded-md bg-white text-[#3A261A] font-semibold"
-      >
-        ...
-      </button>
-    )}
-
-    {/* Last Page */}
-    <button
-      onClick={() => setCurrentPage(totalPages)}
-      className={`w-[64px] h-[64px] border border-[#3A261A] rounded-md font-semibold ${
-        currentPage === totalPages
-          ? "bg-[#3A261A] text-white"
+      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+      disabled={currentPage === 1}
+      className={`w-[64px] h-[64px] font-bold rounded flex items-center justify-center border border-[#2B452C] ${
+        currentPage === 1
+          ? "bg-gray-200 text-gray-400 cursor-not-allowed"
           : "bg-white text-[#3A261A]"
       }`}
     >
-      {totalPages}
+      Prev
     </button>
 
-    {/* Next Button */}
+    {/* Page numbers with ellipsis */}
+    {(() => {
+      const pages = [];
+      if (totalPages <= 5) {
+        for (let i = 1; i <= totalPages; i++) pages.push(i);
+      } else if (currentPage <= 3) {
+        pages.push(1, 2, 3, 4, "...", totalPages);
+      } else if (currentPage >= totalPages - 2) {
+        pages.push(1, "...", totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+      } else {
+        pages.push(
+          1,
+          "...",
+          currentPage - 1,
+          currentPage,
+          currentPage + 1,
+          "...",
+          totalPages
+        );
+      }
+
+      return pages.map((p, i) =>
+        p === "..." ? (
+          <div
+            key={`dots-${i}`}
+            className="w-[64px] h-[64px] flex items-center justify-center"
+          >
+            ...
+          </div>
+        ) : (
+          <button
+            key={p}
+            onClick={() => setCurrentPage(p)}
+            className={`w-[64px] h-[64px] border border-[#2B452C] rounded flex items-center justify-center font-semibold ${
+              currentPage === p ? "bg-[#3A261A] text-white" : "bg-white text-[#3A261A]"
+            }`}
+          >
+            {p}
+          </button>
+        )
+      );
+    })()}
+
+    {/* Next */}
     <button
-      onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-      className="w-[64px] h-[64px] rounded-full border border-[#3A261A] bg-white flex items-center justify-center text-black text-xl"
+      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+      disabled={currentPage === totalPages}
+      className={`w-[64px] h-[64px] font-bold rounded flex items-center justify-center border border-[#2B452C] ${
+        currentPage === totalPages
+          ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+          : "bg-white text-[#3A261A]"
+      }`}
     >
-      <RiArrowDropRightLine className="w-10 h-10"/>
+      Next
     </button>
   </div>
 </div>
+
+
 
 </div>
 
