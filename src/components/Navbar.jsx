@@ -8,6 +8,7 @@ import { GoSearch } from "react-icons/go";
 import { FaUser } from "react-icons/fa6";
 import { MdOutlineArrowDropDown } from 'react-icons/md';
 import UserProfile from '../pages/userProfile';
+import { showLoginToast } from './ShowLoginToast';
 
 const Navbar = ({handleOpenLogin}) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -23,6 +24,7 @@ const [suggestions, setSuggestions] = useState([]);
    const toggleProfile = () => setShowProfile(!showProfile);
  const [showDropdown, setShowDropdown] = useState(false);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+const [token, setToken] = useState(localStorage.getItem("accessToken"));
 
 const [cartCount, setCartCount] = useState(
   parseInt(localStorage.getItem("cartCount")) || 0
@@ -35,32 +37,34 @@ const [cartCount, setCartCount] = useState(
   localStorage.removeItem("user");
   console.log("Removed from localStorage:", localStorage.getItem("user")); // should be null
   setUser(null);
+  setToken(null);
   window.dispatchEvent(new Event("profileUpdated"));
   navigate('/');
 };
 
-  useEffect(() => {
+ useEffect(() => {
   const loadUserFromLocalStorage = () => {
     const storedUser = localStorage.getItem("user");
+    const storedToken = localStorage.getItem("accessToken");
+
     if (storedUser) {
       const parsed = JSON.parse(storedUser);
       setUser(parsed.user || parsed);
-    }
-    else{
+    } else {
       setUser(null);
     }
+
+    setToken(storedToken); 
   };
 
-  // Load initially
   loadUserFromLocalStorage();
-
-  // Listen for updates
   window.addEventListener("profileUpdated", loadUserFromLocalStorage);
 
   return () => {
     window.removeEventListener("profileUpdated", loadUserFromLocalStorage);
   };
 }, []);
+
 
   
   useEffect(() => {
@@ -107,10 +111,15 @@ const handleChange=(res)=>{
       toggleProfile();
     }
 
-}
+};
 
 const handleCart=()=>{
-  navigate('/shopcart');
+   const token = localStorage.getItem("accessToken");
+   if (!token) {
+      showLoginToast(() => handleOpenLogin());
+   } else {
+     navigate('/shopcart');
+   }
 }
 
 useEffect(() => {
@@ -203,9 +212,9 @@ useEffect(() => {
         <div className="flex items-center gap-4">
           <FaUser  onClick={handleChange} className="text-[#492C1E] text-3xl" />
           <div className="relative ml-2">
-  <FaShoppingCart className="text-[#492C1E] text-[28px]" onClick={handleCart} />
+  <FaShoppingCart className="text-[#492C1E] text-[28px] cursor-pointer" onClick={handleCart} />
   {cartCount > 0 && (
-    <span className="absolute -top-2 -right-1 bg-red-600 text-[10px] leading-none font-semibold text-white rounded-full px-[4px] py-[3px]">
+    <span className="absolute -top-2 -right-1 bg-red-600 text-[10px] leading-none  font-semibold text-white rounded-full px-[4px] py-[3px]">
       {cartCount}
     </span>
   )}
@@ -295,7 +304,7 @@ useEffect(() => {
       </div>
 
      <div className="relative ml-2">
-  <FaShoppingCart className="text-[#492C1E] text-[28px]" onClick={handleCart} />
+  <FaShoppingCart className="text-[#492C1E] text-[28px] cursor-pointer" onClick={handleCart} />
   {cartCount > 0 && (
     <span className="absolute -top-2 -right-1 bg-red-600 text-[10px] leading-none font-semibold text-white rounded-full px-[4px] py-[3px]">
       {cartCount}
@@ -349,7 +358,7 @@ useEffect(() => {
       </div>
 
     <div className="relative ml-2">
-  <FaShoppingCart className="text-[#492C1E] text-[28px]" onClick={handleCart} />
+  <FaShoppingCart className="text-[#492C1E] text-[28px] cursor-pointer" onClick={handleCart} />
   {cartCount > 0 && (
     <span className="absolute -top-2 -right-1 bg-red-600 text-[10px] leading-none font-semibold text-white rounded-full px-[4px] py-[3px]">
       {cartCount}
@@ -460,18 +469,47 @@ useEffect(() => {
     />
   </button>
 
-  {isOpen2 && (
+   {isOpen2 && (
     <div className="absolute right-0 mt-2 w-28 bg-white border rounded shadow-lg z-50">
-      <ul className="py-1 text-md text-gray-700">
-        <li onClick={handleChange} className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Profile</li>
-        <li onClick={handleLogout} className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Logout</li>
+      <ul className="py-1 text-md text-gray-700 ">
+        {token ? (
+          <>
+            <li
+              onClick={handleChange}
+              className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+            >
+              Profile
+            </li>
+            <li
+              onClick={handleLogout}
+              className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+            >
+              Logout
+            </li>
+          </>
+        ) : (
+          <>
+            <li
+              onClick={handleChange}
+              className=" w-full py-2 hover:bg-gray-100 cursor-pointer"
+            >
+              Profile
+            </li>
+          <li
+            onClick={handleChange}
+            className=" w-full py-2 hover:bg-gray-100 cursor-pointer"
+          >
+            Login
+          </li>
+          </>
+        )}
       </ul>
     </div>
   )}
 </div>
 
    <div className="relative ml-2">
-  <FaShoppingCart className="text-[#492C1E] text-[35px]" onClick={handleCart} />
+  <FaShoppingCart className="text-[#492C1E] text-[35px] cursor-pointer" onClick={handleCart} />
   {cartCount > 0 && (
     <span className="absolute -top-2 -right-2 bg-red-600 text-[14px] leading-none font-semibold text-white rounded-full px-[5px] py-[3px]">
       {cartCount}

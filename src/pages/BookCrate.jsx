@@ -82,7 +82,8 @@ export default function BookCrate({ handleOpenLogin}) {
   const [sortOption, setSortOption] = useState("Relevance");
    const [showFilter, setShowFilter] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [limit] = useState(20);
+ const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const limit = isMobile ? 10000 : 20;
 const [priceRange, setPriceRange] = useState([0, 0]);
 const [discountRange, setDiscountRange] = useState([0, 0]);
 const [yearRange, setYearRange] = useState([0, 0]);
@@ -116,6 +117,12 @@ const [isCrate] = useState(false);
 const [showOutOfStock] = useState(false);
 
 const [filterRanges, setFilterRanges] = useState(null);
+
+useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
 useEffect(() => {
   const fetchFilterRanges = async () => {

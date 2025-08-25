@@ -27,6 +27,20 @@ export default function App() {
   const [showLogin, setShowLogin] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
   const [showForgot, setShowForgot] = useState(false);
+  const [user, setUser] = useState(null);
+const [token, setToken] = useState(null);
+
+useEffect(() => {
+  const storedUser = localStorage.getItem("user");
+  const storedToken = localStorage.getItem("accessToken");
+
+  if (storedUser) {
+    setUser(JSON.parse(storedUser));
+  }
+  if (storedToken) {
+    setToken(storedToken);
+  }
+}, []);
 
 const handleOpenLogin = () => {
   setShowLogin(true);
@@ -72,7 +86,11 @@ const handleCloseAllPopups = () => {
     <>
       <ScrollToTop />
 
-      <Navbar handleOpenLogin={handleOpenLogin} />
+      <Navbar   handleOpenLogin={handleOpenLogin} 
+  user={user} 
+  token={token} 
+  setUser={setUser} 
+  setToken={setToken}  />
 
       {loading && <Loader />}
 
@@ -100,6 +118,8 @@ const handleCloseAllPopups = () => {
     onClose={handleCloseAllPopups}
     onOpenSignup={handleOpenSignup}
     onOpenForgot={handleOpenForgot}
+    setUser={setUser}      
+      setToken={setToken}
   />
         </div>
       )}

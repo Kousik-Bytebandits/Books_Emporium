@@ -5,7 +5,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loader from "../components/Loader";
 import AddressPopup from "./AddressPopup";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 import { showLoginToast } from "../components/ShowLoginToast";
 
 const ProductDetails = ({ handleOpenLogin }) => {

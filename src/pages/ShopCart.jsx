@@ -7,7 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 import AddressPopup from "./AddressPopup";
 import {showLoginToast} from "../components/ShowLoginToast";
 import { showSessionExpiredToast } from "../components/showSessionExpiredToast";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 export default function ShopCart({handleOpenLogin}) {
   
   const selectRef = useRef();

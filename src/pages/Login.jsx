@@ -6,14 +6,14 @@ import { IoEyeSharp } from "react-icons/io5";
 import { FaEyeSlash } from "react-icons/fa";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Helmet } from 'react-helmet';
-export default function Login({ onClose,onOpenSignup,onOpenForgot }) {
+import { Helmet } from 'react-helmet-async';
+export default function Login({ onClose,onOpenSignup,onOpenForgot,setUser,setToken }) {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = async () => {
+const handleLogin = async () => {
   try {
     const res = await fetch(`${endpoint_prefix}02_Authentication/auth/login`, {
       method: 'POST',
@@ -24,21 +24,25 @@ export default function Login({ onClose,onOpenSignup,onOpenForgot }) {
     const data = await res.json();
 
     if (res.ok && data.accessToken) {
-      // Store tokens & user
+      // Store tokens & user in localStorage
       localStorage.setItem('accessToken', data.accessToken);
       localStorage.setItem('refreshToken', data.refreshToken);
       localStorage.setItem('user', JSON.stringify(data.user));
 
-      toast.success("Login successful!");
+      // 👇 Update state immediately (fixes dropdown issue)
+      setToken(data.accessToken);
+      setUser(data.user);
 
+      // Optional: notify other listeners
       window.dispatchEvent(new Event("profileUpdated"));
+
+      toast.success("Login successful!");
 
       setTimeout(() => {
         onClose();
         navigate('/');
       }, 1500);
     } else {
-     
       const errorMessage = data.message || data.error || 'Login failed';
 
       if (errorMessage.toLowerCase().includes('password')) {

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { FaFilter } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { FaChevronDown } from "react-icons/fa";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 function ProductCard({ product }) {
   const navigate = useNavigate();
 
@@ -57,14 +57,15 @@ export default function ShopList() {
   const [sortOption, setSortOption] = useState("Relevance");
    const [showFilter, setShowFilter] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [limit] = useState(20);
- const [priceRange, setPriceRange] = useState([0, 0]);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+const limit = isMobile ? 10000 : 20; 
+   const [priceRange, setPriceRange] = useState([0, 0]);
 const [discountRange, setDiscountRange] = useState([0, 0]);
 const [yearRange, setYearRange] = useState([0, 0]);
 const [isDropdownOpen, setIsDropdownOpen] = useState(true);
-const [tempPrice, setTempPrice] = useState(0);
-const [tempDiscount, setTempDiscount] = useState(0);
-const [tempYear, setTempYear] = useState(0);
+const [tempPrice, setTempPrice] = useState([0, 0]);
+const [tempDiscount, setTempDiscount] = useState([0, 0]);
+const [tempYear, setTempYear] = useState([0, 0]);
 const [selectedCondition, setSelectedCondition] = useState("");
 const [totalProducts, setTotalProducts] = useState(0);
 const start = (currentPage - 1) * limit + 1;
@@ -73,6 +74,15 @@ const totalPages = Math.ceil(totalProducts / limit) || 1;
 const [isCrate] = useState(false);
 const [showOutOfStock] = useState(false);
 const [filterRanges, setFilterRanges] = useState(null);
+
+
+useEffect(() => {
+  const handleResize = () => {
+    setIsMobile(window.innerWidth < 768);
+  };
+  window.addEventListener("resize", handleResize);
+  return () => window.removeEventListener("resize", handleResize);
+}, []);
 
 const handleConditionChange = (value) => {
   setSelectedCondition((prev) => (prev === value ? "" : value)); 
@@ -94,9 +104,9 @@ useEffect(() => {
       setDiscountRange([data.discount_range.starting, data.discount_range.ending]);
       setYearRange([data.published_date.starting, data.published_date.ending]);
 
-      setTempPrice(data.price_range.ending);
-      setTempDiscount(data.discount_range.ending);
-      setTempYear(data.published_date.ending);
+      setTempPrice([data.price_range.starting, data.price_range.ending]);
+setTempDiscount([data.discount_range.starting, data.discount_range.ending]);
+setTempYear([data.published_date.starting, data.published_date.ending]);
     } catch (error) {
       console.error("Error fetching filter ranges:", error);
     }
@@ -318,15 +328,19 @@ useEffect(() => {
       </div>
     </div>
       <div className="lg:hidden  lg:bg-white font-archivo flex justify-between items-center px-4 py-3">
-        <button
-          className="bg-[#CA1D1D] font-tenor text-white text-[14px] px-4 py-[6px] rounded-full "
-          onClick={() => {
-            setPriceRange(tempPrice === 0 ? [0, filterRanges?.price_range?.ending ?? 5000] : [0, tempPrice]);
-            setSelectedCategories([]);
-          }}
-        >
-          Clear Filter
-        </button>
+       <button
+  className="bg-[#CA1D1D] font-tenor text-white text-[14px] px-4 py-[6px] rounded-full"
+  onClick={() => {
+    // Reset only price range to API default
+    setPriceRange([
+      filterRanges?.price_range?.starting ?? 0,
+      filterRanges?.price_range?.ending ?? 5000
+    ]);
+  }}
+>
+  Clear Price
+</button>
+
         <button
           onClick={() => setShowFilter(false)}
           className="text-[24px] font-bold lg:hidden"
@@ -405,13 +419,14 @@ useEffect(() => {
   setTempYear(yearRange);
 }, [priceRange, discountRange, yearRange]);
 
+
   return (
     <div>
       <Helmet>
-  <title>Shop Second Hand Books Online Near Trichy | Books Emporium</title>
-  <meta name="description" content="Browse and shop from a wide range of used books available in Trichy and all over India. Affordable second-hand books delivered to your doorstep." />
-  <meta name="keywords" content="Used books Trichy, Buy books online near Trichy, Second hand books, Cheap books online, Old book shops Trichy" />
-</Helmet>
+        <title>Shop Second Hand Books Online Near Trichy | Books Emporium</title>
+        <meta name="description" content="Browse and shop from a wide range of used books available in Trichy and all over India. Affordable second-hand books delivered to your doorstep." />
+        <meta name="keywords" content="Used books Trichy, Buy books online near Trichy, Second hand books, Cheap books online, Old book shops Trichy" />
+      </Helmet>
 
     <div className="lg:mt-[2%] mt-[30%]  min-h-screen overflow-hidden  pb-20 bg-background   lg:px-8 lg:pt-[6%] font-archivo text-[#676A5E]">
      
