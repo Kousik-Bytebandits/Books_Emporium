@@ -338,7 +338,7 @@ useEffect(() => {
     ]);
   }}
 >
-  Clear Price
+  Clear Filter
 </button>
 
         <button
@@ -371,8 +371,8 @@ useEffect(() => {
   max={filterRanges?.price_range?.ending ?? 5000}
   value={tempPrice[1]}
   onChange={(e) => setTempPrice([tempPrice[0], parseInt(e.target.value)])}
-            className="w-full h-2 bg-[#B4541F] rounded-lg appearance-none cursor-pointer"
-            style={{ accentColor: "#B4541F" }}
+            className="w-full accent-[#B4541F]"
+           
           />
 
           <div className="flex justify-between items-center mt-2 text-sm">

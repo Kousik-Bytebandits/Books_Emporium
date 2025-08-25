@@ -87,9 +87,9 @@ export default function BookCrate({ handleOpenLogin}) {
 const [priceRange, setPriceRange] = useState([0, 0]);
 const [discountRange, setDiscountRange] = useState([0, 0]);
 const [yearRange, setYearRange] = useState([0, 0]);
-const [tempPrice, setTempPrice] = useState(0);
-const [tempDiscount, setTempDiscount] = useState(0);
-const [tempYear, setTempYear] = useState(0);
+const [tempPrice, setTempPrice] = useState([0, 0]);
+const [tempDiscount, setTempDiscount] = useState([0, 0]);
+const [tempYear, setTempYear] = useState([0, 0]);
 const [isDropdownOpen, setIsDropdownOpen] = useState(true);
 const [selectedCrate, setSelectedCrate] = useState(crates[0]);
  const scrollRef = useRef(null);
@@ -140,11 +140,9 @@ useEffect(() => {
       setDiscountRange([data.discount_range.starting, data.discount_range.ending]);
       setYearRange([data.published_date.starting, data.published_date.ending]);
 
-      // temp values should also be arrays
       setTempPrice([data.price_range.starting, data.price_range.ending]);
-      setTempDiscount([data.discount_range.starting, data.discount_range.ending]);
-      setTempYear([data.published_date.starting, data.published_date.ending]);
-
+setTempDiscount([data.discount_range.starting, data.discount_range.ending]);
+setTempYear([data.published_date.starting, data.published_date.ending]);
     } catch (error) {
       console.error("Error fetching filter ranges:", error);
     }
@@ -543,9 +541,12 @@ const FilterSidebar = (
         <button
           className="bg-[#CA1D1D] font-tenor text-white text-[14px] px-4 py-[6px] rounded-full "
           onClick={() => {
-            setPriceRange(tempPrice === 0 ? [0, filterRanges?.price_range?.ending ?? 5000] : [0, tempPrice]);
-            setSelectedCategories([]);
-          }}
+    // Reset only price range to API default
+    setPriceRange([
+      filterRanges?.price_range?.starting ?? 0,
+      filterRanges?.price_range?.ending ?? 5000
+    ]);
+  }}
         >
           Clear Filter
         </button>
