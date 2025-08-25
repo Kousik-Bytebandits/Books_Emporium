@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 import NotificationPopup from "./NotificatioPopup"
 import endpoint_prefix from "../config/ApiConfig";
 export default function SignUp({ onClose, onOpenLogin }) {
