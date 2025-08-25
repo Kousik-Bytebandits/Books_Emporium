@@ -136,35 +136,24 @@ const sortOptionMapping = {
 const fetchProducts = (conditionValue = selectedCondition) => {
   const sortQuery = sortOptionMapping[sortOption] || "name_asc";
   const [minPrice, maxPrice] = priceRange;
-  const [, maxDiscount] = discountRange;
+  const [minDiscount, maxDiscount] = discountRange;
   const [fromYear, toYear] = yearRange;
-  const category = selectedCategories.length > 0 ? selectedCategories[0] : "";
 
-  let discountLabel = "";
-  if (maxDiscount <= 20) discountLabel = "upto_20";
-  else if (maxDiscount <= 30) discountLabel = "upto_30";
-  else if (maxDiscount <= 50) discountLabel = "upto_50";
-  else discountLabel = "upto_70";
+  const categoriesQuery = selectedCategories
+    .map(cat => `&category=${encodeURIComponent(cat)}`)
+    .join("");
 
-  const apiURL = `https://booksemporium.in/Microservices/Prod/04_user_website/api/books/list?page=${currentPage}&limit=${limit}&category=${encodeURIComponent(
-    category
-  )}&sort=${sortQuery}&min_price=${minPrice}&max_price=${maxPrice}&date_from=${fromYear}&date_to=${toYear}&discount=${discountLabel}${
-    conditionValue ? `&condition=${conditionValue}` : ""
-  }&is_crate=${isCrate ? "true" : "false"}&show_out_of_stock=${showOutOfStock ? "true" : "false"}`;
+  const apiURL = `https://booksemporium.in/Microservices/Prod/04_user_website/api/books/list?page=${currentPage}&limit=${limit}&sort=${sortQuery}&min_price=${minPrice}&max_price=${maxPrice}&min_discount=${minDiscount}&max_discount=${maxDiscount}&date_from=${fromYear}&date_to=${toYear}${categoriesQuery}${conditionValue ? `&condition=${conditionValue}` : ""}&is_crate=${isCrate ? "true" : "false"}&show_out_of_stock=${showOutOfStock ? "true" : "false"}`;
 
   fetch(apiURL)
-    .then((res) => res.json())
-    .then((data) => {
+    .then(res => res.json())
+    .then(data => {
       if (Array.isArray(data.results)) {
         setProducts(data.results);
-        setTotalProducts(data.total || 0); // ✅ capture total count from API
-      } else {
-        console.error("Unexpected API response format:", data);
+        setTotalProducts(data.total || 0);
       }
     })
-    .catch((err) => {
-      console.error("Failed to fetch products:", err);
-    });
+    .catch(err => console.error(err));
 };
 
 
@@ -419,6 +408,11 @@ useEffect(() => {
   setTempYear(yearRange);
 }, [priceRange, discountRange, yearRange]);
 
+useEffect(() => {
+  if (filterRanges?.categories) {
+    console.log("Categories from API:", filterRanges.categories);
+  }
+}, [filterRanges]);
 
   return (
     <div>
