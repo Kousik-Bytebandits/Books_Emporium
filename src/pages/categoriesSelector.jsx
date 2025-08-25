@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import categories from "./categories";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 export default function CategorySelector({ onBooksFetched }) {
   const [activeId, setActiveId] = useState(true);
   

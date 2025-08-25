@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import BannerCarousel from "./BannerCarousel";
 import CategorySelector from "./categoriesSelector";
 import { useNavigate } from "react-router-dom";
-import {Helmet} from "react-helmet";
+import {Helmet} from "react-helmet-async";
 
 export default function Home() {
   const [books, setBooks] = useState([]);
